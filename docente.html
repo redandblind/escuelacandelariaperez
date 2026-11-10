@@ -3,423 +3,652 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Docente - Escuela Candelaria Pérez</title>
+    <title>Panel Docente · Escuela Candelaria Pérez</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --radius: 14px;
+            --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
         body {
-            background-color: #f4f6f9;
-            color: #1f2937;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
+        /* Header */
         header {
-            background-color: #eef2f7;
-            border-bottom: 1px solid #d1d5db;
-            padding: 15px 25px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 40;
         }
 
-        .header-info h1 {
+        .header-left h1 {
             font-size: 1.1rem;
-            color: #1e3a8a;
-            font-weight: 600;
+            color: var(--primary-dark);
+            font-weight: 700;
         }
 
-        .header-info p {
-            font-size: 0.8rem;
-            color: #3b82f6;
+        .header-left p {
+            font-size: 0.78rem;
+            color: var(--primary-light);
+            margin-top: 1px;
         }
 
-        .header-right {
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .chat-btn {
+        .icon-btn {
             position: relative;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            padding: 8px 12px;
-            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .chat-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: #ef4444;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.15rem;
+            transition: background 0.15s;
         }
 
+        .icon-btn:hover { background: #f1f5f9; }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .btn-logout {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border);
+            padding: 9px 14px;
+            border-radius: 9px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn-logout:hover { background: #e2e8f0; }
+
+        /* Main */
         main {
             flex: 1;
-            max-width: 900px;
+            max-width: 960px;
             width: 100%;
-            margin: 20px auto;
-            padding: 0 15px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        /* Welcome + Stats */
+        .welcome-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 22px;
         }
 
         .welcome-card {
-            background: #ffffff;
-            padding: 20px 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #e5e7eb;
-            margin-bottom: 20px;
+            flex: 1;
+            min-width: 260px;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 22px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 24px rgba(30, 64, 175, 0.25);
         }
 
         .welcome-card h2 {
-            color: #1e3a8a;
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-            text-transform: uppercase;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
         .welcome-card p {
-            color: #4b5563;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            opacity: 0.9;
         }
 
-        .curso-section {
-            background: #ffffff;
+        .stats-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #e5e7eb;
-            margin-bottom: 20px;
-            overflow-x: auto;
+            padding: 16px 18px;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: var(--shadow);
         }
 
-        .curso-section h3 {
-            color: #1e3a8a;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #eff6ff;
-            padding-bottom: 8px;
+        .stat-card .num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            background: white;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.12s, box-shadow 0.15s;
+        }
+
+        .btn-action:hover { transform: translateY(-1px); }
+
+        .btn-create {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-dark);
+            border: 1.5px solid var(--border);
+        }
+
+        /* Course sections */
+        .curso-section {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .curso-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .curso-header h3 {
+            font-size: 1rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .curso-count {
+            font-size: 0.78rem;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
-            min-width: 500px;
+            font-size: 0.88rem;
         }
 
         th, td {
-            padding: 12px 10px;
+            padding: 12px 16px;
             text-align: left;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         th {
-            color: #6b7280;
+            color: var(--text-muted);
             font-weight: 600;
-            background-color: #f9fafb;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            background: #fafbfc;
         }
 
-        td {
-            color: #1f2937;
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
 
-        .acciones {
-            position: relative;
-            text-align: right;
-        }
+        .acciones { text-align: right; position: relative; }
 
         .menu-dots {
             background: none;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             cursor: pointer;
-            color: #4b5563;
-            padding: 6px 10px;
-            border-radius: 4px;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            line-height: 1;
         }
 
-        .menu-dots:hover {
-            background-color: #f3f4f6;
-        }
+        .menu-dots:hover { background: #f1f5f9; color: var(--primary-dark); }
 
         .dropdown-menu {
             display: none;
             position: absolute;
-            right: 0;
-            top: 35px;
+            right: 12px;
+            top: 40px;
             background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            width: 160px;
-            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            z-index: 20;
+            width: 180px;
+            overflow: hidden;
         }
 
         .dropdown-menu button {
             width: 100%;
-            padding: 10px;
+            padding: 11px 14px;
             background: none;
             border: none;
             font-size: 0.85rem;
-            color: #374151;
+            color: #334155;
             cursor: pointer;
             text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .dropdown-menu button:hover {
-            background-color: #f3f4f6;
-            color: #1e3a8a;
+            background: #f8fafc;
+            color: var(--primary-dark);
         }
 
-        .dropdown-menu button.danger {
-            color: #dc2626;
-        }
+        .dropdown-menu button.danger { color: var(--danger); }
+        .dropdown-menu button.danger:hover { background: #fef2f2; }
 
-        .dropdown-menu button.danger:hover {
-            background-color: #ffeeec;
-        }
-
+        /* Modals */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(4px);
             z-index: 100;
-            padding: 15px;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
 
-        .modal-content {
+        .modal-overlay.show { display: flex; }
+
+        .modal {
             background: white;
-            padding: 20px 25px;
-            border-radius: 12px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 440px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: modalIn 0.25s ease;
         }
 
-        .modal-content h3 {
-            color: #1e3a8a;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.96) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .modal-content label {
+        .modal-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #94a3b8;
+            line-height: 1;
+        }
+
+        .modal-body { padding: 20px 22px; }
+
+        .modal-body label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            color: #374151;
+            color: #334155;
             margin-bottom: 6px;
-            margin-top: 12px;
+            margin-top: 14px;
         }
 
-        .modal-content select, .modal-content input {
+        .modal-body label:first-child { margin-top: 0; }
+
+        .modal-body input,
+        .modal-body select {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            padding: 11px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            font-size: 0.92rem;
             outline: none;
+            background: #fafbfc;
         }
 
-        .modal-actions {
+        .modal-body input:focus,
+        .modal-body select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            background: white;
+        }
+
+        .modal-footer {
+            padding: 16px 22px;
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            justify-content: flex-end;
         }
 
-        .modal-actions button {
-            flex: 1;
-            padding: 10px;
-            border-radius: 6px;
+        .btn-modal {
+            padding: 10px 18px;
+            border-radius: 9px;
             font-weight: 600;
+            font-size: 0.88rem;
             cursor: pointer;
             border: none;
         }
 
-        .btn-guardar {
-            background-color: #3b82f6;
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-save {
+            background: var(--primary-light);
             color: white;
         }
 
-        .btn-guardar:hover {
-            background-color: #2563eb;
-        }
+        .btn-save:hover { background: #2563eb; }
 
-        .btn-cancelar {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-
-        .btn-cancelar:hover {
-            background-color: #d1d5db;
-        }
-
-        .justificaciones-lista {
-            max-height: 250px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
+        /* Justificaciones list */
         .justificacion-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
             font-size: 0.85rem;
         }
 
-        .justificacion-card strong {
-            color: #1e3a8a;
+        .justificacion-card strong { color: var(--primary-dark); }
+        .justificacion-card .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 3px;
         }
-
         .justificacion-card p {
-            margin-top: 5px;
+            margin-top: 8px;
             color: #334155;
+            line-height: 1.4;
         }
 
-        .btn-volver {
-            background-color: #6b7280;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-volver:hover {
-            background-color: #4b5563;
+        .empty-state {
+            text-align: center;
+            padding: 28px 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 16px;
             font-size: 0.75rem;
-            color: #6b7280;
-            background-color: #eef2f7;
-            border-top: 1px solid #d1d5db;
+            color: var(--text-muted);
+            background: var(--card);
+            border-top: 1px solid var(--border);
         }
 
         @media (max-width: 600px) {
-            header {
-                padding: 12px 15px;
-            }
-            .header-info h1 {
-                font-size: 1rem;
-            }
-            .welcome-card h2 {
-                font-size: 1.15rem;
-            }
+            header { padding: 12px 14px; }
+            .welcome-row { flex-direction: column; }
+            .stats-grid { width: 100%; }
+            .stat-card { flex: 1; }
+            table { font-size: 0.82rem; }
+            th, td { padding: 10px 12px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-info">
+        <div class="header-left">
             <h1>Escuela Candelaria Pérez</h1>
-            <p>Portal del Docente • San Javier</p>
+            <p>Panel del Docente · San Javier</p>
         </div>
-        <div class="header-right">
-            <button class="chat-btn" onclick="abrirBuzonJustificaciones()">
-                💬 <span id="contadorJustificaciones" class="chat-badge" style="display:none;">0</span>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="abrirBuzonJustificaciones()" title="Buzón de justificaciones">
+                💬
+                <span id="contadorJustificaciones" class="badge">0</span>
             </button>
-            <a href="index.html" class="btn-volver">Cerrar Sesión</a>
+            <a href="index.html" class="btn-logout">Cerrar sesión</a>
         </div>
     </header>
 
     <main>
-        <div class="welcome-card">
-            <h2 id="saludoProfe">HOLA, CARGANDO...</h2>
-            <p>¿Qué necesita gestionar hoy? Aquí tiene el listado oficial de sus estudiantes asignados.</p>
+        <div class="welcome-row">
+            <div class="welcome-card">
+                <h2 id="saludoProfe">Hola...</h2>
+                <p>Gestiona alumnos, calificaciones y justificaciones de tus cursos asignados.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="num" id="statAlumnos">0</div>
+                    <div class="label">Alumnos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="statCursos">0</div>
+                    <div class="label">Cursos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="statJustif">0</div>
+                    <div class="label">Justificaciones</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()">
+            </div>
+            <button class="btn-action btn-create" onclick="abrirModalCrearAlumno()">
+                ＋ Nuevo alumno
+            </button>
         </div>
 
         <div id="contenedorCursos">
-            <!-- Dinámicamente se cargan los cursos y alumnos -->
+            <!-- Se genera dinámicamente -->
         </div>
     </main>
 
-    <!-- Modal de Notas -->
+    <!-- Modal Nota -->
     <div id="modalNota" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="modalTitulo">Agregar Nota a Estudiante</h3>
-            
-            <label for="selectAsignatura">Seleccionar Asignatura:</label>
-            <select id="selectAsignatura">
-                <option value="Lenguaje y Comunicación">1. Lenguaje y Comunicación</option>
-                <option value="Matemática">2. Matemática</option>
-                <option value="Historia, Geografía y Ciencias Sociales">3. Historia, Geografía y Ciencias Sociales</option>
-                <option value="Ciencias Naturales">4. Ciencias Naturales</option>
-                <option value="Artes Visuales">5. Artes Visuales</option>
-                <option value="Educación Física y Salud">6. Educación Física y Salud</option>
-                <option value="Tecnología">7. Tecnología</option>
-                <option value="Música">8. Música</option>
-                <option value="Inglés">9. Inglés</option>
-                <option value="Religión">10. Religión</option>
-                <option value="Orientación">11. Orientación</option>
-            </select>
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTituloNota">Agregar calificación</h3>
+                <button class="modal-close" onclick="cerrarModal('modalNota')">×</button>
+            </div>
+            <div class="modal-body">
+                <label for="selectAsignatura">Asignatura</label>
+                <select id="selectAsignatura">
+                    <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+                    <option value="Matemática">Matemática</option>
+                    <option value="Historia, Geografía y Ciencias Sociales">Historia, Geografía y Ciencias Sociales</option>
+                    <option value="Ciencias Naturales">Ciencias Naturales</option>
+                    <option value="Artes Visuales">Artes Visuales</option>
+                    <option value="Educación Física y Salud">Educación Física y Salud</option>
+                    <option value="Tecnología">Tecnología</option>
+                    <option value="Música">Música</option>
+                    <option value="Inglés">Inglés</option>
+                    <option value="Religión">Religión</option>
+                    <option value="Orientación">Orientación</option>
+                </select>
 
-            <label for="inputNota">Ingresar Nota (Ej: 6,5):</label>
-            <input type="text" id="inputNota" placeholder="Ej: 6,5">
-
-            <div class="modal-actions">
-                <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
-                <button type="button" class="btn-guardar" onclick="guardarNota()">Guardar Nota</button>
+                <label for="inputNota">Nota (ej: 6,5)</label>
+                <input type="text" id="inputNota" placeholder="Ej: 6,5 o 7.0" inputmode="decimal">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalNota')">Cancelar</button>
+                <button class="btn-modal btn-save" onclick="guardarNota()">Guardar nota</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Justificaciones -->
-    <div id="modalJustificaciones" class="modal-overlay">
-        <div class="modal-content">
-            <h3>📥 Buzón de Justificaciones</h3>
-            <div id="listaJustificacionesBuzon" class="justificaciones-lista">
-                <p style="text-align: center; color: #64748b; font-size: 0.85rem;">No hay justificaciones recibidas.</p>
+    <!-- Modal Crear Alumno -->
+    <div id="modalCrearAlumno" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Crear nuevo perfil de alumno</h3>
+                <button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancelar" onclick="cerrarModalBuzon()">Cerrar</button>
+            <div class="modal-body">
+                <label for="nuevoRut">RUT (con guión)</label>
+                <input type="text" id="nuevoRut" placeholder="Ej: 25928875-4" maxlength="12">
+
+                <label for="nuevoNombre">Nombre completo</label>
+                <input type="text" id="nuevoNombre" placeholder="Ej: Juan Pérez González">
+
+                <label for="nuevoCurso">Curso</label>
+                <select id="nuevoCurso">
+                    <!-- Se llena con los cursos del profesor -->
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCrearAlumno')">Cancelar</button>
+                <button class="btn-modal btn-save" onclick="crearNuevoAlumno()">Crear perfil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Justificaciones -->
+    <div id="modalJustificaciones" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📥 Buzón de justificaciones</h3>
+                <button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="listaJustificacionesBuzon">
+                    <div class="empty-state">No hay justificaciones recibidas.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalJustificaciones')">Cerrar</button>
             </div>
         </div>
     </div>
 
     <footer>
-        Desarrollado para Escuela Candelaria Pérez • San Javier
+        Escuela Candelaria Pérez · San Javier · Panel Docente
     </footer>
 
     <script>
+        // ========== DATOS BASE ==========
         const baseDatosCursos = {
             "1° Básico": {
                 "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ"
@@ -456,172 +685,274 @@
             "ANA COFRÉ MUÑOZ": ["8° Básico"]
         };
 
+        // ========== ESTADO ==========
         const params = new URLSearchParams(window.location.search);
         const nombreProfe = params.get('nombre');
         let alumnoSeleccionadoRut = null;
+        let cursosDelProfe = [];
 
-        if (nombreProfe && profesorCursos[nombreProfe]) {
-            document.getElementById('saludoProfe').innerText = `HOLA, ${nombreProfe}`;
-            
-            const contenedor = document.getElementById('contenedorCursos');
-            const cursosDelProfe = profesorCursos[nombreProfe];
+        // ========== INICIALIZACIÓN ==========
+        if (!nombreProfe || !profesorCursos[nombreProfe]) {
+            alert("Acceso no autorizado o nombre de docente inválido.");
+            window.location.href = "index.html";
+        } else {
+            cursosDelProfe = profesorCursos[nombreProfe];
+            document.getElementById('saludoProfe').textContent = `Hola, ${formatearNombre(nombreProfe)}`;
+            renderizarTodo();
+            actualizarNotificacionesJustificaciones();
+        }
+
+        function formatearNombre(nombre) {
+            return nombre.split(' ').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join(' ');
+        }
+
+        // ========== DATOS DINÁMICOS ==========
+        function obtenerCursosCompletos() {
+            // Copia profunda de la base
+            const cursos = JSON.parse(JSON.stringify(baseDatosCursos));
+
+            // Alumnos creados por docentes
+            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
+            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
+
+            for (const [rut, nombre] of Object.entries(creados)) {
+                const curso = cursosCreados[rut];
+                if (curso && cursos[curso]) {
+                    cursos[curso][rut] = nombre;
+                }
+            }
+
+            return cursos;
+        }
+
+        function renderizarTodo() {
+            const cursos = obtenerCursosCompletos();
             const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+            const contenedor = document.getElementById('contenedorCursos');
+            contenedor.innerHTML = '';
+
+            let totalAlumnos = 0;
 
             cursosDelProfe.forEach(cursoNombre => {
-                const alumnos = baseDatosCursos[cursoNombre];
-                
-                let htmlCurso = `
-                    <div class="curso-section">
-                        <h3>${cursoNombre}</h3>
+                const alumnos = cursos[cursoNombre] || {};
+                const alumnosActivos = Object.entries(alumnos).filter(([rut]) => !eliminados.includes(rut));
+                totalAlumnos += alumnosActivos.length;
+
+                let filas = '';
+                alumnosActivos.forEach(([rut, nombre]) => {
+                    filas += `
+                        <tr id="fila-${rut}" data-nombre="${nombre.toLowerCase()}" data-rut="${rut}">
+                            <td style="font-family: monospace; font-size: 0.84rem;">${rut}</td>
+                            <td>${nombre}</td>
+                            <td class="acciones">
+                                <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
+                                <div id="menu-${rut}" class="dropdown-menu">
+                                    <button onclick="abrirModalNota('${rut}', '${nombre.replace(/'/g, "\\'")}')">➕ Agregar nota</button>
+                                    <button class="danger" onclick="eliminarAlumno('${rut}', '${nombre.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                if (alumnosActivos.length === 0) {
+                    filas = `<tr><td colspan="3" class="empty-state">No hay alumnos en este curso.</td></tr>`;
+                }
+
+                contenedor.innerHTML += `
+                    <div class="curso-section" data-curso="${cursoNombre}">
+                        <div class="curso-header">
+                            <h3>${cursoNombre}</h3>
+                            <span class="curso-count">${alumnosActivos.length} alumno${alumnosActivos.length !== 1 ? 's' : ''}</span>
+                        </div>
                         <table>
                             <thead>
                                 <tr>
                                     <th>RUT</th>
-                                    <th>Nombre Completo del Alumno</th>
-                                    <th style="text-align: right;">Acciones</th>
+                                    <th>Nombre completo</th>
+                                    <th style="text-align:right;">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                `;
-
-                for (const [rut, nombre] of Object.entries(alumnos)) {
-                    if (!eliminados.includes(rut)) {
-                        htmlCurso += `
-                            <tr id="fila-${rut}">
-                                <td>${rut}</td>
-                                <td>${nombre}</td>
-                                <td class="acciones">
-                                    <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
-                                    <div id="menu-${rut}" class="dropdown-menu">
-                                        <button onclick="abrirModalNota('${rut}', '${nombre}')">➕ Agregar Nota</button>
-                                        <button class="danger" onclick="eliminarAlumno('${rut}', '${nombre}')">🗑️ Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                }
-
-                htmlCurso += `
-                            </tbody>
+                            <tbody>${filas}</tbody>
                         </table>
                     </div>
                 `;
-                contenedor.innerHTML += htmlCurso;
             });
 
-            actualizarNotificacionesJustificaciones();
-
-        } else {
-            alert("Acceso no autorizado o nombre de docente inválido.");
-            window.location.href = "index.html";
+            document.getElementById('statAlumnos').textContent = totalAlumnos;
+            document.getElementById('statCursos').textContent = cursosDelProfe.length;
         }
 
-        function toggleMenu(rut) {
-            document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                if(menu.id !== `menu-${rut}`) menu.style.display = 'none';
+        // ========== BÚSQUEDA ==========
+        function filtrarAlumnos() {
+            const q = document.getElementById('buscarAlumno').value.trim().toLowerCase();
+            document.querySelectorAll('#contenedorCursos tr[data-nombre]').forEach(tr => {
+                const match = !q || tr.dataset.nombre.includes(q) || tr.dataset.rut.toLowerCase().includes(q);
+                tr.style.display = match ? '' : 'none';
             });
+        }
 
+        // ========== MENÚS ==========
+        function toggleMenu(rut) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== `menu-${rut}`) m.style.display = 'none';
+            });
             const menu = document.getElementById(`menu-${rut}`);
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function abrirModalNota(rut, nombreAlumno) {
-            alumnoSeleccionadoRut = rut;
-            document.getElementById('modalTitulo').innerText = `Agregar Nota a: ${nombreAlumno}`;
-            document.getElementById('inputNota').value = '';
-            document.getElementById('modalNota').style.display = 'flex';
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+        window.addEventListener('click', e => {
+            if (!e.target.closest('.menu-dots') && !e.target.closest('.dropdown-menu')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            }
+        });
+
+        // ========== MODALES ==========
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('show');
+            if (id === 'modalNota') alumnoSeleccionadoRut = null;
         }
 
-        function cerrarModal() {
-            document.getElementById('modalNota').style.display = 'none';
-            alumnoSeleccionadoRut = null;
+        function abrirModalNota(rut, nombre) {
+            alumnoSeleccionadoRut = rut;
+            document.getElementById('modalTituloNota').textContent = `Nota · ${nombre}`;
+            document.getElementById('inputNota').value = '';
+            document.getElementById('modalNota').classList.add('show');
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+            setTimeout(() => document.getElementById('inputNota').focus(), 100);
         }
 
         function guardarNota() {
             const asignatura = document.getElementById('selectAsignatura').value;
             const nota = document.getElementById('inputNota').value.trim();
 
-            if (nota === "") {
-                alert("Por favor, ingrese una calificación válida.");
+            if (!nota) {
+                alert("Ingresa una calificación válida.");
                 document.getElementById('inputNota').focus();
                 return;
             }
 
-            let notasAlumno = JSON.parse(localStorage.getItem(`notas_${alumnoSeleccionadoRut}`) || '[]');
-            notasAlumno.push({ asignatura: asignatura, nota: nota });
-            localStorage.setItem(`notas_${alumnoSeleccionadoRut}`, JSON.stringify(notasAlumno));
+            let notas = JSON.parse(localStorage.getItem(`notas_${alumnoSeleccionadoRut}`) || '[]');
+            notas.push({
+                asignatura,
+                nota,
+                fecha: new Date().toLocaleDateString('es-CL'),
+                docente: nombreProfe
+            });
+            localStorage.setItem(`notas_${alumnoSeleccionadoRut}`, JSON.stringify(notas));
 
-            alert(`¡Calificación ${nota} subida con éxito en ${asignatura}!`);
-            cerrarModal();
+            alert(`✓ Nota ${nota} registrada en ${asignatura}`);
+            cerrarModal('modalNota');
         }
 
-        function eliminarAlumno(rut, nombreAlumno) {
-            if (confirm(`¿Está seguro de eliminar a ${nombreAlumno} del sistema? El alumno ya no podrá ingresar.`)) {
-                const fila = document.getElementById(`fila-${rut}`);
-                if (fila) fila.remove();
+        // ========== CREAR ALUMNO ==========
+        function abrirModalCrearAlumno() {
+            const select = document.getElementById('nuevoCurso');
+            select.innerHTML = cursosDelProfe.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('nuevoRut').value = '';
+            document.getElementById('nuevoNombre').value = '';
+            document.getElementById('modalCrearAlumno').classList.add('show');
+            setTimeout(() => document.getElementById('nuevoRut').focus(), 100);
+        }
 
-                let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-                if (!eliminados.includes(rut)) {
-                    eliminados.push(rut);
-                    localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
-                }
+        function crearNuevoAlumno() {
+            const rut = document.getElementById('nuevoRut').value.trim().toUpperCase();
+            const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
+            const curso = document.getElementById('nuevoCurso').value;
 
-                alert(`El estudiante ${nombreAlumno} ha sido eliminado correctamente.`);
+            if (!rut || !nombre) {
+                alert("RUT y nombre son obligatorios.");
+                return;
             }
+
+            // Validación simple de RUT
+            if (!/^\d{7,8}-[\dkK]$/.test(rut)) {
+                alert("Formato de RUT inválido. Usa el formato 12345678-9");
+                return;
+            }
+
+            // Verificar que no exista
+            const todos = obtenerCursosCompletos();
+            let existe = false;
+            for (const c of Object.values(todos)) {
+                if (c[rut]) { existe = true; break; }
+            }
+            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
+            if (creados[rut] || existe) {
+                alert("Ya existe un alumno con ese RUT.");
+                return;
+            }
+
+            // Guardar
+            creados[rut] = nombre;
+            localStorage.setItem('alumnosCreados', JSON.stringify(creados));
+
+            const cursosMap = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
+            cursosMap[rut] = curso;
+            localStorage.setItem('alumnosCursos', JSON.stringify(cursosMap));
+
+            // Si estaba eliminado, reactivarlo
+            let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+            eliminados = eliminados.filter(r => r !== rut);
+            localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
+
+            alert(`✓ Perfil creado:\n${nombre}\nCurso: ${curso}`);
+            cerrarModal('modalCrearAlumno');
+            renderizarTodo();
+            actualizarNotificacionesJustificaciones();
         }
 
-        function actualizarNotificacionesJustificaciones() {
-            const cursosDelProfe = profesorCursos[nombreProfe] || [];
-            const todasJustificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            
-            const misJustificaciones = todasJustificaciones.filter(j => cursosDelProfe.includes(j.curso));
-            const badge = document.getElementById('contadorJustificaciones');
+        // ========== ELIMINAR ==========
+        function eliminarAlumno(rut, nombre) {
+            if (!confirm(`¿Eliminar a ${nombre} del sistema?\nEl alumno ya no podrá ingresar.`)) return;
 
-            if (misJustificaciones.length > 0) {
-                badge.innerText = misJustificaciones.length;
+            const fila = document.getElementById(`fila-${rut}`);
+            if (fila) fila.remove();
+
+            let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+            if (!eliminados.includes(rut)) {
+                eliminados.push(rut);
+                localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
+            }
+
+            // Actualizar contadores
+            renderizarTodo();
+            alert(`Estudiante ${nombre} eliminado.`);
+        }
+
+        // ========== JUSTIFICACIONES ==========
+        function actualizarNotificacionesJustificaciones() {
+            const todas = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
+            const mias = todas.filter(j => cursosDelProfe.includes(j.curso));
+            const badge = document.getElementById('contadorJustificaciones');
+            const stat = document.getElementById('statJustif');
+
+            if (mias.length > 0) {
+                badge.textContent = mias.length;
                 badge.style.display = 'flex';
             } else {
                 badge.style.display = 'none';
             }
+            if (stat) stat.textContent = mias.length;
         }
 
         function abrirBuzonJustificaciones() {
-            const cursosDelProfe = profesorCursos[nombreProfe] || [];
-            const todasJustificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            const misJustificaciones = todasJustificaciones.filter(j => cursosDelProfe.includes(j.curso));
-            
-            const buzonContenedor = document.getElementById('listaJustificacionesBuzon');
+            const todas = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
+            const mias = todas.filter(j => cursosDelProfe.includes(j.curso));
+            const cont = document.getElementById('listaJustificacionesBuzon');
 
-            if (misJustificaciones.length > 0) {
-                buzonContenedor.innerHTML = '';
-                misJustificaciones.forEach(j => {
-                    buzonContenedor.innerHTML += `
-                        <div class="justificacion-card">
-                            <div><strong>De:</strong> ${j.de} (${j.curso})</div>
-                            <div style="font-size: 0.75rem; color: #64748b; margin-top:2px;">Fecha: ${j.fecha}</div>
-                            <p>"${j.mensaje}"</p>
-                        </div>
-                    `;
-                });
+            if (mias.length === 0) {
+                cont.innerHTML = '<div class="empty-state">No hay justificaciones recibidas.</div>';
             } else {
-                buzonContenedor.innerHTML = '<p style="text-align: center; color: #64748b; font-size: 0.85rem;">No hay justificaciones recibidas.</p>';
+                cont.innerHTML = mias.map(j => `
+                    <div class="justificacion-card">
+                        <strong>${j.de}</strong>
+                        <div class="meta">${j.curso} · ${j.fecha}${j.rut ? ' · ' + j.rut : ''}</div>
+                        <p>"${j.mensaje}"</p>
+                    </div>
+                `).join('');
             }
-
-            document.getElementById('modalJustificaciones').style.display = 'flex';
-        }
-
-        function cerrarModalBuzon() {
-            document.getElementById('modalJustificaciones').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.menu-dots')) {
-                document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                    menu.style.display = 'none';
-                });
-            }
+            document.getElementById('modalJustificaciones').classList.add('show');
         }
     </script>
 </body>

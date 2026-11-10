@@ -3,163 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro digital de calificaciones - Escuela Candelaria Pérez</title>
+    <title>Portal Escolar · Escuela Candelaria Pérez</title>
     <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #059669;
+            --danger: #dc2626;
+            --radius: 14px;
+            --shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #1f2937;
-            display: flex;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-        }
-
-        .left-panel {
-            flex: 1.2;
-            background-color: #eef2f7;
-            border-right: 1px solid #d1d5db;
-            padding: 50px 60px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
-        .brand-section {
+        /* ========== HEADER ========== */
+        .topbar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 28px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .logo-escuela-container {
-            width: 80px;
-            height: 80px;
-            background-color: #ffffff;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #d1d5db;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .logo-escuela-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .brand-info h1 {
-            font-size: 1.6rem;
-            color: #1e3a8a;
+            color: white;
             font-weight: 700;
-            margin-bottom: 4px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
         }
 
-        .subtitle {
-            font-size: 0.9rem;
-            color: #3b82f6;
-            margin-bottom: 2px;
+        .brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-text p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .topbar-badge {
+            background: #eff6ff;
+            color: var(--primary);
+            font-size: 0.75rem;
             font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid #bfdbfe;
         }
 
-        .rbd-info {
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .features-list {
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #374151;
-        }
-
-        .disclaimer {
-            font-size: 0.8rem;
-            color: #6b7280;
-            line-height: 1.4;
-            max-width: 450px;
-        }
-
-        .right-panel {
+        /* ========== MAIN ========== */
+        main {
             flex: 1;
-            background-color: #f4f6f9;
-            padding: 50px 60px;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
         }
 
-        .login-container {
+        .login-wrapper {
             width: 100%;
-            max-width: 380px;
-            margin: auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid #e5e7eb;
+            max-width: 420px;
         }
 
-        .login-container h2 {
-            font-size: 1.5rem;
-            color: #1e3a8a;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .login-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
         }
 
-        .login-container p {
-            font-size: 0.85rem;
-            color: #4b5563;
-            margin-bottom: 25px;
+        .login-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+            color: white;
+            padding: 28px 28px 24px;
+            text-align: center;
+        }
+
+        .login-header h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .login-header p {
+            font-size: 0.88rem;
+            opacity: 0.9;
             line-height: 1.4;
         }
 
-        .role-selector {
-            display: flex;
-            background: #e5e7eb;
-            padding: 4px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .login-body {
+            padding: 28px;
         }
 
-        .role-btn {
+        /* Role selector */
+        .role-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+
+        .role-tab {
             flex: 1;
-            padding: 10px;
+            padding: 11px 8px;
             border: none;
             background: transparent;
             font-size: 0.9rem;
-            font-weight: 500;
-            color: #4b5563;
+            font-weight: 600;
+            color: var(--text-muted);
             cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
-        .role-btn.active {
-            background: #ffffff;
-            color: #1e3a8a;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-            font-weight: 600;
+        .role-tab.active {
+            background: white;
+            color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .form-section {
@@ -168,167 +171,207 @@
 
         .form-section.active {
             display: block;
+            animation: fadeIn 0.25s ease;
         }
 
-        .input-group {
-            margin-bottom: 15px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .input-group label {
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
+            color: #334155;
+            margin-bottom: 7px;
         }
 
-        .input-group input {
+        .field input {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 13px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafbfc;
         }
 
-        .input-group input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        .field input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+            background: white;
         }
 
-        .btn-ingresar {
+        .btn-primary {
             width: 100%;
-            padding: 12px;
-            background-color: #3b82f6;
+            padding: 14px;
+            background: linear-gradient(135deg, #1e40af, #2563eb);
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 0.95rem;
             font-weight: 600;
-            color: #ffffff;
+            color: white;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         }
 
-        .btn-ingresar:hover {
-            background-color: #2563eb;
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
         }
 
-        .help-link {
-            display: block;
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .help-text {
             text-align: center;
-            font-size: 0.8rem;
-            color: #3b82f6;
-            text-decoration: none;
             margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
-        .help-link:hover {
+        .help-text a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .help-text a:hover {
             text-decoration: underline;
         }
 
-        footer.footer-credits {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 20px;
+        /* Features strip */
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
         }
 
-        @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-            }
-            .left-panel {
-                flex: none;
-                border-right: none;
-                border-bottom: 1px solid #d1d5db;
-                padding: 30px 20px;
-                gap: 20px;
-            }
-            .right-panel {
-                flex: none;
-                padding: 30px 20px;
-                width: 100%;
-            }
+        .feature {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .feature .icon {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .feature span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 18px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        @media (max-width: 480px) {
+            .topbar { padding: 12px 16px; }
+            .login-body { padding: 22px 18px; }
+            .login-header { padding: 22px 18px 18px; }
+            .features { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="left-panel">
-        <div class="top-content">
-            <div class="brand-section">
-                <div class="logo-escuela-container">
-                    <img src="logo escuela.png" alt="Logo Escuela Candelaria Pérez" onerror="this.style.display='none'; this.parentElement.innerText='LOGO';">
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-logo">CP</div>
+            <div class="brand-text">
+                <h1>Escuela Candelaria Pérez</h1>
+                <p>San Javier · Portal Escolar</p>
+            </div>
+        </div>
+        <div class="topbar-badge">v2.0</div>
+    </header>
+
+    <main>
+        <div class="login-wrapper">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>Bienvenido/a</h2>
+                    <p>Accede con tu perfil de docente o estudiante</p>
                 </div>
-                <div class="brand-info">
-                    <h1>Escuela Candelaria Pérez</h1>
-                    <div class="subtitle">Registro digital de calificaciones · v1.38.5</div>
-                    <div class="rbd-info">San Javier</div>
+
+                <div class="login-body">
+                    <div class="role-tabs">
+                        <button type="button" class="role-tab" id="btnDocentes" onclick="cambiarRol('docentes')">👨‍🏫 Docentes</button>
+                        <button type="button" class="role-tab active" id="btnEstudiantes" onclick="cambiarRol('estudiantes')">🎓 Estudiantes</button>
+                    </div>
+
+                    <!-- Docentes -->
+                    <div id="seccionDocentes" class="form-section">
+                        <div class="field">
+                            <label for="profesorInput">Nombre completo del docente</label>
+                            <input type="text" id="profesorInput" placeholder="Ej: Marta Quevedo Villalobos" autocomplete="name">
+                        </div>
+                        <div class="field">
+                            <label for="passInput">Contraseña institucional</label>
+                            <input type="password" id="passInput" placeholder="Ingresa la clave" autocomplete="current-password">
+                        </div>
+                        <button type="button" class="btn-primary" onclick="ingresarDocente()">Ingresar como Docente</button>
+                    </div>
+
+                    <!-- Estudiantes -->
+                    <div id="seccionEstudiantes" class="form-section active">
+                        <div class="field">
+                            <label for="rutInput">RUT del estudiante</label>
+                            <input type="text" id="rutInput" placeholder="Ej: 27109816-2" autocomplete="off">
+                        </div>
+                        <button type="button" class="btn-primary" onclick="ingresarEstudiante()">Entrar al Portal</button>
+                    </div>
+
+                    <p class="help-text">
+                        ¿Problemas para ingresar? <a href="#" onclick="alert('Contacta a la administración del establecimiento.'); return false;">Avisa a la administración</a>
+                    </p>
                 </div>
             </div>
 
-            <div class="features-list">
-                <div class="feature-item">
-                    <span>📖</span> Libro de calificaciones por curso y asignatura
+            <div class="features">
+                <div class="feature">
+                    <div class="icon">📋</div>
+                    <span>Libro de calificaciones</span>
                 </div>
-                <div class="feature-item">
-                    <span>📊</span> Informes de notas y certificados anuales
+                <div class="feature">
+                    <div class="icon">✉️</div>
+                    <span>Justificaciones</span>
+                </div>
+                <div class="feature">
+                    <div class="icon">👤</div>
+                    <span>Gestión de alumnos</span>
+                </div>
+                <div class="feature">
+                    <div class="icon">📊</div>
+                    <span>Panel docente</span>
                 </div>
             </div>
         </div>
+    </main>
 
-        <div class="disclaimer">
-            Uso exclusivo del personal y de los estudiantes del establecimiento. Las calificaciones y las anotaciones de convivencia son información reservada.
-        </div>
-    </div>
-
-    <div class="right-panel">
-        <div class="login-container">
-            <h2>Ingresar</h2>
-            <p>Los docentes entran con su nombre y clave, y los estudiantes con su RUT.</p>
-
-            <div class="role-selector">
-                <button type="button" class="role-btn" id="btnDocentes" onclick="cambiarRol('docentes')">Docentes</button>
-                <button type="button" class="role-btn active" id="btnEstudiantes" onclick="cambiarRol('estudiantes')">Estudiantes</button>
-            </div>
-
-            <!-- Sección Docentes -->
-            <div id="seccionDocentes" class="form-section">
-                <div class="input-group">
-                    <label for="profesorInput">Nombre del Profesor(a):</label>
-                    <input type="text" id="profesorInput" placeholder="Ej: Marta Quevedo Villalobos">
-                </div>
-                <div class="input-group">
-                    <label for="passInput">Contraseña:</label>
-                    <input type="password" id="passInput" placeholder="Contraseña institucional">
-                </div>
-                <button type="button" class="btn-ingresar" onclick="ingresarDocente()">Acceder como Docente</button>
-            </div>
-
-            <!-- Sección Estudiantes -->
-            <div id="seccionEstudiantes" class="form-section active">
-                <div class="input-group">
-                    <label for="rutInput">RUT del Estudiante:</label>
-                    <input type="text" id="rutInput" placeholder="Ej: 27109816-2">
-                </div>
-                <button type="button" class="btn-ingresar" onclick="ingresarEstudiante()">Entrar al Sistema</button>
-            </div>
-
-            <a href="#" class="help-link" onclick="alert('Contacte a la administración del establecimiento para soporte.')">¿Problemas para ingresar? Avisa a la administración.</a>
-        </div>
-
-        <footer class="footer-credits">
-            <span>Desarrollado para Escuela Candelaria Pérez</span>
-            <span>•</span>
-            <span>San Javier</span>
-        </footer>
-    </div>
+    <footer>
+        Desarrollado para Escuela Candelaria Pérez · San Javier · Uso exclusivo del establecimiento
+    </footer>
 
     <script>
         const profesoresValidos = {
@@ -340,26 +383,35 @@
             "ANA COFRÉ MUÑOZ": ["8° Básico"]
         };
 
-        function cambiarRol(rol) {
-            document.getElementById('btnDocentes').classList.remove('active');
-            document.getElementById('btnEstudiantes').classList.remove('active');
-            document.getElementById('seccionDocentes').classList.remove('active');
-            document.getElementById('seccionEstudiantes').classList.remove('active');
+        // Base de datos original de alumnos (se fusiona con los creados en localStorage)
+        const baseDatosAlumnosGlobal = {
+            "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ",
+            "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ",
+            "25919681-7": "MATEO EXEQUIEL CAMPOS QUINTANA", "25725971-4": "JULIETA ISABELLA CANCINO ORMEÑO", "26159496-K": "AMARO LEÓN CIFUENTES CORREA", "25864356-9": "NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL", "25928875-4": "EMILIANO ALONSO JAQUE PEÑALOZA", "26025635-1": "FIORELLA IGNACIA MÉNDEZ ORTEGA", "25935326-2": "ISAAC ANDRÉS MORA MARTÍNEZ",
+            "25377391-K": "AMARO ANDRÉS ARANEDA RAMÍREZ", "25215012-9": "JEREMIAS EDGAR CASTRO CARREÑO", "25717568-5": "MANUEL JESÚS ESQUIVEL GONZÁLEZ", "25374420-0": "MARÍA JOSÉ GÓMEZ GÓMEZ", "25510730-5": "AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO", "25269634-2": "JAVIER IGNACIO MARDONES IBACACHE", "24961971-K": "STEFAN ANTONIO REICHENBACH VEGA",
+            "25201656-2": "FRANCO ANTONIO ACEVEDO ACUÑA", "25054488-K": "PAZ FRANCISCA BAEZA DÍAZ", "25058732-5": "JOSÉ HUMBERTO BUENO PAVEZ", "25058760-0": "JOSÉ OMAR BUENO PAVEZ", "24533270-K": "EDUARDO JAVIER CASTRO CARREÑO", "25030936-8": "MATÍAS NICOLÁS FAÚNDEZ SOTO", "25003701-5": "EMILYA JESÚS MARTINA GARRIDO HERRERA", "25052798-5": "ABHAY NITAY MARTÍNEZ ARAVENA", "25284224-1": "GERALDYNE ALEJANDRA MOYA CANCINO", "25042294-6": "MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA", "25241982-9": "BENJAMÍN ANTONIO OLIVARES MORALES", "24954101-K": "JAVIER IGNACIO ORELLANA VALDES", "25106705-8": "JULIETA VALERIA SANDOVAL JAQUE", "25291352-1": "MARTIN ALONSO SILVA ROA", "25241359-6": "AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ", "25212963-4": "JOSÉ IGNACIO VERA MEDEL", "25017516-7": "MARTIN IGNACIO JARA BARRA",
+            "24934084-7": "JOSEPH THOMAS BARBETT PINTO", "24890180-2": "MARIA ELENA BUENO PALMA", "24356402-6": "ALEXIS DAVID ALEJANDRO CANCINO PASTENES", "24714647-4": "EMILIA DEL CARMEN INOSTROZA TARAZONA", "24893220-1": "GABRIELA JESÚS MUÑOZ ORELLANA", "24748067-6": "VICTORIA ANABELLA SALGADO CARRASCO", "24502047-3": "DIEGO ALONZO VILLALOBOS VALDÉS", "24502029-5": "VICENTE IGNASIO VILLALOBOS VALDÉS", "24906925-6": "MATEO IGNACIO VIÑALS COFRE",
+            "24545483-K": "ISAIASS ELIUDT ARANEDA RAMÍREZ", "24503476-8": "DANIEL ALEXIS CAMPOS YÁÑEZ", "24434484-4": "AGUSTÍN EFRAIN CASTRO CANALES", "24389919-2": "BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA", "24318562-9": "SOFÍA AMANDA MUÑOZ ARAYA", "23889737-8": "ALEJANDRO ANÍBAL PINO ESQUIVEL", "24490056-9": "AARÓN ELÍAS SANTANDER CÉSPEDES", "24339330-2": "ANDY ANGEL URRUTIA GÓMEZ", "24557543-2": "MATEO ALONSO VALDÉS CABELLO",
+            "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
+        };
 
-            if (rol === 'docentes') {
-                document.getElementById('btnDocentes').classList.add('active');
-                document.getElementById('seccionDocentes').classList.add('active');
-            } else {
-                document.getElementById('btnEstudiantes').classList.add('active');
-                document.getElementById('seccionEstudiantes').classList.add('active');
-            }
+        function cambiarRol(rol) {
+            document.getElementById('btnDocentes').classList.toggle('active', rol === 'docentes');
+            document.getElementById('btnEstudiantes').classList.toggle('active', rol === 'estudiantes');
+            document.getElementById('seccionDocentes').classList.toggle('active', rol === 'docentes');
+            document.getElementById('seccionEstudiantes').classList.toggle('active', rol === 'estudiantes');
+        }
+
+        function obtenerTodosLosAlumnos() {
+            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
+            return { ...baseDatosAlumnosGlobal, ...creados };
         }
 
         function ingresarEstudiante() {
             const input = document.getElementById('rutInput');
             const rut = input.value.trim().toUpperCase();
 
-            if (rut === "") {
+            if (!rut) {
                 alert("Por favor, introduce tu RUT.");
                 input.focus();
                 return;
@@ -367,19 +419,14 @@
 
             const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
             if (eliminados.includes(rut)) {
-                alert("El estudiante ha sido desvinculado o ya no se encuentra matriculado en el establecimiento.");
+                alert("El estudiante ha sido desvinculado o ya no se encuentra matriculado.");
                 input.focus();
                 return;
             }
 
-            const baseDatosAlumnosGlobal = {
-                "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ", "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ", "25919681-7": "MATEO EXEQUIEL CAMPOS QUINTANA", "25725971-4": "JULIETA ISABELLA CANCINO ORMEÑO", "26159496-K": "AMARO LEÓN CIFUENTES CORREA", "25864356-9": "NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL", "25928875-4": "EMILIANO ALONSO JAQUE PEÑALOZA", "26025635-1": "FIORELLA IGNACIA MÉNDEZ ORTEGA", "25935326-2": "ISAAC ANDRÉS MORA MARTÍNEZ", "25377391-K": "AMARO ANDRÉS ARANEDA RAMÍREZ", "25215012-9": "JEREMIAS EDGAR CASTRO CARREÑO", "25717568-5": "MANUEL JESÚS ESQUIVEL GONZÁLEZ", "25374420-0": "MARÍA JOSÉ GÓMEZ GÓMEZ", "25510730-5": "AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO", "25269634-2": "JAVIER IGNACIO MARDONES IBACACHE", "24961971-K": "STEFAN ANTONIO REICHENBACH VEGA", "25201656-2": "FRANCO ANTONIO ACEVEDO ACUÑA", "25054488-K": "PAZ FRANCISCA BAEZA DÍAZ", "25058732-5": "JOSÉ HUMBERTO BUENO PAVEZ", "25058760-0": "JOSÉ OMAR BUENO PAVEZ", "24533270-K": "EDUARDO JAVIER CASTRO CARREÑO", "25030936-8": "MATÍAS NICOLÁS FAÚNDEZ SOTO", "25003701-5": "EMILYA JESÚS MARTINA GARRIDO HERRERA", "25052798-5": "ABHAY NITAY MARTÍNEZ ARAVENA", "25284224-1": "GERALDYNE ALEJANDRA MOYA CANCINO", "25042294-6": "MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA", "25241982-9": "BENJAMÍN ANTONIO OLIVARES MORALES", "24954101-K": "JAVIER IGNACIO ORELLANA VALDES", "25106705-8": "JULIETA VALERIA SANDOVAL JAQUE", "25291352-1": "MARTIN ALONSO SILVA ROA", "25241359-6": "AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ", "25212963-4": "JOSÉ IGNACIO VERA MEDEL", "25017516-7": "MARTIN IGNACIO JARA BARRA", "24934084-7": "JOSEPH THOMAS BARBETT PINTO", "24890180-2": "MARIA ELENA BUENO PALMA", "24356402-6": "ALEXIS DAVID ALEJANDRO CANCINO PASTENES", "24714647-4": "EMILIA DEL CARMEN INOSTROZA TARAZONA", "24893220-1": "GABRIELA JESÚS MUÑOZ ORELLANA", "24748067-6": "VICTORIA ANABELLA SALGADO CARRASCO",
-                "24502047-3": "DIEGO ALONZO VILLALOBOS VALDÉS", "24502029-5": "VICENTE IGNASIO VILLALOBOS VALDÉS", "24906925-6": "MATEO IGNACIO VIÑALS COFRE", "24545483-K": "ISAIASS ELIUDT ARANEDA RAMÍREZ", "24503476-8": "DANIEL ALEXIS CAMPOS YÁÑEZ", "24434484-4": "AGUSTÍN EFRAIN CASTRO CANALES", "24389919-2": "BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA", "24318562-9": "SOFÍA AMANDA MUÑOZ ARAYA", "23889737-8": "ALEJANDRO ANÍBAL PINO ESQUIVEL", "24490056-9": "AARÓN ELÍAS SANTANDER CÉSPEDES", "24339330-2": "ANDY ANGEL URRUTIA GÓMEZ", "24557543-2": "MATEO ALONSO VALDÉS CABELLO", "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
-            };
-
-            if (baseDatosAlumnosGlobal[rut]) {
-                const nombreAlumno = baseDatosAlumnosGlobal[rut];
-                window.location.href = `estudiante.html?nombre=${encodeURIComponent(nombreAlumno)}&rut=${encodeURIComponent(rut)}`;
+            const todos = obtenerTodosLosAlumnos();
+            if (todos[rut]) {
+                window.location.href = `estudiante.html?nombre=${encodeURIComponent(todos[rut])}&rut=${encodeURIComponent(rut)}`;
             } else {
                 alert("El RUT ingresado no se encuentra registrado en el sistema.");
                 input.focus();
@@ -387,23 +434,34 @@
         }
 
         function ingresarDocente() {
-            const nombreProfeInput = document.getElementById('profesorInput').value.trim().toUpperCase();
-            const passInput = document.getElementById('passInput').value.trim();
+            const nombre = document.getElementById('profesorInput').value.trim().toUpperCase();
+            const pass = document.getElementById('passInput').value.trim();
 
-            if (passInput !== "candelaria16") {
-                alert("Error: Contraseña incorrecta. Inténtelo de nuevo.");
+            if (pass !== "candelaria16") {
+                alert("Contraseña incorrecta. Inténtalo de nuevo.");
                 document.getElementById('passInput').value = "";
                 document.getElementById('passInput').focus();
                 return;
             }
 
-            if (profesoresValidos[nombreProfeInput]) {
-                window.location.href = `docente.html?nombre=${encodeURIComponent(nombreProfeInput)}`;
+            if (profesoresValidos[nombre]) {
+                window.location.href = `docente.html?nombre=${encodeURIComponent(nombre)}`;
             } else {
-                alert("Error: Nombre de profesor(a) no encontrado. Asegúrese de escribir su 1er nombre y 2 apellidos (Ej: Marta Quevedo Villalobos).");
+                alert("Nombre de docente no encontrado.\nEscribe tu 1er nombre + 2 apellidos (Ej: Marta Quevedo Villalobos).");
                 document.getElementById('profesorInput').focus();
             }
         }
+
+        // Enter key support
+        document.getElementById('rutInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') ingresarEstudiante();
+        });
+        document.getElementById('passInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') ingresarDocente();
+        });
+        document.getElementById('profesorInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('passInput').focus();
+        });
     </script>
 </body>
 </html>

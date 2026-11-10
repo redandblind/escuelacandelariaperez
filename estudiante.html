@@ -3,336 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Estudiante - Escuela Candelaria Pérez</title>
+    <title>Portal Estudiante · Escuela Candelaria Pérez</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #059669;
+            --radius: 14px;
+            --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
         body {
-            background-color: #f4f6f9;
-            color: #1f2937;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            width: 100vw;
-            justify-content: space-between;
         }
 
         header {
-            background-color: #eef2f7;
-            border-bottom: 1px solid #d1d5db;
-            padding: 15px 25px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 22px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
         }
 
-        .logo-escuela-small {
-            width: 45px;
-            height: 45px;
-            background-color: #ffffff;
-            border-radius: 10px;
+        .logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #d1d5db;
-            overflow: hidden;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
             flex-shrink: 0;
         }
 
-        .logo-escuela-small img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
         .header-info h1 {
-            font-size: 1.1rem;
-            color: #1e3a8a;
-            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            font-weight: 700;
         }
 
         .header-info p {
-            font-size: 0.8rem;
-            color: #3b82f6;
+            font-size: 0.78rem;
+            color: var(--primary-light);
         }
 
         main {
             flex: 1;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 15px;
-            gap: 20px;
+            justify-content: center;
+            padding: 24px 16px 40px;
         }
 
-        .panel-card {
-            background: #ffffff;
+        .panel {
             width: 100%;
-            max-width: 600px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            border: 1px solid #e5e7eb;
+            max-width: 520px;
         }
 
-        .greeting {
-            font-size: 1.3rem;
-            color: #1e3a8a;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .profile-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 26px 24px 22px;
             text-align: center;
-            word-wrap: break-word;
         }
 
-        .rut-badge-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .rut-badge {
-            display: inline-block;
-            background: #eff6ff;
-            color: #3b82f6;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid #bfdbfe;
-        }
-
-        .details-box {
-            text-align: left;
-            border-top: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 12px 0;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: #4b5563;
+        .avatar {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 12px;
+            border: 2px solid rgba(255,255,255,0.35);
         }
 
-        .detail-item {
+        .profile-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .rut-pill {
+            display: inline-block;
+            background: rgba(255,255,255,0.18);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .profile-body {
+            padding: 18px 22px;
+        }
+
+        .info-row {
             display: flex;
             justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
         }
 
-        .detail-label {
-            color: #6b7280;
-            font-weight: 500;
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label { color: var(--text-muted); font-weight: 500; }
+        .info-value { color: var(--text); font-weight: 600; }
+        .status-active { color: var(--success); }
+
+        /* Justificación */
+        .section-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 20px 22px;
+            margin-bottom: 18px;
         }
 
-        .detail-value {
-            color: #1f2937;
-            font-weight: 600;
-        }
-
-        .justificar-section {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .justificar-section h3 {
+        .section-card h3 {
             font-size: 1rem;
-            color: #1e3a8a;
-            margin-bottom: 8px;
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .justificar-section textarea {
-            width: 100%;
-            height: 70px;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            outline: none;
-            resize: none;
-        }
-
-        .justificar-section textarea:focus {
-            border-color: #3b82f6;
-        }
-
-        .btn-subir {
-            margin-top: 8px;
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            float: right;
-        }
-
-        .btn-subir:hover {
-            background-color: #059669;
-        }
-
-        .notas-section {
-            text-align: left;
-            margin-top: 15px;
-            clear: both;
-        }
-
-        .notas-section h3 {
-            font-size: 1.1rem;
-            color: #1e3a8a;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #eff6ff;
-            padding-bottom: 5px;
-        }
-
-        .lista-notas {
-            list-style: none;
-            max-height: 180px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
             gap: 8px;
         }
 
+        textarea {
+            width: 100%;
+            height: 90px;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            resize: vertical;
+            background: #fafbfc;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            background: white;
+        }
+
+        .btn-send {
+            margin-top: 10px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            float: right;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+            transition: transform 0.12s;
+        }
+
+        .btn-send:hover { transform: translateY(-1px); }
+
+        /* Notas */
+        .notas-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
         .nota-item {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 10px 14px;
-            border-radius: 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            gap: 12px;
+        }
+
+        .nota-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nota-asignatura {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nota-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
         .nota-badge {
             background: #dbeafe;
             color: #1e40af;
-            padding: 3px 10px;
-            border-radius: 4px;
+            padding: 5px 12px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .sin-notas {
-            color: #6b7280;
-            font-size: 0.85rem;
-            font-style: italic;
             text-align: center;
-            padding: 10px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            padding: 20px 10px;
+            font-style: italic;
         }
 
-        .btn-volver {
+        .btn-logout {
             width: 100%;
-            padding: 12px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            padding: 13px;
+            background: white;
+            color: var(--primary-dark);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 20px;
+            transition: background 0.15s;
         }
 
-        .btn-volver:hover {
-            background-color: #2563eb;
-        }
+        .btn-logout:hover { background: #f8fafc; }
 
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 16px;
             font-size: 0.75rem;
-            color: #6b7280;
-            background-color: #eef2f7;
-            border-top: 1px solid #d1d5db;
+            color: var(--text-muted);
+            background: var(--card);
+            border-top: 1px solid var(--border);
         }
 
-        @media (max-width: 600px) {
-            header {
-                padding: 12px 15px;
-            }
-            .panel-card {
-                padding: 18px 15px;
-            }
-            .greeting {
-                font-size: 1.15rem;
-            }
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        @media (max-width: 480px) {
+            .profile-header { padding: 22px 18px 18px; }
+            .profile-body, .section-card { padding: 16px 18px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-escuela-small">
-            <img src="logo escuela.png" alt="Logo" onerror="this.style.display='none';">
-        </div>
+        <div class="logo">CP</div>
         <div class="header-info">
             <h1>Escuela Candelaria Pérez</h1>
-            <p>Portal del Estudiante • San Javier</p>
+            <p>Portal del Estudiante · San Javier</p>
         </div>
     </header>
 
     <main>
-        <div class="panel-card">
-            <h2 id="saludo" class="greeting">HOLA, Cargando...</h2>
-            <div class="rut-badge-container">
-                <div id="rut-estudiante" class="rut-badge">RUT: --</div>
+        <div class="panel">
+            <!-- Perfil -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar">🎓</div>
+                    <h2 id="saludo">Cargando...</h2>
+                    <div class="rut-pill" id="rut-estudiante">RUT: --</div>
+                </div>
+                <div class="profile-body">
+                    <div class="info-row">
+                        <span class="info-label">Establecimiento</span>
+                        <span class="info-value">Escuela Candelaria Pérez</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Curso</span>
+                        <span class="info-value" id="curso-estudiante">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Estado</span>
+                        <span class="info-value status-active">Matriculado / Activo</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="details-box">
-                <div class="detail-item">
-                    <span class="detail-label">Establecimiento:</span>
-                    <span class="detail-value">Escuela Candelaria Pérez</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Curso:</span>
-                    <span id="curso-estudiante" class="detail-value">Cargando...</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Estado:</span>
-                    <span class="detail-value" style="color: #16a34a;">Matriculado / Activo</span>
-                </div>
+            <!-- Justificar -->
+            <div class="section-card clearfix">
+                <h3>📝 Justificar asistencia</h3>
+                <textarea id="textoJustificacion" placeholder="Escribe el motivo de la justificación..."></textarea>
+                <button type="button" class="btn-send" onclick="subirJustificacion()">Enviar justificación</button>
             </div>
 
-            <!-- Sección Justificar Asistencias -->
-            <div class="justificar-section">
-                <h3>📝 Justificar Asistencia</h3>
-                <textarea id="textoJustificacion" placeholder="Por favor justifique su asistencia..."></textarea>
-                <button type="button" class="btn-subir" onclick="subirJustificacion()">Subir / Enviar</button>
-            </div>
-
-            <!-- Listado de calificaciones asignadas -->
-            <div class="notas-section">
-                <h3>Mis Calificaciones</h3>
-                <ul id="listaNotas" class="lista-notas">
-                    <li class="sin-notas">No hay calificaciones registradas todavía.</li>
+            <!-- Notas -->
+            <div class="section-card">
+                <h3>📊 Mis calificaciones</h3>
+                <ul id="listaNotas" class="notas-list">
+                    <li class="sin-notas">Aún no hay calificaciones registradas.</li>
                 </ul>
             </div>
 
-            <button class="btn-volver" onclick="cerrarSesion()">Cerrar Sesión / Volver</button>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
         </div>
     </main>
 
     <footer>
-        Desarrollado para Escuela Candelaria Pérez • San Javier
+        Escuela Candelaria Pérez · San Javier · Portal Estudiante
     </footer>
 
     <script>
-        const mapaCursosAlumnos = {
+        // Mapa base RUT → curso
+        const mapaCursosBase = {
             "27109816-2": "1° Básico", "27102017-1": "1° Básico", "26826120-6": "1° Básico", "26865752-5": "1° Básico", "27204005-2": "1° Básico", "26792929-7": "1° Básico", "26898511-5": "1° Básico", "26758311-0": "1° Básico", "26729600-6": "1° Básico", "27191114-9": "1° Básico", "27009108-3": "1° Básico",
             "25796184-2": "2° Básico", "26402298-3": "2° Básico", "26752038-0": "2° Básico", "26659139-K": "2° Básico", "26365506-K": "2° Básico", "26533453-9": "2° Básico", "26117713-7": "2° Básico",
             "25919681-7": "3° Básico", "25725971-4": "3° Básico", "26159496-K": "3° Básico", "25864356-9": "3° Básico", "25928875-4": "3° Básico", "26025635-1": "3° Básico", "25935326-2": "3° Básico",
@@ -347,63 +365,77 @@
         const nombreAlumnoGlobal = params.get('nombre');
         const rutAlumnoGlobal = params.get('rut');
 
-        if (nombreAlumnoGlobal && rutAlumnoGlobal) {
-            document.getElementById('saludo').innerText = `HOLA, ${nombreAlumnoGlobal}`;
-            document.getElementById('rut-estudiante').innerText = `RUT: ${rutAlumnoGlobal}`;
-            document.getElementById('curso-estudiante').innerText = mapaCursosAlumnos[rutAlumnoGlobal] || "1° Básico";
-
-            cargarNotasEstudiante(rutAlumnoGlobal);
-        } else {
+        if (!nombreAlumnoGlobal || !rutAlumnoGlobal) {
             alert("Acceso no autorizado.");
             window.location.href = "index.html";
+        } else {
+            // Verificar si fue eliminado
+            const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+            if (eliminados.includes(rutAlumnoGlobal.toUpperCase())) {
+                alert("Tu matrícula ya no está activa en el establecimiento.");
+                window.location.href = "index.html";
+            }
+
+            document.getElementById('saludo').textContent = nombreAlumnoGlobal;
+            document.getElementById('rut-estudiante').textContent = `RUT: ${rutAlumnoGlobal}`;
+
+            // Curso: primero de los creados, luego de la base
+            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
+            const curso = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "—";
+            document.getElementById('curso-estudiante').textContent = curso;
+
+            cargarNotasEstudiante(rutAlumnoGlobal);
         }
 
         function subirJustificacion() {
             const texto = document.getElementById('textoJustificacion').value.trim();
-            if (texto === "") {
-                alert("Por favor escriba la justificación antes de enviar.");
+            if (!texto) {
+                alert("Escribe la justificación antes de enviar.");
                 return;
             }
 
-            const cursoAlumno = mapaCursosAlumnos[rutAlumnoGlobal] || "1° Básico";
-            let justificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            
-            justificaciones.push({
-                 de: nombreAlumnoGlobal,
-                 rut: rutAlumnoGlobal,
-                 curso: cursoAlumno,
-                 mensaje: texto,
-                 fecha: new Date().toLocaleDateString()
-            });
+            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
+            const cursoAlumno = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "1° Básico";
 
+            let justificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
+            justificaciones.push({
+                de: nombreAlumnoGlobal,
+                rut: rutAlumnoGlobal,
+                curso: cursoAlumno,
+                mensaje: texto,
+                fecha: new Date().toLocaleDateString('es-CL')
+            });
             localStorage.setItem('justificacionesDocentes', JSON.stringify(justificaciones));
-            
+
             document.getElementById('textoJustificacion').value = '';
-            alert("Gracias por comunicarnos.");
+            alert("✓ Justificación enviada correctamente.");
         }
 
-        function cargarNotasEstudiante(rutAlumno) {
-            const notasGuardadas = JSON.parse(localStorage.getItem(`notas_${rutAlumno}`) || '[]');
-            const contenedorNotas = document.getElementById('listaNotas');
+        function cargarNotasEstudiante(rut) {
+            const notas = JSON.parse(localStorage.getItem(`notas_${rut}`) || '[]');
+            const cont = document.getElementById('listaNotas');
 
-            if (notasGuardadas.length > 0) {
-                contenedorNotas.innerHTML = '';
-                notasGuardadas.forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = 'nota-item';
-                    li.innerHTML = `
-                        <span>${item.asignatura}</span>
-                        <span class="nota-badge">${item.nota}</span>
-                    `;
-                    contenedorNotas.appendChild(li);
-                });
+            if (notas.length === 0) {
+                cont.innerHTML = '<li class="sin-notas">Aún no hay calificaciones registradas.</li>';
+                return;
             }
+
+            // Mostrar las más recientes primero
+            const ordenadas = [...notas].reverse();
+            cont.innerHTML = ordenadas.map(item => `
+                <li class="nota-item">
+                    <div class="nota-info">
+                        <div class="nota-asignatura">${item.asignatura}</div>
+                        <div class="nota-meta">${item.fecha || ''}${item.docente ? ' · ' + item.docente.split(' ')[0] : ''}</div>
+                    </div>
+                    <span class="nota-badge">${item.nota}</span>
+                </li>
+            `).join('');
         }
 
         function cerrarSesion() {
             window.location.href = "index.html";
         }
     </script>
-
 </body>
 </html>
