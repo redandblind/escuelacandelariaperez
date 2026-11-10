@@ -23,30 +23,29 @@
         header {
             background-color: #eef2f7;
             border-bottom: 1px solid #d1d5db;
-            padding: 20px 40px;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .header-info h1 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #1e3a8a;
             font-weight: 600;
         }
 
         .header-info p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #3b82f6;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
-        /* Botón de Chat de Notificaciones */
         .chat-btn {
             position: relative;
             background: #ffffff;
@@ -81,38 +80,39 @@
             flex: 1;
             max-width: 900px;
             width: 100%;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
         .welcome-card {
             background: #ffffff;
-            padding: 25px 30px;
+            padding: 20px 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid #e5e7eb;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .welcome-card h2 {
             color: #1e3a8a;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 5px;
             text-transform: uppercase;
         }
 
         .welcome-card p {
             color: #4b5563;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .curso-section {
             background: #ffffff;
             border-radius: 12px;
-            padding: 25px 30px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid #e5e7eb;
             margin-bottom: 20px;
+            overflow-x: auto;
         }
 
         .curso-section h3 {
@@ -127,6 +127,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
+            min-width: 500px;
         }
 
         th, td {
@@ -153,10 +154,10 @@
         .menu-dots {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
             color: #4b5563;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 4px;
         }
 
@@ -202,7 +203,6 @@
             background-color: #ffeeec;
         }
 
-        /* Modales */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -214,11 +214,12 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
+            padding: 15px;
         }
 
         .modal-content {
             background: white;
-            padding: 25px 30px;
+            padding: 20px 25px;
             border-radius: 12px;
             width: 100%;
             max-width: 450px;
@@ -227,8 +228,8 @@
 
         .modal-content h3 {
             color: #1e3a8a;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
         }
 
         .modal-content label {
@@ -282,7 +283,6 @@
             background-color: #d1d5db;
         }
 
-        /* Lista de Justificaciones en el Modal */
         .justificaciones-lista {
             max-height: 250px;
             overflow-y: auto;
@@ -313,9 +313,9 @@
             background-color: #6b7280;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             text-decoration: none;
         }
@@ -326,11 +326,23 @@
 
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             font-size: 0.75rem;
             color: #6b7280;
             background-color: #eef2f7;
             border-top: 1px solid #d1d5db;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 12px 15px;
+            }
+            .header-info h1 {
+                font-size: 1rem;
+            }
+            .welcome-card h2 {
+                font-size: 1.15rem;
+            }
         }
     </style>
 </head>
@@ -345,7 +357,7 @@
             <button class="chat-btn" onclick="abrirBuzonJustificaciones()">
                 💬 <span id="contadorJustificaciones" class="chat-badge" style="display:none;">0</span>
             </button>
-            <a href="PANTALLA DE CARGA.html" class="btn-volver">Cerrar Sesión</a>
+            <a href="index.html" class="btn-volver">Cerrar Sesión</a>
         </div>
     </header>
 
@@ -390,7 +402,7 @@
         </div>
     </div>
 
-    <!-- Modal de Justificaciones / Chat de Notificaciones -->
+    <!-- Modal de Justificaciones -->
     <div id="modalJustificaciones" class="modal-overlay">
         <div class="modal-content">
             <h3>📥 Buzón de Justificaciones</h3>
@@ -498,12 +510,11 @@
                 contenedor.innerHTML += htmlCurso;
             });
 
-            // Actualizar badge de notificaciones para este profesor
             actualizarNotificacionesJustificaciones();
 
         } else {
             alert("Acceso no autorizado o nombre de docente inválido.");
-            window.location.href = "PANTALLA DE CARGA.html";
+            window.location.href = "index.html";
         }
 
         function toggleMenu(rut) {
@@ -561,12 +572,10 @@
             }
         }
 
-        // Lógica del Buzón de Justificaciones
         function actualizarNotificacionesJustificaciones() {
             const cursosDelProfe = profesorCursos[nombreProfe] || [];
             const todasJustificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
             
-            // Filtrar solo las que corresponden a los cursos del profesor
             const misJustificaciones = todasJustificaciones.filter(j => cursosDelProfe.includes(j.curso));
             const badge = document.getElementById('contadorJustificaciones');
 
