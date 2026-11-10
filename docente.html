@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Docente - Escuela Candelaria Pérez</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #eef2f7;
+            border-bottom: 1px solid #d1d5db;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-info h1 {
+            font-size: 1.2rem;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .header-info p {
+            font-size: 0.85rem;
+            color: #3b82f6;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Botón de Chat de Notificaciones */
+        .chat-btn {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-card {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 25px;
+        }
+
+        .welcome-card h2 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .welcome-card p {
+            color: #4b5563;
+            font-size: 0.95rem;
+        }
+
+        .curso-section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .curso-section h3 {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            color: #6b7280;
+            font-weight: 600;
+            background-color: #f9fafb;
+        }
+
+        td {
+            color: #1f2937;
+        }
+
+        .acciones {
+            position: relative;
+            text-align: right;
+        }
+
+        .menu-dots {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #4b5563;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .menu-dots:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            width: 160px;
+            text-align: left;
+        }
+
+        .dropdown-menu button {
+            width: 100%;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #374151;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .dropdown-menu button:hover {
+            background-color: #f3f4f6;
+            color: #1e3a8a;
+        }
+
+        .dropdown-menu button.danger {
+            color: #dc2626;
+        }
+
+        .dropdown-menu button.danger:hover {
+            background-color: #ffeeec;
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .modal-content h3 {
+            color: #1e3a8a;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-content label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+            margin-top: 12px;
+        }
+
+        .modal-content select, .modal-content input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-guardar {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-guardar:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-cancelar {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #d1d5db;
+        }
+
+        /* Lista de Justificaciones en el Modal */
+        .justificaciones-lista {
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .justificacion-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+        }
+
+        .justificacion-card strong {
+            color: #1e3a8a;
+        }
+
+        .justificacion-card p {
+            margin-top: 5px;
+            color: #334155;
+        }
+
+        .btn-volver {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-volver:hover {
+            background-color: #4b5563;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background-color: #eef2f7;
+            border-top: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-info">
+            <h1>Escuela Candelaria Pérez</h1>
+            <p>Portal del Docente • San Javier</p>
+        </div>
+        <div class="header-right">
+            <button class="chat-btn" onclick="abrirBuzonJustificaciones()">
+                💬 <span id="contadorJustificaciones" class="chat-badge" style="display:none;">0</span>
+            </button>
+            <a href="PANTALLA DE CARGA.html" class="btn-volver">Cerrar Sesión</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="welcome-card">
+            <h2 id="saludoProfe">HOLA, CARGANDO...</h2>
+            <p>¿Qué necesita gestionar hoy? Aquí tiene el listado oficial de sus estudiantes asignados.</p>
+        </div>
+
+        <div id="contenedorCursos">
+            <!-- Dinámicamente se cargan los cursos y alumnos -->
+        </div>
+    </main>
+
+    <!-- Modal de Notas -->
+    <div id="modalNota" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitulo">Agregar Nota a Estudiante</h3>
+            
+            <label for="selectAsignatura">Seleccionar Asignatura:</label>
+            <select id="selectAsignatura">
+                <option value="Lenguaje y Comunicación">1. Lenguaje y Comunicación</option>
+                <option value="Matemática">2. Matemática</option>
+                <option value="Historia, Geografía y Ciencias Sociales">3. Historia, Geografía y Ciencias Sociales</option>
+                <option value="Ciencias Naturales">4. Ciencias Naturales</option>
+                <option value="Artes Visuales">5. Artes Visuales</option>
+                <option value="Educación Física y Salud">6. Educación Física y Salud</option>
+                <option value="Tecnología">7. Tecnología</option>
+                <option value="Música">8. Música</option>
+                <option value="Inglés">9. Inglés</option>
+                <option value="Religión">10. Religión</option>
+                <option value="Orientación">11. Orientación</option>
+            </select>
+
+            <label for="inputNota">Ingresar Nota (Ej: 6,5):</label>
+            <input type="text" id="inputNota" placeholder="Ej: 6,5">
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn-guardar" onclick="guardarNota()">Guardar Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Justificaciones / Chat de Notificaciones -->
+    <div id="modalJustificaciones" class="modal-overlay">
+        <div class="modal-content">
+            <h3>📥 Buzón de Justificaciones</h3>
+            <div id="listaJustificacionesBuzon" class="justificaciones-lista">
+                <p style="text-align: center; color: #64748b; font-size: 0.85rem;">No hay justificaciones recibidas.</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" onclick="cerrarModalBuzon()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Desarrollado para Escuela Candelaria Pérez • San Javier
+    </footer>
+
+    <script>
+        const baseDatosCursos = {
+            "1° Básico": {
+                "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ"
+            },
+            "2° Básico": {
+                "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ"
+            },
+            "3° Básico": {
+                "25919681-7": "MATEO EXEQUIEL CAMPOS QUINTANA", "25725971-4": "JULIETA ISABELLA CANCINO ORMEÑO", "26159496-K": "AMARO LEÓN CIFUENTES CORREA", "25864356-9": "NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL", "25928875-4": "EMILIANO ALONSO JAQUE PEÑALOZA", "26025635-1": "FIORELLA IGNACIA MÉNDEZ ORTEGA", "25935326-2": "ISAAC ANDRÉS MORA MARTÍNEZ"
+            },
+            "4° Básico": {
+                "25377391-K": "AMARO ANDRÉS ARANEDA RAMÍREZ", "25215012-9": "JEREMIAS EDGAR CASTRO CARREÑO", "25717568-5": "MANUEL JESÚS ESQUIVEL GONZÁLEZ", "25374420-0": "MARÍA JOSÉ GÓMEZ GÓMEZ", "25510730-5": "AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO", "25269634-2": "JAVIER IGNACIO MARDONES IBACACHE", "24961971-K": "STEFAN ANTONIO REICHENBACH VEGA"
+            },
+            "5° Básico": {
+                "25201656-2": "FRANCO ANTONIO ACEVEDO ACUÑA", "25054488-K": "PAZ FRANCISCA BAEZA DÍAZ", "25058732-5": "JOSÉ HUMBERTO BUENO PAVEZ", "25058760-0": "JOSÉ OMAR BUENO PAVEZ", "24533270-K": "EDUARDO JAVIER CASTRO CARREÑO", "25030936-8": "MATÍAS NICOLÁS FAÚNDEZ SOTO", "25003701-5": "EMILYA JESÚS MARTINA GARRIDO HERRERA", "25052798-5": "ABHAY NITAY MARTÍNEZ ARAVENA", "25284224-1": "GERALDYNE ALEJANDRA MOYA CANCINO", "25042294-6": "MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA", "25241982-9": "BENJAMÍN ANTONIO OLIVARES MORALES", "24954101-K": "JAVIER IGNACIO ORELLANA VALDES", "25106705-8": "JULIETA VALERIA SANDOVAL JAQUE", "25291352-1": "MARTIN ALONSO SILVA ROA", "25241359-6": "AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ", "25212963-4": "JOSÉ IGNACIO VERA MEDEL", "25017516-7": "MARTIN IGNACIO JARA BARRA"
+            },
+            "6° Básico": {
+                "24934084-7": "JOSEPH THOMAS BARBETT PINTO", "24890180-2": "MARIA ELENA BUENO PALMA", "24356402-6": "ALEXIS DAVID ALEJANDRO CANCINO PASTENES", "24714647-4": "EMILIA DEL CARMEN INOSTROZA TARAZONA", "24893220-1": "GABRIELA JESÚS MUÑOZ ORELLANA", "24748067-6": "VICTORIA ANABELLA SALGADO CARRASCO", "24502047-3": "DIEGO ALONZO VILLALOBOS VALDÉS", "24502029-5": "VICENTE IGNASIO VILLALOBOS VALDÉS", "24906925-6": "MATEO IGNACIO VIÑALS COFRE"
+            },
+            "7° Básico": {
+                "24545483-K": "ISAIASS ELIUDT ARANEDA RAMÍREZ", "24503476-8": "DANIEL ALEXIS CAMPOS YÁÑEZ", "24434484-4": "AGUSTÍN EFRAIN CASTRO CANALES", "24389919-2": "BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA", "24318562-9": "SOFÍA AMANDA MUÑOZ ARAYA", "23889737-8": "ALEJANDRO ANÍBAL PINO ESQUIVEL", "24490056-9": "AARÓN ELÍAS SANTANDER CÉSPEDES", "24339330-2": "ANDY ANGEL URRUTIA GÓMEZ", "24557543-2": "MATEO ALONSO VALDÉS CABELLO"
+            },
+            "8° Básico": {
+                "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
+            }
+        };
+
+        const profesorCursos = {
+            "MARTA QUEVEDO VILLALOBOS": ["1° Básico", "2° Básico"],
+            "EDUARDO FUENTES REYES": ["3° Básico", "4° Básico"],
+            "HÉCTOR GONZÁLEZ GAETE": ["5° Básico"],
+            "EUGENIA BARROS BUSTAMANTE": ["6° Básico"],
+            "KARINA SOTELO VALDÉS": ["7° Básico"],
+            "ANA COFRÉ MUÑOZ": ["8° Básico"]
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const nombreProfe = params.get('nombre');
+        let alumnoSeleccionadoRut = null;
+
+        if (nombreProfe && profesorCursos[nombreProfe]) {
+            document.getElementById('saludoProfe').innerText = `HOLA, ${nombreProfe}`;
+            
+            const contenedor = document.getElementById('contenedorCursos');
+            const cursosDelProfe = profesorCursos[nombreProfe];
+            const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+
+            cursosDelProfe.forEach(cursoNombre => {
+                const alumnos = baseDatosCursos[cursoNombre];
+                
+                let htmlCurso = `
+                    <div class="curso-section">
+                        <h3>${cursoNombre}</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>RUT</th>
+                                    <th>Nombre Completo del Alumno</th>
+                                    <th style="text-align: right;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                for (const [rut, nombre] of Object.entries(alumnos)) {
+                    if (!eliminados.includes(rut)) {
+                        htmlCurso += `
+                            <tr id="fila-${rut}">
+                                <td>${rut}</td>
+                                <td>${nombre}</td>
+                                <td class="acciones">
+                                    <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
+                                    <div id="menu-${rut}" class="dropdown-menu">
+                                        <button onclick="abrirModalNota('${rut}', '${nombre}')">➕ Agregar Nota</button>
+                                        <button class="danger" onclick="eliminarAlumno('${rut}', '${nombre}')">🗑️ Eliminar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+
+                htmlCurso += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                contenedor.innerHTML += htmlCurso;
+            });
+
+            // Actualizar badge de notificaciones para este profesor
+            actualizarNotificacionesJustificaciones();
+
+        } else {
+            alert("Acceso no autorizado o nombre de docente inválido.");
+            window.location.href = "PANTALLA DE CARGA.html";
+        }
+
+        function toggleMenu(rut) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if(menu.id !== `menu-${rut}`) menu.style.display = 'none';
+            });
+
+            const menu = document.getElementById(`menu-${rut}`);
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function abrirModalNota(rut, nombreAlumno) {
+            alumnoSeleccionadoRut = rut;
+            document.getElementById('modalTitulo').innerText = `Agregar Nota a: ${nombreAlumno}`;
+            document.getElementById('inputNota').value = '';
+            document.getElementById('modalNota').style.display = 'flex';
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalNota').style.display = 'none';
+            alumnoSeleccionadoRut = null;
+        }
+
+        function guardarNota() {
+            const asignatura = document.getElementById('selectAsignatura').value;
+            const nota = document.getElementById('inputNota').value.trim();
+
+            if (nota === "") {
+                alert("Por favor, ingrese una calificación válida.");
+                document.getElementById('inputNota').focus();
+                return;
+            }
+
+            let notasAlumno = JSON.parse(localStorage.getItem(`notas_${alumnoSeleccionadoRut}`) || '[]');
+            notasAlumno.push({ asignatura: asignatura, nota: nota });
+            localStorage.setItem(`notas_${alumnoSeleccionadoRut}`, JSON.stringify(notasAlumno));
+
+            alert(`¡Calificación ${nota} subida con éxito en ${asignatura}!`);
+            cerrarModal();
+        }
+
+        function eliminarAlumno(rut, nombreAlumno) {
+            if (confirm(`¿Está seguro de eliminar a ${nombreAlumno} del sistema? El alumno ya no podrá ingresar.`)) {
+                const fila = document.getElementById(`fila-${rut}`);
+                if (fila) fila.remove();
+
+                let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
+                if (!eliminados.includes(rut)) {
+                    eliminados.push(rut);
+                    localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
+                }
+
+                alert(`El estudiante ${nombreAlumno} ha sido eliminado correctamente.`);
+            }
+        }
+
+        // Lógica del Buzón de Justificaciones
+        function actualizarNotificacionesJustificaciones() {
+            const cursosDelProfe = profesorCursos[nombreProfe] || [];
+            const todasJustificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
+            
+            // Filtrar solo las que corresponden a los cursos del profesor
+            const misJustificaciones = todasJustificaciones.filter(j => cursosDelProfe.includes(j.curso));
+            const badge = document.getElementById('contadorJustificaciones');
+
+            if (misJustificaciones.length > 0) {
+                badge.innerText = misJustificaciones.length;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function abrirBuzonJustificaciones() {
+            const cursosDelProfe = profesorCursos[nombreProfe] || [];
+            const todasJustificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
+            const misJustificaciones = todasJustificaciones.filter(j => cursosDelProfe.includes(j.curso));
+            
+            const buzonContenedor = document.getElementById('listaJustificacionesBuzon');
+
+            if (misJustificaciones.length > 0) {
+                buzonContenedor.innerHTML = '';
+                misJustificaciones.forEach(j => {
+                    buzonContenedor.innerHTML += `
+                        <div class="justificacion-card">
+                            <div><strong>De:</strong> ${j.de} (${j.curso})</div>
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top:2px;">Fecha: ${j.fecha}</div>
+                            <p>"${j.mensaje}"</p>
+                        </div>
+                    `;
+                });
+            } else {
+                buzonContenedor.innerHTML = '<p style="text-align: center; color: #64748b; font-size: 0.85rem;">No hay justificaciones recibidas.</p>';
+            }
+
+            document.getElementById('modalJustificaciones').style.display = 'flex';
+        }
+
+        function cerrarModalBuzon() {
+            document.getElementById('modalJustificaciones').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-dots')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.style.display = 'none';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

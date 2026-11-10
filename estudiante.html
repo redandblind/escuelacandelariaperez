@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Estudiante - Escuela Candelaria Pérez</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100vw;
+            justify-content: space-between;
+        }
+
+        header {
+            background-color: #eef2f7;
+            border-bottom: 1px solid #d1d5db;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-escuela-small {
+            width: 45px;
+            height: 45px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d1d5db;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .logo-escuela-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-info h1 {
+            font-size: 1.1rem;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .header-info p {
+            font-size: 0.8rem;
+            color: #3b82f6;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .greeting {
+            font-size: 1.4rem;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+
+        .rut-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #3b82f6;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Sección Justificar Asistencias */
+        .justificar-card {
+            background: #eef2f7;
+            border: 1px solid #d1d5db;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .justificar-card h3 {
+            font-size: 1rem;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .justificar-card textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            resize: vertical;
+            margin-top: 6px;
+        }
+
+        .btn-subir-justificacion {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-subir-justificacion:hover {
+            background-color: #2563eb;
+        }
+
+        .mensaje-agradecimiento {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .details-box {
+            text-align: left;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 0;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #4b5563;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .notas-section {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .notas-section h3 {
+            font-size: 1.1rem;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 5px;
+        }
+
+        .lista-notas {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nota-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 10px 14px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .nota-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .sin-notas {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .btn-volver {
+            width: 100%;
+            padding: 12px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-volver:hover {
+            background-color: #2563eb;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background-color: #eef2f7;
+            border-top: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-escuela-small">
+            <img src="logo escuela.png" alt="Logo" onerror="this.style.display='none';">
+        </div>
+        <div class="header-info">
+            <h1>Escuela Candelaria Pérez</h1>
+            <p>Portal del Estudiante • San Javier</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="panel-card">
+            <h2 id="saludo" class="greeting">HOLA, Cargando...</h2>
+            <div id="rut-estudiante" class="rut-badge">RUT: --</div>
+
+            <!-- Sección Justificar Asistencia -->
+            <div class="justificar-card">
+                <h3>📝 Justificar Asistencia</h3>
+                <textarea id="textoJustificacion" placeholder="Porfavor justifique su asistencia..."></textarea>
+                <button type="button" class="btn-subir-justificacion" onclick="enviarJustificacion()">Subir Justificación</button>
+                <div id="mensajeExito" class="mensaje-agradecimiento">¡Gracias por comunicarnos! Su profesor jefe ha sido notificado.</div>
+            </div>
+
+            <div class="details-box">
+                <div class="detail-item">
+                    <span class="detail-label">Establecimiento:</span>
+                    <span class="detail-value">Escuela Candelaria Pérez</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Ubicación:</span>
+                    <span class="detail-value">San Javier</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Estado:</span>
+                    <span class="detail-value" style="color: #16a34a;">Matriculado / Activo</span>
+                </div>
+            </div>
+
+            <div class="notas-section">
+                <h3>Mis Calificaciones</h3>
+                <ul id="listaNotas" class="lista-notas">
+                    <li class="sin-notas">No hay calificaciones registradas todavía.</li>
+                </ul>
+            </div>
+
+            <button class="btn-volver" onclick="cerrarSesion()">Cerrar Sesión / Volver</button>
+        </div>
+    </main>
+
+    <footer>
+        Desarrollado para Escuela Candelaria Pérez • San Javier
+    </footer>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const nombre = params.get('nombre');
+        const rut = params.get('rut');
+
+        if (nombre && rut) {
+            document.getElementById('saludo').innerText = `HOLA, ${nombre}`;
+            document.getElementById('rut-estudiante').innerText = `RUT: ${rut}`;
+
+            cargarNotasEstudiante(rut);
+        } else {
+            alert("Acceso no autorizado.");
+            window.location.href = "PANTALLA DE CARGA.html";
+        }
+
+        function enviarJustificacion() {
+            const texto = document.getElementById('textoJustificacion').value.trim();
+            if (texto === "") {
+                alert("Por favor escriba el motivo de la justificación.");
+                return;
+            }
+
+            // Mapeo de alumnos a su curso para enviar al profe correspondiente
+            const mapaAlumnosCurso = {
+                "27109816-2": "1° Básico", "27102017-1": "1° Básico", "26826120-6": "1° Básico", "26865752-5": "1° Básico", "27204005-2": "1° Básico", "26792929-7": "1° Básico", "26898511-5": "1° Básico", "26758311-0": "1° Básico", "26729600-6": "1° Básico", "27191114-9": "1° Básico", "27009108-3": "1° Básico",
+                "25796184-2": "2° Básico", "26402298-3": "2° Básico", "26752038-0": "2° Básico", "26659139-K": "2° Básico", "26365506-K": "2° Básico", "26533453-9": "2° Básico", "26117713-7": "2° Básico",
+                "25919681-7": "3° Básico", "25725971-4": "3° Básico", "26159496-K": "3° Básico", "25864356-9": "3° Básico", "25928875-4": "3° Básico", "26025635-1": "3° Básico", "25935326-2": "3° Básico",
+                "25377391-K": "4° Básico", "25215012-9": "4° Básico", "25717568-5": "4° Básico", "25374420-0": "4° Básico", "25510730-5": "4° Básico", "25269634-2": "4° Básico", "24961971-K": "4° Básico",
+                "25201656-2": "5° Básico", "25054488-K": "5° Básico", "25058732-5": "5° Básico", "25058760-0": "5° Básico", "24533270-K": "5° Básico", "25030936-8": "5° Básico", "25003701-5": "5° Básico", "25052798-5": "5° Básico", "25284224-1": "5° Básico", "25042294-6": "5° Básico", "25241982-9": "5° Básico", "24954101-K": "5° Básico", "25106705-8": "5° Básico", "25291352-1": "5° Básico", "25241359-6": "5° Básico", "25212963-4": "5° Básico", "25017516-7": "5° Básico",
+                "24934084-7": "6° Básico", "24890180-2": "6° Básico", "24356402-6": "6° Básico", "24714647-4": "6° Básico", "24893220-1": "6° Básico", "24748067-6": "6° Básico", "24502047-3": "6° Básico", "24502029-5": "6° Básico", "24906925-6": "6° Básico",
+                "24545483-K": "7° Básico", "24503476-8": "7° Básico", "24434484-4": "7° Básico", "24389919-2": "7° Básico", "24318562-9": "7° Básico", "23889737-8": "7° Básico", "24490056-9": "7° Básico", "24339330-2": "7° Básico", "24557543-2": "7° Básico",
+                "23977218-8": "8° Básico", "24313880-9": "8° Básico", "24075427-4": "8° Básico", "24022904-8": "8° Básico", "24198053-7": "8° Básico", "24228200-0": "8° Básico", "23754523-0": "8° Básico", "24085862-2": "8° Básico", "24147417-8": "8° Básico", "23948205-8": "8° Básico", "24160899-9": "8° Básico", "23728030-K": "8° Básico"
+            };
+
+            const curso = mapaAlumnosCurso[rut] || "General";
+            let justificaciones = JSON.parse(localStorage.getItem('justificacionesEscuela') || '[]');
+            
+            justificaciones.push({
+                rut: rut,
+                nombre: nombre,
+                curso: curso,
+                mensaje: texto,
+                fecha: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem('justificacionesEscuela', JSON.stringify(justificaciones));
+
+            document.getElementById('textoJustificacion').value = "";
+            document.getElementById('mensajeExito').style.display = "block";
+
+            setTimeout(() => {
+                document.getElementById('mensajeExito').style.display = "none";
+            }, 4000);
+        }
+
+        function cargarNotasEstudiante(rutAlumno) {
+            const notasGuardadas = JSON.parse(localStorage.getItem(`notas_${rutAlumno}`) || '[]');
+            const contenedorNotas = document.getElementById('listaNotas');
+
+            if (notasGuardadas.length > 0) {
+                contenedorNotas.innerHTML = '';
+                notasGuardadas.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'nota-item';
+                    li.innerHTML = `
+                        <span>${item.asignatura}</span>
+                        <span class="nota-badge">${item.nota}</span>
+                    `;
+                    contenedorNotas.appendChild(li);
+                });
+            }
+        }
+
+        function cerrarSesion() {
+            window.location.href = "PANTALLA DE CARGA.html";
+        }
+    </script>
+</body>
+</html>
