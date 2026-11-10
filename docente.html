@@ -1,959 +1,518 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Docente · Escuela Candelaria Pérez</title>
-    <style>
-        :root {
-            --primary: #1e40af;
-            --primary-light: #3b82f6;
-            --primary-dark: #1e3a8a;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --success: #059669;
-            --danger: #dc2626;
-            --warning: #d97706;
-            --radius: 14px;
-            --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        header {
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 40;
-        }
-
-        .header-left h1 {
-            font-size: 1.1rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-        }
-
-        .header-left p {
-            font-size: 0.78rem;
-            color: var(--primary-light);
-            margin-top: 1px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .icon-btn {
-            position: relative;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.15rem;
-            transition: background 0.15s;
-        }
-
-        .icon-btn:hover { background: #f1f5f9; }
-
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 999px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-        }
-
-        .btn-logout {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid var(--border);
-            padding: 9px 14px;
-            border-radius: 9px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.15s;
-        }
-
-        .btn-logout:hover { background: #e2e8f0; }
-
-        /* Main */
-        main {
-            flex: 1;
-            max-width: 960px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 24px 16px 40px;
-        }
-
-        /* Welcome + Stats */
-        .welcome-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 22px;
-        }
-
-        .welcome-card {
-            flex: 1;
-            min-width: 260px;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            color: white;
-            padding: 22px 24px;
-            border-radius: var(--radius);
-            box-shadow: 0 8px 24px rgba(30, 64, 175, 0.25);
-        }
-
-        .welcome-card h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .welcome-card p {
-            font-size: 0.88rem;
-            opacity: 0.9;
-        }
-
-        .stats-grid {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 18px;
-            min-width: 120px;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-
-        .stat-card .num {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-        }
-
-        .stat-card .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* Toolbar */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 18px;
-            align-items: center;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 200px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 11px 14px 11px 40px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            outline: none;
-            background: white;
-        }
-
-        .search-box input:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-        }
-
-        .search-box::before {
-            content: "🔍";
-            position: absolute;
-            left: 13px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 11px 16px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: transform 0.12s, box-shadow 0.15s;
-        }
-
-        .btn-action:hover { transform: translateY(-1px); }
-
-        .btn-create {
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: white;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: var(--primary-dark);
-            border: 1.5px solid var(--border);
-        }
-
-        /* Course sections */
-        .curso-section {
-            background: var(--card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 18px;
-            overflow: hidden;
-        }
-
-        .curso-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .curso-header h3 {
-            font-size: 1rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-        }
-
-        .curso-count {
-            font-size: 0.78rem;
-            background: #eff6ff;
-            color: var(--primary);
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.88rem;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        th {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            background: #fafbfc;
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f8fafc; }
-
-        .acciones { text-align: right; position: relative; }
-
-        .menu-dots {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: #64748b;
-            padding: 4px 10px;
-            border-radius: 6px;
-            line-height: 1;
-        }
-
-        .menu-dots:hover { background: #f1f5f9; color: var(--primary-dark); }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 12px;
-            top: 40px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-            z-index: 20;
-            width: 180px;
-            overflow: hidden;
-        }
-
-        .dropdown-menu button {
-            width: 100%;
-            padding: 11px 14px;
-            background: none;
-            border: none;
-            font-size: 0.85rem;
-            color: #334155;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dropdown-menu button:hover {
-            background: #f8fafc;
-            color: var(--primary-dark);
-        }
-
-        .dropdown-menu button.danger { color: var(--danger); }
-        .dropdown-menu button.danger:hover { background: #fef2f2; }
-
-        /* Modals */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal-overlay.show { display: flex; }
-
-        .modal {
-            background: white;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 440px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            overflow: hidden;
-            animation: modalIn 0.25s ease;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.96) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-header {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            font-size: 1.05rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: #94a3b8;
-            line-height: 1;
-        }
-
-        .modal-body { padding: 20px 22px; }
-
-        .modal-body label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 6px;
-            margin-top: 14px;
-        }
-
-        .modal-body label:first-child { margin-top: 0; }
-
-        .modal-body input,
-        .modal-body select {
-            width: 100%;
-            padding: 11px 13px;
-            border: 1.5px solid var(--border);
-            border-radius: 9px;
-            font-size: 0.92rem;
-            outline: none;
-            background: #fafbfc;
-        }
-
-        .modal-body input:focus,
-        .modal-body select:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-            background: white;
-        }
-
-        .modal-footer {
-            padding: 16px 22px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .btn-modal {
-            padding: 10px 18px;
-            border-radius: 9px;
-            font-weight: 600;
-            font-size: 0.88rem;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-cancel {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-save {
-            background: var(--primary-light);
-            color: white;
-        }
-
-        .btn-save:hover { background: #2563eb; }
-
-        /* Justificaciones list */
-        .justificacion-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-        }
-
-        .justificacion-card strong { color: var(--primary-dark); }
-        .justificacion-card .meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 3px;
-        }
-        .justificacion-card p {
-            margin-top: 8px;
-            color: #334155;
-            line-height: 1.4;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 28px 16px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 16px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            background: var(--card);
-            border-top: 1px solid var(--border);
-        }
-
-        @media (max-width: 600px) {
-            header { padding: 12px 14px; }
-            .welcome-row { flex-direction: column; }
-            .stats-grid { width: 100%; }
-            .stat-card { flex: 1; }
-            table { font-size: 0.82rem; }
-            th, td { padding: 10px 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Docente · Escuela Candelaria Pérez</title>
+<style>
+:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--success:#059669;--danger:#dc2626;--warn:#d97706;--radius:14px;--shadow:0 4px 20px rgba(15,23,42,.05)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:40}
+.header-left h1{font-size:1.1rem;color:var(--primary-dark);font-weight:700}
+.header-left p{font-size:.78rem;color:var(--primary-light);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{position:relative;background:#f8fafc;border:1px solid var(--border);width:42px;height:42px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+.icon-btn:hover{background:#f1f5f9}
+.badge{position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:none;align-items:center;justify-content:center;padding:0 4px}
+.btn-logout{background:#f1f5f9;color:#475569;border:1px solid var(--border);padding:9px 14px;border-radius:9px;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none}
+.btn-logout:hover{background:#e2e8f0}
+main{flex:1;max-width:980px;width:100%;margin:0 auto;padding:24px 16px 40px}
+.welcome-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:22px}
+.welcome-card{flex:1;min-width:260px;background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:22px 24px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(30,64,175,.25)}
+.welcome-card h2{font-size:1.25rem;font-weight:700;margin-bottom:4px}
+.welcome-card p{font-size:.88rem;opacity:.9}
+.stats-grid{display:flex;gap:12px;flex-wrap:wrap}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;min-width:110px;text-align:center;box-shadow:var(--shadow)}
+.stat-card .num{font-size:1.5rem;font-weight:700;color:var(--primary-dark)}
+.stat-card .label{font-size:.75rem;color:var(--muted);margin-top:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;background:#fff}
+.search-box input:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.search-box::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.6}
+.btn-action{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;border:none}
+.btn-create{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
+.btn-secondary{background:#fff;color:var(--primary-dark);border:1.5px solid var(--border)}
+.curso-section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
+.curso-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-bottom:1px solid var(--border)}
+.curso-header h3{font-size:1rem;color:var(--primary-dark);font-weight:700}
+.curso-count{font-size:.78rem;background:#eff6ff;color:var(--primary);padding:4px 10px;border-radius:999px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid #f1f5f9}
+th{color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;background:#fafbfc}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.acciones{text-align:right;position:relative}
+.menu-dots{background:none;border:none;font-size:1.25rem;cursor:pointer;color:#64748b;padding:4px 10px;border-radius:6px;line-height:1}
+.menu-dots:hover{background:#f1f5f9;color:var(--primary-dark)}
+.dropdown-menu{display:none;position:absolute;right:12px;top:40px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:20;width:200px;overflow:hidden}
+.dropdown-menu button{width:100%;padding:11px 14px;background:none;border:none;font-size:.85rem;color:#334155;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px}
+.dropdown-menu button:hover{background:#f8fafc;color:var(--primary-dark)}
+.dropdown-menu button.danger{color:var(--danger)}
+.dropdown-menu button.danger:hover{background:#fef2f2}
+.prom-chip{display:inline-block;padding:3px 9px;border-radius:6px;font-weight:700;font-size:.85rem}
+.prom-ok{background:#d1fae5;color:#065f46}
+.prom-mid{background:#fef3c7;color:#92400e}
+.prom-bad{background:#fee2e2;color:#991b1b}
+.prom-na{background:#f1f5f9;color:#94a3b8}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.15);overflow:hidden;animation:modalIn .25s ease;max-height:90vh;display:flex;flex-direction:column}
+.modal.wide{max-width:560px}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-header h3{font-size:1.05rem;color:var(--primary-dark);font-weight:700}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#94a3b8;line-height:1}
+.modal-body{padding:20px 22px;overflow-y:auto}
+.modal-body label{display:block;font-size:.82rem;font-weight:600;color:#334155;margin-bottom:6px;margin-top:14px}
+.modal-body label:first-child{margin-top:0}
+.modal-body input,.modal-body select,.modal-body textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.92rem;outline:none;background:#fafbfc;font-family:inherit}
+.modal-body input:focus,.modal-body select:focus,.modal-body textarea:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12);background:#fff}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
+.btn-modal{padding:10px 18px;border-radius:9px;font-weight:600;font-size:.88rem;cursor:pointer;border:none}
+.btn-cancel{background:#f1f5f9;color:#475569}
+.btn-save{background:var(--primary-light);color:#fff}
+.btn-save:hover{background:#2563eb}
+.justificacion-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;font-size:.85rem}
+.justificacion-card strong{color:var(--primary-dark)}
+.justificacion-card .meta{font-size:.75rem;color:var(--muted);margin-top:3px}
+.justificacion-card p{margin-top:8px;color:#334155;line-height:1.4}
+.empty-state{text-align:center;padding:28px 16px;color:var(--muted);font-size:.9rem}
+.sem-tabs{display:flex;gap:6px;margin-bottom:14px}
+.sem-tab{flex:1;padding:9px;border:1.5px solid var(--border);background:#f8fafc;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);text-align:center}
+.sem-tab.active{background:#eff6ff;border-color:#93c5fd;color:var(--primary-dark)}
+.nota-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+.nota-row:last-child{border-bottom:none}
+.avg-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-around;text-align:center;gap:8px}
+.avg-box .avg-val{font-size:1.4rem;font-weight:700}
+.avg-box .avg-lbl{font-size:.72rem;color:var(--muted);margin-top:2px}
+.obs-item{background:#f8fafc;border-left:3px solid var(--primary-light);padding:10px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;font-size:.85rem}
+.obs-item.neg{border-left-color:var(--danger)}
+.obs-item .obs-meta{font-size:.72rem;color:var(--muted);margin-top:4px}
+footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
+@media(max-width:600px){header{padding:12px 14px}.welcome-row{flex-direction:column}.stats-grid{width:100%}.stat-card{flex:1}table{font-size:.82rem}th,td{padding:10px 10px}}
+</style>
 </head>
 <body>
-
-    <header>
-        <div class="header-left">
-            <h1>Escuela Candelaria Pérez</h1>
-            <p>Panel del Docente · San Javier</p>
-        </div>
-        <div class="header-actions">
-            <button class="icon-btn" onclick="abrirBuzonJustificaciones()" title="Buzón de justificaciones">
-                💬
-                <span id="contadorJustificaciones" class="badge">0</span>
-            </button>
-            <a href="index.html" class="btn-logout">Cerrar sesión</a>
-        </div>
-    </header>
-
-    <main>
-        <div class="welcome-row">
-            <div class="welcome-card">
-                <h2 id="saludoProfe">Hola...</h2>
-                <p>Gestiona alumnos, calificaciones y justificaciones de tus cursos asignados.</p>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="num" id="statAlumnos">0</div>
-                    <div class="label">Alumnos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num" id="statCursos">0</div>
-                    <div class="label">Cursos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num" id="statJustif">0</div>
-                    <div class="label">Justificaciones</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="toolbar">
-            <div class="search-box">
-                <input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()">
-            </div>
-            <button class="btn-action btn-create" onclick="abrirModalCrearAlumno()">
-                ＋ Nuevo alumno
-            </button>
-        </div>
-
-        <div id="contenedorCursos">
-            <!-- Se genera dinámicamente -->
-        </div>
-    </main>
-
-    <!-- Modal Nota -->
-    <div id="modalNota" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalTituloNota">Agregar calificación</h3>
-                <button class="modal-close" onclick="cerrarModal('modalNota')">×</button>
-            </div>
-            <div class="modal-body">
-                <label for="selectAsignatura">Asignatura</label>
-                <select id="selectAsignatura">
-                    <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
-                    <option value="Matemática">Matemática</option>
-                    <option value="Historia, Geografía y Ciencias Sociales">Historia, Geografía y Ciencias Sociales</option>
-                    <option value="Ciencias Naturales">Ciencias Naturales</option>
-                    <option value="Artes Visuales">Artes Visuales</option>
-                    <option value="Educación Física y Salud">Educación Física y Salud</option>
-                    <option value="Tecnología">Tecnología</option>
-                    <option value="Música">Música</option>
-                    <option value="Inglés">Inglés</option>
-                    <option value="Religión">Religión</option>
-                    <option value="Orientación">Orientación</option>
-                </select>
-
-                <label for="inputNota">Nota (ej: 6,5)</label>
-                <input type="text" id="inputNota" placeholder="Ej: 6,5 o 7.0" inputmode="decimal">
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalNota')">Cancelar</button>
-                <button class="btn-modal btn-save" onclick="guardarNota()">Guardar nota</button>
-            </div>
-        </div>
+<header>
+  <div class="header-left">
+    <h1>Escuela Candelaria Pérez</h1>
+    <p>Panel del Docente · San Javier</p>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="abrirBuzonJustificaciones()" title="Justificaciones">💬<span id="contadorJustificaciones" class="badge">0</span></button>
+    <a href="index.html" class="btn-logout" onclick="cerrarSesionDocente()">Cerrar sesión</a>
+  </div>
+</header>
+<main>
+  <div class="welcome-row">
+    <div class="welcome-card">
+      <h2 id="saludoProfe">Hola...</h2>
+      <p>Gestiona alumnos, notas por semestre, promedios y observaciones.</p>
     </div>
-
-    <!-- Modal Crear Alumno -->
-    <div id="modalCrearAlumno" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Crear nuevo perfil de alumno</h3>
-                <button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button>
-            </div>
-            <div class="modal-body">
-                <label for="nuevoRut">RUT (con guión)</label>
-                <input type="text" id="nuevoRut" placeholder="Ej: 25928875-4" maxlength="12">
-
-                <label for="nuevoNombre">Nombre completo</label>
-                <input type="text" id="nuevoNombre" placeholder="Ej: Juan Pérez González">
-
-                <label for="nuevoCurso">Curso</label>
-                <select id="nuevoCurso">
-                    <!-- Se llena con los cursos del profesor -->
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCrearAlumno')">Cancelar</button>
-                <button class="btn-modal btn-save" onclick="crearNuevoAlumno()">Crear perfil</button>
-            </div>
-        </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="num" id="statAlumnos">0</div><div class="label">Alumnos</div></div>
+      <div class="stat-card"><div class="num" id="statCursos">0</div><div class="label">Cursos</div></div>
+      <div class="stat-card"><div class="num" id="statJustif">0</div><div class="label">Justif.</div></div>
     </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()"></div>
+    <button class="btn-action btn-create" onclick="abrirModalCrearAlumno()">＋ Nuevo alumno</button>
+  </div>
+  <div id="contenedorCursos"></div>
+</main>
 
-    <!-- Modal Justificaciones -->
-    <div id="modalJustificaciones" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>📥 Buzón de justificaciones</h3>
-                <button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button>
-            </div>
-            <div class="modal-body">
-                <div id="listaJustificacionesBuzon">
-                    <div class="empty-state">No hay justificaciones recibidas.</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-modal btn-cancel" onclick="cerrarModal('modalJustificaciones')">Cerrar</button>
-            </div>
-        </div>
+<!-- Modal Nota -->
+<div id="modalNota" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTituloNota">Agregar calificación</h3><button class="modal-close" onclick="cerrarModal('modalNota')">×</button></div>
+    <div class="modal-body">
+      <label>Semestre</label>
+      <select id="selectSemestre">
+        <option value="1">1° Semestre</option>
+        <option value="2">2° Semestre</option>
+      </select>
+      <label>Asignatura</label>
+      <select id="selectAsignatura">
+        <option>Lenguaje y Comunicación</option>
+        <option>Matemática</option>
+        <option>Historia, Geografía y Ciencias Sociales</option>
+        <option>Ciencias Naturales</option>
+        <option>Artes Visuales</option>
+        <option>Educación Física y Salud</option>
+        <option>Tecnología</option>
+        <option>Música</option>
+        <option>Inglés</option>
+        <option>Religión</option>
+        <option>Orientación</option>
+      </select>
+      <label>Nota (1,0 a 7,0)</label>
+      <input type="text" id="inputNota" placeholder="Ej: 6,5 o 5.0" inputmode="decimal">
     </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalNota')">Cancelar</button>
+      <button class="btn-modal btn-save" onclick="guardarNota()">Guardar nota</button>
+    </div>
+  </div>
+</div>
 
-    <footer>
-        Escuela Candelaria Pérez · San Javier · Panel Docente
-    </footer>
+<!-- Modal Ver Notas / Promedios -->
+<div id="modalVerNotas" class="modal-overlay">
+  <div class="modal wide">
+    <div class="modal-header"><h3 id="tituloVerNotas">Calificaciones</h3><button class="modal-close" onclick="cerrarModal('modalVerNotas')">×</button></div>
+    <div class="modal-body">
+      <div class="avg-box" id="avgBox">
+        <div><div class="avg-val" id="avgS1">—</div><div class="avg-lbl">1° Semestre</div></div>
+        <div><div class="avg-val" id="avgS2">—</div><div class="avg-lbl">2° Semestre</div></div>
+        <div><div class="avg-val" id="avgGen">—</div><div class="avg-lbl">Promedio general</div></div>
+      </div>
+      <div class="sem-tabs">
+        <button class="sem-tab active" data-sem="all" onclick="filtrarSemVer(this)">Todas</button>
+        <button class="sem-tab" data-sem="1" onclick="filtrarSemVer(this)">1° Sem</button>
+        <button class="sem-tab" data-sem="2" onclick="filtrarSemVer(this)">2° Sem</button>
+      </div>
+      <div id="listaNotasDocente"></div>
+    </div>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="cerrarModal('modalVerNotas')">Cerrar</button></div>
+  </div>
+</div>
 
-    <script>
-        // ========== DATOS BASE ==========
-        const baseDatosCursos = {
-            "1° Básico": {
-                "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ"
-            },
-            "2° Básico": {
-                "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ"
-            },
-            "3° Básico": {
-                "25919681-7": "MATEO EXEQUIEL CAMPOS QUINTANA", "25725971-4": "JULIETA ISABELLA CANCINO ORMEÑO", "26159496-K": "AMARO LEÓN CIFUENTES CORREA", "25864356-9": "NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL", "25928875-4": "EMILIANO ALONSO JAQUE PEÑALOZA", "26025635-1": "FIORELLA IGNACIA MÉNDEZ ORTEGA", "25935326-2": "ISAAC ANDRÉS MORA MARTÍNEZ"
-            },
-            "4° Básico": {
-                "25377391-K": "AMARO ANDRÉS ARANEDA RAMÍREZ", "25215012-9": "JEREMIAS EDGAR CASTRO CARREÑO", "25717568-5": "MANUEL JESÚS ESQUIVEL GONZÁLEZ", "25374420-0": "MARÍA JOSÉ GÓMEZ GÓMEZ", "25510730-5": "AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO", "25269634-2": "JAVIER IGNACIO MARDONES IBACACHE", "24961971-K": "STEFAN ANTONIO REICHENBACH VEGA"
-            },
-            "5° Básico": {
-                "25201656-2": "FRANCO ANTONIO ACEVEDO ACUÑA", "25054488-K": "PAZ FRANCISCA BAEZA DÍAZ", "25058732-5": "JOSÉ HUMBERTO BUENO PAVEZ", "25058760-0": "JOSÉ OMAR BUENO PAVEZ", "24533270-K": "EDUARDO JAVIER CASTRO CARREÑO", "25030936-8": "MATÍAS NICOLÁS FAÚNDEZ SOTO", "25003701-5": "EMILYA JESÚS MARTINA GARRIDO HERRERA", "25052798-5": "ABHAY NITAY MARTÍNEZ ARAVENA", "25284224-1": "GERALDYNE ALEJANDRA MOYA CANCINO", "25042294-6": "MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA", "25241982-9": "BENJAMÍN ANTONIO OLIVARES MORALES", "24954101-K": "JAVIER IGNACIO ORELLANA VALDES", "25106705-8": "JULIETA VALERIA SANDOVAL JAQUE", "25291352-1": "MARTIN ALONSO SILVA ROA", "25241359-6": "AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ", "25212963-4": "JOSÉ IGNACIO VERA MEDEL", "25017516-7": "MARTIN IGNACIO JARA BARRA"
-            },
-            "6° Básico": {
-                "24934084-7": "JOSEPH THOMAS BARBETT PINTO", "24890180-2": "MARIA ELENA BUENO PALMA", "24356402-6": "ALEXIS DAVID ALEJANDRO CANCINO PASTENES", "24714647-4": "EMILIA DEL CARMEN INOSTROZA TARAZONA", "24893220-1": "GABRIELA JESÚS MUÑOZ ORELLANA", "24748067-6": "VICTORIA ANABELLA SALGADO CARRASCO", "24502047-3": "DIEGO ALONZO VILLALOBOS VALDÉS", "24502029-5": "VICENTE IGNASIO VILLALOBOS VALDÉS", "24906925-6": "MATEO IGNACIO VIÑALS COFRE"
-            },
-            "7° Básico": {
-                "24545483-K": "ISAIASS ELIUDT ARANEDA RAMÍREZ", "24503476-8": "DANIEL ALEXIS CAMPOS YÁÑEZ", "24434484-4": "AGUSTÍN EFRAIN CASTRO CANALES", "24389919-2": "BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA", "24318562-9": "SOFÍA AMANDA MUÑOZ ARAYA", "23889737-8": "ALEJANDRO ANÍBAL PINO ESQUIVEL", "24490056-9": "AARÓN ELÍAS SANTANDER CÉSPEDES", "24339330-2": "ANDY ANGEL URRUTIA GÓMEZ", "24557543-2": "MATEO ALONSO VALDÉS CABELLO"
-            },
-            "8° Básico": {
-                "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
-            }
-        };
+<!-- Modal Observación -->
+<div id="modalObs" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><h3 id="tituloObs">Observación</h3><button class="modal-close" onclick="cerrarModal('modalObs')">×</button></div>
+    <div class="modal-body">
+      <label>Tipo</label>
+      <select id="selectTipoObs">
+        <option value="pos">Positiva</option>
+        <option value="neg">Negativa / Amonestación</option>
+      </select>
+      <label>Descripción</label>
+      <textarea id="textoObs" rows="3" placeholder="Describe la observación..."></textarea>
+      <div id="listaObsPrevias" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalObs')">Cancelar</button>
+      <button class="btn-modal btn-save" onclick="guardarObs()">Registrar</button>
+    </div>
+  </div>
+</div>
 
-        const profesorCursos = {
-            "MARTA QUEVEDO VILLALOBOS": ["1° Básico", "2° Básico"],
-            "EDUARDO FUENTES REYES": ["3° Básico", "4° Básico"],
-            "HÉCTOR GONZÁLEZ GAETE": ["5° Básico"],
-            "EUGENIA BARROS BUSTAMANTE": ["6° Básico"],
-            "KARINA SOTELO VALDÉS": ["7° Básico"],
-            "ANA COFRÉ MUÑOZ": ["8° Básico"]
-        };
+<!-- Modal Crear Alumno -->
+<div id="modalCrearAlumno" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><h3>Crear nuevo perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button></div>
+    <div class="modal-body">
+      <label>RUT (con guión)</label>
+      <input type="text" id="nuevoRut" placeholder="Ej: 25928875-4" maxlength="12">
+      <label>Nombre completo</label>
+      <input type="text" id="nuevoNombre" placeholder="Ej: Juan Pérez González">
+      <label>Curso</label>
+      <select id="nuevoCurso"></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCrearAlumno')">Cancelar</button>
+      <button class="btn-modal btn-save" onclick="crearNuevoAlumno()">Crear perfil</button>
+    </div>
+  </div>
+</div>
 
-        // ========== ESTADO ==========
-        const params = new URLSearchParams(window.location.search);
-        const nombreProfe = params.get('nombre');
-        let alumnoSeleccionadoRut = null;
-        let cursosDelProfe = [];
+<!-- Modal Justificaciones -->
+<div id="modalJustificaciones" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><h3>📥 Buzón de justificaciones</h3><button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button></div>
+    <div class="modal-body"><div id="listaJustificacionesBuzon"><div class="empty-state">No hay justificaciones recibidas.</div></div></div>
+    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="cerrarModal('modalJustificaciones')">Cerrar</button></div>
+  </div>
+</div>
 
-        // ========== INICIALIZACIÓN ==========
-        if (!nombreProfe || !profesorCursos[nombreProfe]) {
-            alert("Acceso no autorizado o nombre de docente inválido.");
-            window.location.href = "index.html";
-        } else {
-            cursosDelProfe = profesorCursos[nombreProfe];
-            document.getElementById('saludoProfe').textContent = `Hola, ${formatearNombre(nombreProfe)}`;
-            renderizarTodo();
-            actualizarNotificacionesJustificaciones();
-        }
+<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v2.1</footer>
 
-        function formatearNombre(nombre) {
-            return nombre.split(' ').map(p => p.charAt(0) + p.slice(1).toLowerCase()).join(' ');
-        }
+<script>
+const baseDatosCursos = {
+  "1° Básico":{"27109816-2":"BASTIAN ALONSO CAMPOS BAEZA","27102017-1":"KHIARA EMILY CASTRO CARREÑO","26826120-6":"IAN CALEB CONTRERAS GÓMEZ","26865752-5":"COLOMBA ESTER DÍAZ VALVERDE","27204005-2":"HANDERZON HELIEL HERNÁNDEZ ESQUIVEL","26792929-7":"ESTEBAN JOSJUE NORAMBUENA CASTRO","26898511-5":"SIMONEY ORTEGA BRIONES","26758311-0":"DOMINIQUE AMELIA REICHENBACH VEGA","26729600-6":"DANIEL ESTEBAN VILLEGAS VÁSQUEZ","27191114-9":"IAN LUCIANO PÉREZ GONZÁLEZ","27009108-3":"TRINIDAD ANDREA LARA QUIROZ"},
+  "2° Básico":{"25796184-2":"ELÍAS HEVER CASTRO CARREÑO","26402298-3":"MATEO LUCIANO CORREA SEQUINI","26752038-0":"LEMÓN ELUNEY FUENZALIDA ARAVENA","26659139-K":"MATILDE TRINIDAD MUÑOZ ARAYA","26365506-K":"SOFÍA IGNACIA PAILLAN ANCATÉN","26533453-9":"AGUSTINA ALEJANDRA ROJAS GÓMEZ","26117713-7":"DAVID ALEXIS RUIZ GONZÁLEZ"},
+  "3° Básico":{"25919681-7":"MATEO EXEQUIEL CAMPOS QUINTANA","25725971-4":"JULIETA ISABELLA CANCINO ORMEÑO","26159496-K":"AMARO LEÓN CIFUENTES CORREA","25864356-9":"NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL","25928875-4":"EMILIANO ALONSO JAQUE PEÑALOZA","26025635-1":"FIORELLA IGNACIA MÉNDEZ ORTEGA","25935326-2":"ISAAC ANDRÉS MORA MARTÍNEZ"},
+  "4° Básico":{"25377391-K":"AMARO ANDRÉS ARANEDA RAMÍREZ","25215012-9":"JEREMIAS EDGAR CASTRO CARREÑO","25717568-5":"MANUEL JESÚS ESQUIVEL GONZÁLEZ","25374420-0":"MARÍA JOSÉ GÓMEZ GÓMEZ","25510730-5":"AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO","25269634-2":"JAVIER IGNACIO MARDONES IBACACHE","24961971-K":"STEFAN ANTONIO REICHENBACH VEGA"},
+  "5° Básico":{"25201656-2":"FRANCO ANTONIO ACEVEDO ACUÑA","25054488-K":"PAZ FRANCISCA BAEZA DÍAZ","25058732-5":"JOSÉ HUMBERTO BUENO PAVEZ","25058760-0":"JOSÉ OMAR BUENO PAVEZ","24533270-K":"EDUARDO JAVIER CASTRO CARREÑO","25030936-8":"MATÍAS NICOLÁS FAÚNDEZ SOTO","25003701-5":"EMILYA JESÚS MARTINA GARRIDO HERRERA","25052798-5":"ABHAY NITAY MARTÍNEZ ARAVENA","25284224-1":"GERALDYNE ALEJANDRA MOYA CANCINO","25042294-6":"MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA","25241982-9":"BENJAMÍN ANTONIO OLIVARES MORALES","24954101-K":"JAVIER IGNACIO ORELLANA VALDES","25106705-8":"JULIETA VALERIA SANDOVAL JAQUE","25291352-1":"MARTIN ALONSO SILVA ROA","25241359-6":"AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ","25212963-4":"JOSÉ IGNACIO VERA MEDEL","25017516-7":"MARTIN IGNACIO JARA BARRA"},
+  "6° Básico":{"24934084-7":"JOSEPH THOMAS BARBETT PINTO","24890180-2":"MARIA ELENA BUENO PALMA","24356402-6":"ALEXIS DAVID ALEJANDRO CANCINO PASTENES","24714647-4":"EMILIA DEL CARMEN INOSTROZA TARAZONA","24893220-1":"GABRIELA JESÚS MUÑOZ ORELLANA","24748067-6":"VICTORIA ANABELLA SALGADO CARRASCO","24502047-3":"DIEGO ALONZO VILLALOBOS VALDÉS","24502029-5":"VICENTE IGNASIO VILLALOBOS VALDÉS","24906925-6":"MATEO IGNACIO VIÑALS COFRE"},
+  "7° Básico":{"24545483-K":"ISAIASS ELIUDT ARANEDA RAMÍREZ","24503476-8":"DANIEL ALEXIS CAMPOS YÁÑEZ","24434484-4":"AGUSTÍN EFRAIN CASTRO CANALES","24389919-2":"BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA","24318562-9":"SOFÍA AMANDA MUÑOZ ARAYA","23889737-8":"ALEJANDRO ANÍBAL PINO ESQUIVEL","24490056-9":"AARÓN ELÍAS SANTANDER CÉSPEDES","24339330-2":"ANDY ANGEL URRUTIA GÓMEZ","24557543-2":"MATEO ALONSO VALDÉS CABELLO"},
+  "8° Básico":{"23977218-8":"KIARA JULIANA ACEVEDO ACUÑA","24313880-9":"DAMARIS ANDREA ALBORNOZ ZÁRATE","24075427-4":"BENJAMÍN FRANCISCO ASTUDILLO CANALES","24022904-8":"CRISTIAN YHEREMY CAMPOS BAEZA","24198053-7":"TRIANA ANDREA CORREA ORMEÑO","24228200-0":"ANA KARINA FAÚNDEZ SOTO","23754523-0":"LUIS HUMBERTO FAÚNDEZ SOTO","24085862-2":"CRISTÓBAL IGNACIO LOYOLA DÍAZ","24147417-8":"YARIEL ANÍBAL MENA CANCINO","23948205-8":"MANUEL ALEJANDRO ROJAS GÓMEZ","24160899-9":"JESÚS ANTONIO SALGADO SALGADO","23728030-K":"ROCÍO ANTONELLA SUAZO PIZARRO"}
+};
+const profesorCursos = {
+  "MARTA QUEVEDO VILLALOBOS":["1° Básico","2° Básico"],
+  "EDUARDO FUENTES REYES":["3° Básico","4° Básico"],
+  "HÉCTOR GONZÁLEZ GAETE":["5° Básico"],
+  "EUGENIA BARROS BUSTAMANTE":["6° Básico"],
+  "KARINA SOTELO VALDÉS":["7° Básico"],
+  "ANA COFRÉ MUÑOZ":["8° Básico"]
+};
 
-        // ========== DATOS DINÁMICOS ==========
-        function obtenerCursosCompletos() {
-            // Copia profunda de la base
-            const cursos = JSON.parse(JSON.stringify(baseDatosCursos));
+const params = new URLSearchParams(window.location.search);
+const nombreProfe = params.get('nombre');
+let alumnoSeleccionadoRut = null;
+let alumnoVerNotasRut = null;
+let notasVerCache = [];
+let cursosDelProfe = [];
 
-            // Alumnos creados por docentes
-            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
-            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
+// Sesión
+(function checkSession(){
+  try {
+    const s = JSON.parse(sessionStorage.getItem('docente_session')||'null');
+    if (!s || s.nombre !== nombreProfe || Date.now() > s.exp) {
+      // permitir acceso por URL pero recomendar login
+    }
+  } catch(e){}
+})();
 
-            for (const [rut, nombre] of Object.entries(creados)) {
-                const curso = cursosCreados[rut];
-                if (curso && cursos[curso]) {
-                    cursos[curso][rut] = nombre;
-                }
-            }
+if (!nombreProfe || !profesorCursos[nombreProfe]) {
+  alert("Acceso no autorizado.");
+  window.location.href = "index.html";
+} else {
+  cursosDelProfe = profesorCursos[nombreProfe];
+  document.getElementById('saludoProfe').textContent = 'Hola, ' + formatearNombre(nombreProfe);
+  renderizarTodo();
+  actualizarNotificacionesJustificaciones();
+}
 
-            return cursos;
-        }
+function formatearNombre(n){return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' ')}
+function parseNota(str){
+  if(!str) return NaN;
+  const n = parseFloat(String(str).replace(',','.'));
+  return (n>=1 && n<=7) ? n : NaN;
+}
+function fmtNota(n){
+  if(n==null||isNaN(n)) return '—';
+  return n.toFixed(1).replace('.',',');
+}
+function claseProm(n){
+  if(n==null||isNaN(n)) return 'prom-na';
+  if(n>=5.5) return 'prom-ok';
+  if(n>=4.0) return 'prom-mid';
+  return 'prom-bad';
+}
+function calcPromedio(notas, semestre){
+  let list = notas;
+  if(semestre) list = notas.filter(x => String(x.semestre||'1')===String(semestre));
+  // promedio por asignatura primero, luego promedio de asignaturas
+  const byAsig = {};
+  list.forEach(n=>{
+    const v = parseNota(n.nota);
+    if(isNaN(v)) return;
+    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
+    byAsig[n.asignatura].push(v);
+  });
+  const asigAvgs = Object.values(byAsig).map(arr => arr.reduce((a,b)=>a+b,0)/arr.length);
+  if(!asigAvgs.length) return null;
+  return asigAvgs.reduce((a,b)=>a+b,0)/asigAvgs.length;
+}
+function getNotas(rut){ return JSON.parse(localStorage.getItem('notas_'+rut)||'[]'); }
 
-        function renderizarTodo() {
-            const cursos = obtenerCursosCompletos();
-            const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-            const contenedor = document.getElementById('contenedorCursos');
-            contenedor.innerHTML = '';
+function obtenerCursosCompletos(){
+  const cursos = JSON.parse(JSON.stringify(baseDatosCursos));
+  const creados = JSON.parse(localStorage.getItem('alumnosCreados')||'{}');
+  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
+  for(const [rut,nombre] of Object.entries(creados)){
+    const c = cursosCreados[rut];
+    if(c && cursos[c]) cursos[c][rut]=nombre;
+  }
+  return cursos;
+}
 
-            let totalAlumnos = 0;
+function renderizarTodo(){
+  const cursos = obtenerCursosCompletos();
+  const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
+  const cont = document.getElementById('contenedorCursos');
+  cont.innerHTML = '';
+  let total=0;
+  cursosDelProfe.forEach(cursoNombre=>{
+    const alumnos = cursos[cursoNombre]||{};
+    const activos = Object.entries(alumnos).filter(([r])=>!eliminados.includes(r));
+    total += activos.length;
+    let filas = '';
+    activos.forEach(([rut,nombre])=>{
+      const notas = getNotas(rut);
+      const prom = calcPromedio(notas);
+      const chip = '<span class="prom-chip '+claseProm(prom)+'">'+(prom!=null?fmtNota(prom):'—')+'</span>';
+      filas += '<tr id="fila-'+rut+'" data-nombre="'+nombre.toLowerCase()+'" data-rut="'+rut+'">'+
+        '<td style="font-family:monospace;font-size:.84rem">'+rut+'</td>'+
+        '<td>'+nombre+'</td>'+
+        '<td style="text-align:center">'+chip+'</td>'+
+        '<td class="acciones">'+
+          '<button class="menu-dots" onclick="toggleMenu(\''+rut+'\')">⋮</button>'+
+          '<div id="menu-'+rut+'" class="dropdown-menu">'+
+            '<button onclick="abrirModalNota(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">➕ Agregar nota</button>'+
+            '<button onclick="abrirVerNotas(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">📊 Ver notas / promedio</button>'+
+            '<button onclick="abrirObs(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">📝 Observación</button>'+
+            '<button class="danger" onclick="eliminarAlumno(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">🗑️ Eliminar</button>'+
+          '</div></td></tr>';
+    });
+    if(!activos.length) filas='<tr><td colspan="4" class="empty-state">No hay alumnos en este curso.</td></tr>';
+    cont.innerHTML += '<div class="curso-section" data-curso="'+cursoNombre+'">'+
+      '<div class="curso-header"><h3>'+cursoNombre+'</h3><span class="curso-count">'+activos.length+' alumno'+(activos.length!==1?'s':'')+'</span></div>'+
+      '<table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>'+filas+'</tbody></table></div>';
+  });
+  document.getElementById('statAlumnos').textContent = total;
+  document.getElementById('statCursos').textContent = cursosDelProfe.length;
+}
 
-            cursosDelProfe.forEach(cursoNombre => {
-                const alumnos = cursos[cursoNombre] || {};
-                const alumnosActivos = Object.entries(alumnos).filter(([rut]) => !eliminados.includes(rut));
-                totalAlumnos += alumnosActivos.length;
+function filtrarAlumnos(){
+  const q = document.getElementById('buscarAlumno').value.trim().toLowerCase();
+  document.querySelectorAll('#contenedorCursos tr[data-nombre]').forEach(tr=>{
+    tr.style.display = (!q || tr.dataset.nombre.includes(q) || tr.dataset.rut.toLowerCase().includes(q)) ? '' : 'none';
+  });
+}
 
-                let filas = '';
-                alumnosActivos.forEach(([rut, nombre]) => {
-                    filas += `
-                        <tr id="fila-${rut}" data-nombre="${nombre.toLowerCase()}" data-rut="${rut}">
-                            <td style="font-family: monospace; font-size: 0.84rem;">${rut}</td>
-                            <td>${nombre}</td>
-                            <td class="acciones">
-                                <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
-                                <div id="menu-${rut}" class="dropdown-menu">
-                                    <button onclick="abrirModalNota('${rut}', '${nombre.replace(/'/g, "\\'")}')">➕ Agregar nota</button>
-                                    <button class="danger" onclick="eliminarAlumno('${rut}', '${nombre.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
+function toggleMenu(rut){
+  document.querySelectorAll('.dropdown-menu').forEach(m=>{ if(m.id!=='menu-'+rut) m.style.display='none'; });
+  const menu = document.getElementById('menu-'+rut);
+  menu.style.display = menu.style.display==='block' ? 'none' : 'block';
+}
+window.addEventListener('click', e=>{
+  if(!e.target.closest('.menu-dots') && !e.target.closest('.dropdown-menu'))
+    document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+});
 
-                if (alumnosActivos.length === 0) {
-                    filas = `<tr><td colspan="3" class="empty-state">No hay alumnos en este curso.</td></tr>`;
-                }
+function cerrarModal(id){ document.getElementById(id).classList.remove('show'); if(id==='modalNota') alumnoSeleccionadoRut=null; }
+function cerrarSesionDocente(){ sessionStorage.removeItem('docente_session'); }
 
-                contenedor.innerHTML += `
-                    <div class="curso-section" data-curso="${cursoNombre}">
-                        <div class="curso-header">
-                            <h3>${cursoNombre}</h3>
-                            <span class="curso-count">${alumnosActivos.length} alumno${alumnosActivos.length !== 1 ? 's' : ''}</span>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>RUT</th>
-                                    <th>Nombre completo</th>
-                                    <th style="text-align:right;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>${filas}</tbody>
-                        </table>
-                    </div>
-                `;
-            });
+function abrirModalNota(rut, nombre){
+  alumnoSeleccionadoRut = rut;
+  document.getElementById('modalTituloNota').textContent = 'Nota · '+nombre;
+  document.getElementById('inputNota').value = '';
+  document.getElementById('modalNota').classList.add('show');
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+  setTimeout(()=>document.getElementById('inputNota').focus(),80);
+}
 
-            document.getElementById('statAlumnos').textContent = totalAlumnos;
-            document.getElementById('statCursos').textContent = cursosDelProfe.length;
-        }
+function guardarNota(){
+  const asignatura = document.getElementById('selectAsignatura').value;
+  const semestre = document.getElementById('selectSemestre').value;
+  const notaRaw = document.getElementById('inputNota').value.trim();
+  const val = parseNota(notaRaw);
+  if(isNaN(val)){ alert('Ingresa una nota válida entre 1,0 y 7,0'); document.getElementById('inputNota').focus(); return; }
+  let notas = getNotas(alumnoSeleccionadoRut);
+  notas.push({
+    asignatura, nota: fmtNota(val), semestre,
+    fecha: new Date().toLocaleDateString('es-CL'),
+    docente: nombreProfe
+  });
+  localStorage.setItem('notas_'+alumnoSeleccionadoRut, JSON.stringify(notas));
+  alert('✓ Nota '+fmtNota(val)+' registrada en '+asignatura+' ('+semestre+'° Semestre)');
+  cerrarModal('modalNota');
+  renderizarTodo();
+}
 
-        // ========== BÚSQUEDA ==========
-        function filtrarAlumnos() {
-            const q = document.getElementById('buscarAlumno').value.trim().toLowerCase();
-            document.querySelectorAll('#contenedorCursos tr[data-nombre]').forEach(tr => {
-                const match = !q || tr.dataset.nombre.includes(q) || tr.dataset.rut.toLowerCase().includes(q);
-                tr.style.display = match ? '' : 'none';
-            });
-        }
+function abrirVerNotas(rut, nombre){
+  alumnoVerNotasRut = rut;
+  document.getElementById('tituloVerNotas').textContent = 'Notas · '+nombre;
+  notasVerCache = getNotas(rut);
+  const p1 = calcPromedio(notasVerCache,'1');
+  const p2 = calcPromedio(notasVerCache,'2');
+  const pg = calcPromedio(notasVerCache);
+  const el1=document.getElementById('avgS1'), el2=document.getElementById('avgS2'), elg=document.getElementById('avgGen');
+  el1.textContent=fmtNota(p1); el1.className='avg-val '+claseProm(p1);
+  el2.textContent=fmtNota(p2); el2.className='avg-val '+claseProm(p2);
+  elg.textContent=fmtNota(pg); elg.className='avg-val '+claseProm(pg);
+  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.toggle('active', t.dataset.sem==='all'));
+  renderListaNotasDocente('all');
+  document.getElementById('modalVerNotas').classList.add('show');
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+}
+function filtrarSemVer(btn){
+  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderListaNotasDocente(btn.dataset.sem);
+}
+function renderListaNotasDocente(sem){
+  let list = notasVerCache.slice().reverse();
+  if(sem!=='all') list = list.filter(n=>String(n.semestre||'1')===sem);
+  const cont = document.getElementById('listaNotasDocente');
+  if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones en este período.</div>'; return; }
+  cont.innerHTML = list.map(n=>'<div class="nota-row" data-sem="'+(n.semestre||'1')+'"><div><strong>'+n.asignatura+'</strong><div style="font-size:.75rem;color:#64748b">'+(n.fecha||'')+' · Sem '+(n.semestre||'1')+'</div></div><span class="prom-chip '+claseProm(parseNota(n.nota))+'">'+n.nota+'</span></div>').join('');
+}
 
-        // ========== MENÚS ==========
-        function toggleMenu(rut) {
-            document.querySelectorAll('.dropdown-menu').forEach(m => {
-                if (m.id !== `menu-${rut}`) m.style.display = 'none';
-            });
-            const menu = document.getElementById(`menu-${rut}`);
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
+function abrirObs(rut, nombre){
+  alumnoSeleccionadoRut = rut;
+  document.getElementById('tituloObs').textContent = 'Observación · '+nombre;
+  document.getElementById('textoObs').value = '';
+  const obs = JSON.parse(localStorage.getItem('obs_'+rut)||'[]');
+  const cont = document.getElementById('listaObsPrevias');
+  if(obs.length){
+    cont.innerHTML = '<div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:#64748b">Historial</div>' +
+      obs.slice().reverse().map(o=>'<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+' · '+(o.docente||'')+'</div></div>').join('');
+  } else cont.innerHTML = '';
+  document.getElementById('modalObs').classList.add('show');
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+}
+function guardarObs(){
+  const texto = document.getElementById('textoObs').value.trim();
+  const tipo = document.getElementById('selectTipoObs').value;
+  if(!texto){ alert('Escribe la observación.'); return; }
+  let obs = JSON.parse(localStorage.getItem('obs_'+alumnoSeleccionadoRut)||'[]');
+  obs.push({ texto, tipo, fecha: new Date().toLocaleDateString('es-CL'), docente: nombreProfe });
+  localStorage.setItem('obs_'+alumnoSeleccionadoRut, JSON.stringify(obs));
+  alert('✓ Observación registrada');
+  cerrarModal('modalObs');
+}
 
-        window.addEventListener('click', e => {
-            if (!e.target.closest('.menu-dots') && !e.target.closest('.dropdown-menu')) {
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            }
-        });
+function abrirModalCrearAlumno(){
+  document.getElementById('nuevoCurso').innerHTML = cursosDelProfe.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  document.getElementById('nuevoRut').value='';
+  document.getElementById('nuevoNombre').value='';
+  document.getElementById('modalCrearAlumno').classList.add('show');
+  setTimeout(()=>document.getElementById('nuevoRut').focus(),80);
+}
+function crearNuevoAlumno(){
+  const rut = document.getElementById('nuevoRut').value.trim().toUpperCase();
+  const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
+  const curso = document.getElementById('nuevoCurso').value;
+  if(!rut||!nombre){ alert('RUT y nombre son obligatorios.'); return; }
+  if(!/^\d{7,8}-[\dkK]$/.test(rut)){ alert('Formato de RUT inválido. Usa 12345678-9'); return; }
+  const todos = obtenerCursosCompletos();
+  let existe=false;
+  for(const c of Object.values(todos)){ if(c[rut]){existe=true;break;} }
+  const creados = JSON.parse(localStorage.getItem('alumnosCreados')||'{}');
+  if(creados[rut]||existe){ alert('Ya existe un alumno con ese RUT.'); return; }
+  creados[rut]=nombre;
+  localStorage.setItem('alumnosCreados', JSON.stringify(creados));
+  const cm = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
+  cm[rut]=curso;
+  localStorage.setItem('alumnosCursos', JSON.stringify(cm));
+  let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]').filter(r=>r!==rut);
+  localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
+  alert('✓ Perfil creado:\\n'+nombre+'\\nCurso: '+curso);
+  cerrarModal('modalCrearAlumno');
+  renderizarTodo();
+}
 
-        // ========== MODALES ==========
-        function cerrarModal(id) {
-            document.getElementById(id).classList.remove('show');
-            if (id === 'modalNota') alumnoSeleccionadoRut = null;
-        }
+function eliminarAlumno(rut, nombre){
+  if(!confirm('¿Eliminar a '+nombre+' del sistema?\\nEl alumno ya no podrá ingresar.')) return;
+  let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
+  if(!eliminados.includes(rut)){ eliminados.push(rut); localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados)); }
+  renderizarTodo();
+  alert('Estudiante '+nombre+' eliminado.');
+}
 
-        function abrirModalNota(rut, nombre) {
-            alumnoSeleccionadoRut = rut;
-            document.getElementById('modalTituloNota').textContent = `Nota · ${nombre}`;
-            document.getElementById('inputNota').value = '';
-            document.getElementById('modalNota').classList.add('show');
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-            setTimeout(() => document.getElementById('inputNota').focus(), 100);
-        }
-
-        function guardarNota() {
-            const asignatura = document.getElementById('selectAsignatura').value;
-            const nota = document.getElementById('inputNota').value.trim();
-
-            if (!nota) {
-                alert("Ingresa una calificación válida.");
-                document.getElementById('inputNota').focus();
-                return;
-            }
-
-            let notas = JSON.parse(localStorage.getItem(`notas_${alumnoSeleccionadoRut}`) || '[]');
-            notas.push({
-                asignatura,
-                nota,
-                fecha: new Date().toLocaleDateString('es-CL'),
-                docente: nombreProfe
-            });
-            localStorage.setItem(`notas_${alumnoSeleccionadoRut}`, JSON.stringify(notas));
-
-            alert(`✓ Nota ${nota} registrada en ${asignatura}`);
-            cerrarModal('modalNota');
-        }
-
-        // ========== CREAR ALUMNO ==========
-        function abrirModalCrearAlumno() {
-            const select = document.getElementById('nuevoCurso');
-            select.innerHTML = cursosDelProfe.map(c => `<option value="${c}">${c}</option>`).join('');
-            document.getElementById('nuevoRut').value = '';
-            document.getElementById('nuevoNombre').value = '';
-            document.getElementById('modalCrearAlumno').classList.add('show');
-            setTimeout(() => document.getElementById('nuevoRut').focus(), 100);
-        }
-
-        function crearNuevoAlumno() {
-            const rut = document.getElementById('nuevoRut').value.trim().toUpperCase();
-            const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
-            const curso = document.getElementById('nuevoCurso').value;
-
-            if (!rut || !nombre) {
-                alert("RUT y nombre son obligatorios.");
-                return;
-            }
-
-            // Validación simple de RUT
-            if (!/^\d{7,8}-[\dkK]$/.test(rut)) {
-                alert("Formato de RUT inválido. Usa el formato 12345678-9");
-                return;
-            }
-
-            // Verificar que no exista
-            const todos = obtenerCursosCompletos();
-            let existe = false;
-            for (const c of Object.values(todos)) {
-                if (c[rut]) { existe = true; break; }
-            }
-            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
-            if (creados[rut] || existe) {
-                alert("Ya existe un alumno con ese RUT.");
-                return;
-            }
-
-            // Guardar
-            creados[rut] = nombre;
-            localStorage.setItem('alumnosCreados', JSON.stringify(creados));
-
-            const cursosMap = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
-            cursosMap[rut] = curso;
-            localStorage.setItem('alumnosCursos', JSON.stringify(cursosMap));
-
-            // Si estaba eliminado, reactivarlo
-            let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-            eliminados = eliminados.filter(r => r !== rut);
-            localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
-
-            alert(`✓ Perfil creado:\n${nombre}\nCurso: ${curso}`);
-            cerrarModal('modalCrearAlumno');
-            renderizarTodo();
-            actualizarNotificacionesJustificaciones();
-        }
-
-        // ========== ELIMINAR ==========
-        function eliminarAlumno(rut, nombre) {
-            if (!confirm(`¿Eliminar a ${nombre} del sistema?\nEl alumno ya no podrá ingresar.`)) return;
-
-            const fila = document.getElementById(`fila-${rut}`);
-            if (fila) fila.remove();
-
-            let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-            if (!eliminados.includes(rut)) {
-                eliminados.push(rut);
-                localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
-            }
-
-            // Actualizar contadores
-            renderizarTodo();
-            alert(`Estudiante ${nombre} eliminado.`);
-        }
-
-        // ========== JUSTIFICACIONES ==========
-        function actualizarNotificacionesJustificaciones() {
-            const todas = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            const mias = todas.filter(j => cursosDelProfe.includes(j.curso));
-            const badge = document.getElementById('contadorJustificaciones');
-            const stat = document.getElementById('statJustif');
-
-            if (mias.length > 0) {
-                badge.textContent = mias.length;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
-            if (stat) stat.textContent = mias.length;
-        }
-
-        function abrirBuzonJustificaciones() {
-            const todas = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            const mias = todas.filter(j => cursosDelProfe.includes(j.curso));
-            const cont = document.getElementById('listaJustificacionesBuzon');
-
-            if (mias.length === 0) {
-                cont.innerHTML = '<div class="empty-state">No hay justificaciones recibidas.</div>';
-            } else {
-                cont.innerHTML = mias.map(j => `
-                    <div class="justificacion-card">
-                        <strong>${j.de}</strong>
-                        <div class="meta">${j.curso} · ${j.fecha}${j.rut ? ' · ' + j.rut : ''}</div>
-                        <p>"${j.mensaje}"</p>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('modalJustificaciones').classList.add('show');
-        }
-    </script>
+function actualizarNotificacionesJustificaciones(){
+  const todas = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
+  const mias = todas.filter(j=>cursosDelProfe.includes(j.curso));
+  const badge = document.getElementById('contadorJustificaciones');
+  const stat = document.getElementById('statJustif');
+  if(mias.length>0){ badge.textContent=mias.length; badge.style.display='flex'; }
+  else badge.style.display='none';
+  if(stat) stat.textContent=mias.length;
+}
+function abrirBuzonJustificaciones(){
+  const todas = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
+  const mias = todas.filter(j=>cursosDelProfe.includes(j.curso));
+  const cont = document.getElementById('listaJustificacionesBuzon');
+  if(!mias.length) cont.innerHTML='<div class="empty-state">No hay justificaciones recibidas.</div>';
+  else cont.innerHTML = mias.map(j=>'<div class="justificacion-card"><strong>'+j.de+'</strong><div class="meta">'+j.curso+' · '+j.fecha+(j.rut?' · '+j.rut:'')+'</div><p>"'+j.mensaje+'"</p></div>').join('');
+  document.getElementById('modalJustificaciones').classList.add('show');
+}
+</script>
 </body>
 </html>

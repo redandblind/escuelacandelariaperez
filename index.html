@@ -19,270 +19,113 @@
             --radius: 14px;
             --shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ========== HEADER ========== */
         .topbar {
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            background: var(--card); border-bottom: 1px solid var(--border);
+            padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
+        .brand { display: flex; align-items: center; gap: 14px; }
         .brand-logo {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
+            width: 48px; height: 48px; background: linear-gradient(135deg, #1e40af, #3b82f6);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 1.1rem;
             box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
         }
-
-        .brand-text h1 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            letter-spacing: -0.02em;
-        }
-
-        .brand-text p {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-top: 1px;
-        }
-
+        .brand-text h1 { font-size: 1.15rem; font-weight: 700; color: var(--primary-dark); letter-spacing: -0.02em; }
+        .brand-text p { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
         .topbar-badge {
-            background: #eff6ff;
-            color: var(--primary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 999px;
-            border: 1px solid #bfdbfe;
+            background: #eff6ff; color: var(--primary); font-size: 0.75rem; font-weight: 600;
+            padding: 6px 12px; border-radius: 999px; border: 1px solid #bfdbfe;
         }
 
-        /* ========== MAIN ========== */
-        main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 20px;
-        }
-
-        .login-wrapper {
-            width: 100%;
-            max-width: 420px;
-        }
-
+        main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+        .login-wrapper { width: 100%; max-width: 420px; }
         .login-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            overflow: hidden;
+            background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+            border: 1px solid var(--border); overflow: hidden;
         }
-
         .login-header {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
-            color: white;
-            padding: 28px 28px 24px;
-            text-align: center;
+            color: white; padding: 28px 28px 24px; text-align: center;
         }
+        .login-header h2 { font-size: 1.45rem; font-weight: 700; margin-bottom: 6px; }
+        .login-header p { font-size: 0.88rem; opacity: 0.9; line-height: 1.4; }
+        .login-body { padding: 28px; }
 
-        .login-header h2 {
-            font-size: 1.45rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .login-header p {
-            font-size: 0.88rem;
-            opacity: 0.9;
-            line-height: 1.4;
-        }
-
-        .login-body {
-            padding: 28px;
-        }
-
-        /* Role selector */
         .role-tabs {
-            display: flex;
-            background: #f1f5f9;
-            padding: 5px;
-            border-radius: 10px;
-            margin-bottom: 24px;
-            gap: 4px;
+            display: flex; background: #f1f5f9; padding: 5px; border-radius: 10px;
+            margin-bottom: 24px; gap: 4px;
         }
-
         .role-tab {
-            flex: 1;
-            padding: 11px 8px;
-            border: none;
-            background: transparent;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            flex: 1; padding: 11px 8px; border: none; background: transparent;
+            font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; border-radius: 8px; transition: all 0.2s ease;
         }
-
         .role-tab.active {
-            background: white;
-            color: var(--primary-dark);
+            background: white; color: var(--primary-dark);
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        .form-section {
-            display: none;
-        }
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-section.active {
-            display: block;
-            animation: fadeIn 0.25s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .field {
-            margin-bottom: 18px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 7px;
-        }
-
+        .field { margin-bottom: 18px; }
+        .field label { display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 7px; }
         .field input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: #fafbfc;
+            width: 100%; padding: 13px 14px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-size: 0.95rem; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s; background: #fafbfc;
+        }
+        .field input:focus {
+            border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12); background: white;
         }
 
-        .field input:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-            background: white;
+        .pass-wrap { position: relative; }
+        .pass-wrap input { padding-right: 48px; }
+        .toggle-pass {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.55;
+            padding: 4px;
         }
+        .toggle-pass:hover { opacity: 0.9; }
 
         .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #1e40af, #2563eb);
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #1e40af, #2563eb);
+            border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+            color: white; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
             box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4); }
+        .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+        .lock-msg {
+            display: none; margin-top: 12px; padding: 10px 12px; background: #fef2f2;
+            border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c;
+            font-size: 0.82rem; text-align: center;
         }
+        .lock-msg.show { display: block; }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .help-text { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); }
+        .help-text a { color: var(--primary-light); text-decoration: none; font-weight: 500; }
+        .help-text a:hover { text-decoration: underline; }
 
-        .help-text {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .help-text a {
-            color: var(--primary-light);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .help-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* Features strip */
         .features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 24px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px;
         }
-
         .feature {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 14px; text-align: center;
         }
-
-        .feature .icon {
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-        }
-
-        .feature span {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            display: block;
-        }
+        .feature .icon { font-size: 1.35rem; margin-bottom: 6px; }
+        .feature span { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; display: block; }
 
         footer {
-            text-align: center;
-            padding: 18px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border);
-            background: var(--card);
+            text-align: center; padding: 18px; font-size: 0.75rem; color: var(--text-muted);
+            border-top: 1px solid var(--border); background: var(--card);
         }
 
         @media (max-width: 480px) {
@@ -294,7 +137,6 @@
     </style>
 </head>
 <body>
-
     <header class="topbar">
         <div class="brand">
             <div class="brand-logo">CP</div>
@@ -303,7 +145,7 @@
                 <p>San Javier · Portal Escolar</p>
             </div>
         </div>
-        <div class="topbar-badge">v2.0</div>
+        <div class="topbar-badge">v2.1</div>
     </header>
 
     <main>
@@ -313,27 +155,28 @@
                     <h2>Bienvenido/a</h2>
                     <p>Accede con tu perfil de docente o estudiante</p>
                 </div>
-
                 <div class="login-body">
                     <div class="role-tabs">
                         <button type="button" class="role-tab" id="btnDocentes" onclick="cambiarRol('docentes')">👨‍🏫 Docentes</button>
                         <button type="button" class="role-tab active" id="btnEstudiantes" onclick="cambiarRol('estudiantes')">🎓 Estudiantes</button>
                     </div>
 
-                    <!-- Docentes -->
                     <div id="seccionDocentes" class="form-section">
                         <div class="field">
                             <label for="profesorInput">Nombre completo del docente</label>
-                            <input type="text" id="profesorInput" placeholder="Ej: Marta Quevedo Villalobos" autocomplete="name">
+                            <input type="text" id="profesorInput" placeholder="Ej: Marta Quevedo Villalobos" autocomplete="username">
                         </div>
                         <div class="field">
                             <label for="passInput">Contraseña institucional</label>
-                            <input type="password" id="passInput" placeholder="Ingresa la clave" autocomplete="current-password">
+                            <div class="pass-wrap">
+                                <input type="password" id="passInput" placeholder="Ingresa la clave" autocomplete="current-password">
+                                <button type="button" class="toggle-pass" onclick="togglePass()" title="Mostrar/ocultar">👁</button>
+                            </div>
                         </div>
-                        <button type="button" class="btn-primary" onclick="ingresarDocente()">Ingresar como Docente</button>
+                        <button type="button" class="btn-primary" id="btnLoginDocente" onclick="ingresarDocente()">Ingresar como Docente</button>
+                        <div id="lockMsg" class="lock-msg"></div>
                     </div>
 
-                    <!-- Estudiantes -->
                     <div id="seccionEstudiantes" class="form-section active">
                         <div class="field">
                             <label for="rutInput">RUT del estudiante</label>
@@ -349,29 +192,15 @@
             </div>
 
             <div class="features">
-                <div class="feature">
-                    <div class="icon">📋</div>
-                    <span>Libro de calificaciones</span>
-                </div>
-                <div class="feature">
-                    <div class="icon">✉️</div>
-                    <span>Justificaciones</span>
-                </div>
-                <div class="feature">
-                    <div class="icon">👤</div>
-                    <span>Gestión de alumnos</span>
-                </div>
-                <div class="feature">
-                    <div class="icon">📊</div>
-                    <span>Panel docente</span>
-                </div>
+                <div class="feature"><div class="icon">📋</div><span>Notas por semestre</span></div>
+                <div class="feature"><div class="icon">📊</div><span>Promedios automáticos</span></div>
+                <div class="feature"><div class="icon">👤</div><span>Gestión de alumnos</span></div>
+                <div class="feature"><div class="icon">✉️</div><span>Justificaciones</span></div>
             </div>
         </div>
     </main>
 
-    <footer>
-        Desarrollado para Escuela Candelaria Pérez · San Javier · Uso exclusivo del establecimiento
-    </footer>
+    <footer>Desarrollado para Escuela Candelaria Pérez · San Javier · Uso exclusivo del establecimiento</footer>
 
     <script>
         const profesoresValidos = {
@@ -383,7 +212,6 @@
             "ANA COFRÉ MUÑOZ": ["8° Básico"]
         };
 
-        // Base de datos original de alumnos (se fusiona con los creados en localStorage)
         const baseDatosAlumnosGlobal = {
             "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ",
             "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ",
@@ -395,6 +223,57 @@
             "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
         };
 
+        const PASS_SALT = "cp_sanjavier_2026";
+        const MAX_ATTEMPTS = 5;
+        const LOCK_MINUTES = 2;
+
+        function getAttempts() {
+            try { return JSON.parse(localStorage.getItem('login_attempts') || '{"count":0,"until":0}'); }
+            catch { return { count: 0, until: 0 }; }
+        }
+        function setAttempts(data) { localStorage.setItem('login_attempts', JSON.stringify(data)); }
+        function isLocked() { return Date.now() < getAttempts().until; }
+        function remainingLockSecs() { return Math.max(0, Math.ceil((getAttempts().until - Date.now()) / 1000)); }
+
+        function registerFail() {
+            const a = getAttempts();
+            a.count += 1;
+            if (a.count >= MAX_ATTEMPTS) {
+                a.until = Date.now() + LOCK_MINUTES * 60 * 1000;
+                a.count = 0;
+            }
+            setAttempts(a);
+            updateLockUI();
+        }
+        function registerSuccess() { setAttempts({ count: 0, until: 0 }); updateLockUI(); }
+
+        function updateLockUI() {
+            const msg = document.getElementById('lockMsg');
+            const btn = document.getElementById('btnLoginDocente');
+            if (isLocked()) {
+                msg.textContent = 'Demasiados intentos. Espera ' + remainingLockSecs() + 's antes de reintentar.';
+                msg.classList.add('show');
+                btn.disabled = true;
+            } else {
+                msg.classList.remove('show');
+                btn.disabled = false;
+            }
+        }
+
+        async function hashPass(pass) {
+            const data = new TextEncoder().encode(pass + PASS_SALT);
+            const buf = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        let EXPECTED_HASH = null;
+        (async () => { EXPECTED_HASH = await hashPass("candelaria16"); })();
+
+        function togglePass() {
+            const inp = document.getElementById('passInput');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+
         function cambiarRol(rol) {
             document.getElementById('btnDocentes').classList.toggle('active', rol === 'docentes');
             document.getElementById('btnEstudiantes').classList.toggle('active', rol === 'estudiantes');
@@ -404,64 +283,73 @@
 
         function obtenerTodosLosAlumnos() {
             const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
-            return { ...baseDatosAlumnosGlobal, ...creados };
+            return Object.assign({}, baseDatosAlumnosGlobal, creados);
         }
 
         function ingresarEstudiante() {
             const input = document.getElementById('rutInput');
             const rut = input.value.trim().toUpperCase();
-
-            if (!rut) {
-                alert("Por favor, introduce tu RUT.");
-                input.focus();
-                return;
-            }
+            if (!rut) { alert("Por favor, introduce tu RUT."); input.focus(); return; }
 
             const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
             if (eliminados.includes(rut)) {
                 alert("El estudiante ha sido desvinculado o ya no se encuentra matriculado.");
-                input.focus();
-                return;
+                input.focus(); return;
             }
 
             const todos = obtenerTodosLosAlumnos();
             if (todos[rut]) {
-                window.location.href = `estudiante.html?nombre=${encodeURIComponent(todos[rut])}&rut=${encodeURIComponent(rut)}`;
+                window.location.href = 'estudiante.html?nombre=' + encodeURIComponent(todos[rut]) + '&rut=' + encodeURIComponent(rut);
             } else {
                 alert("El RUT ingresado no se encuentra registrado en el sistema.");
                 input.focus();
             }
         }
 
-        function ingresarDocente() {
+        async function ingresarDocente() {
+            if (isLocked()) { updateLockUI(); return; }
+
             const nombre = document.getElementById('profesorInput').value.trim().toUpperCase();
             const pass = document.getElementById('passInput').value.trim();
 
-            if (pass !== "candelaria16") {
-                alert("Contraseña incorrecta. Inténtalo de nuevo.");
+            if (!EXPECTED_HASH) EXPECTED_HASH = await hashPass("candelaria16");
+            const hash = await hashPass(pass);
+
+            if (hash !== EXPECTED_HASH) {
+                registerFail();
+                const a = getAttempts();
+                if (isLocked()) {
+                    alert('Contraseña incorrecta. Cuenta bloqueada temporalmente por ' + LOCK_MINUTES + ' minutos.');
+                } else {
+                    alert('Contraseña incorrecta. Intentos restantes: ' + (MAX_ATTEMPTS - a.count));
+                }
                 document.getElementById('passInput').value = "";
                 document.getElementById('passInput').focus();
                 return;
             }
 
-            if (profesoresValidos[nombre]) {
-                window.location.href = `docente.html?nombre=${encodeURIComponent(nombre)}`;
-            } else {
+            if (!profesoresValidos[nombre]) {
                 alert("Nombre de docente no encontrado.\nEscribe tu 1er nombre + 2 apellidos (Ej: Marta Quevedo Villalobos).");
                 document.getElementById('profesorInput').focus();
+                return;
             }
+
+            registerSuccess();
+            const session = {
+                nombre: nombre,
+                exp: Date.now() + 8 * 60 * 60 * 1000,
+                token: Math.random().toString(36).slice(2) + Date.now().toString(36)
+            };
+            sessionStorage.setItem('docente_session', JSON.stringify(session));
+            window.location.href = 'docente.html?nombre=' + encodeURIComponent(nombre);
         }
 
-        // Enter key support
-        document.getElementById('rutInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') ingresarEstudiante();
-        });
-        document.getElementById('passInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') ingresarDocente();
-        });
-        document.getElementById('profesorInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') document.getElementById('passInput').focus();
-        });
+        setInterval(updateLockUI, 1000);
+        updateLockUI();
+
+        document.getElementById('rutInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') ingresarEstudiante(); });
+        document.getElementById('passInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') ingresarDocente(); });
+        document.getElementById('profesorInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') document.getElementById('passInput').focus(); });
     </script>
 </body>
 </html>

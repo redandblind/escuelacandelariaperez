@@ -1,441 +1,234 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Estudiante · Escuela Candelaria Pérez</title>
-    <style>
-        :root {
-            --primary: #1e40af;
-            --primary-light: #3b82f6;
-            --primary-dark: #1e3a8a;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --success: #059669;
-            --radius: 14px;
-            --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 22px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .logo {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-            border-radius: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.95rem;
-            flex-shrink: 0;
-        }
-
-        .header-info h1 {
-            font-size: 1.05rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-        }
-
-        .header-info p {
-            font-size: 0.78rem;
-            color: var(--primary-light);
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            padding: 24px 16px 40px;
-        }
-
-        .panel {
-            width: 100%;
-            max-width: 520px;
-        }
-
-        .profile-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 18px;
-        }
-
-        .profile-header {
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            color: white;
-            padding: 26px 24px 22px;
-            text-align: center;
-        }
-
-        .avatar {
-            width: 64px;
-            height: 64px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            margin: 0 auto 12px;
-            border: 2px solid rgba(255,255,255,0.35);
-        }
-
-        .profile-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            word-break: break-word;
-        }
-
-        .rut-pill {
-            display: inline-block;
-            background: rgba(255,255,255,0.18);
-            padding: 5px 14px;
-            border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-
-        .profile-body {
-            padding: 18px 22px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 9px 0;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
-        }
-
-        .info-row:last-child { border-bottom: none; }
-
-        .info-label { color: var(--text-muted); font-weight: 500; }
-        .info-value { color: var(--text); font-weight: 600; }
-        .status-active { color: var(--success); }
-
-        /* Justificación */
-        .section-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            padding: 20px 22px;
-            margin-bottom: 18px;
-        }
-
-        .section-card h3 {
-            font-size: 1rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 90px;
-            padding: 12px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            outline: none;
-            resize: vertical;
-            background: #fafbfc;
-            font-family: inherit;
-        }
-
-        textarea:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-            background: white;
-        }
-
-        .btn-send {
-            margin-top: 10px;
-            background: linear-gradient(135deg, #059669, #10b981);
-            color: white;
-            border: none;
-            padding: 11px 18px;
-            border-radius: 9px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            float: right;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
-            transition: transform 0.12s;
-        }
-
-        .btn-send:hover { transform: translateY(-1px); }
-
-        /* Notas */
-        .notas-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 280px;
-            overflow-y: auto;
-        }
-
-        .nota-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nota-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .nota-asignatura {
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .nota-meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .nota-badge {
-            background: #dbeafe;
-            color: #1e40af;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-
-        .sin-notas {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.88rem;
-            padding: 20px 10px;
-            font-style: italic;
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 13px;
-            background: white;
-            color: var(--primary-dark);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .btn-logout:hover { background: #f8fafc; }
-
-        footer {
-            text-align: center;
-            padding: 16px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            background: var(--card);
-            border-top: 1px solid var(--border);
-        }
-
-        .clearfix::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        @media (max-width: 480px) {
-            .profile-header { padding: 22px 18px 18px; }
-            .profile-body, .section-card { padding: 16px 18px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Estudiante · Escuela Candelaria Pérez</title>
+<style>
+:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--success:#059669;--danger:#dc2626;--radius:14px;--shadow:0 4px 20px rgba(15,23,42,.05)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;align-items:center;gap:14px}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.95rem;flex-shrink:0}
+.header-info h1{font-size:1.05rem;color:var(--primary-dark);font-weight:700}
+.header-info p{font-size:.78rem;color:var(--primary-light)}
+main{flex:1;display:flex;justify-content:center;padding:24px 16px 40px}
+.panel{width:100%;max-width:540px}
+.profile-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+.profile-header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:26px 24px 22px;text-align:center}
+.avatar{width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 12px;border:2px solid rgba(255,255,255,.35)}
+.profile-header h2{font-size:1.15rem;font-weight:700;margin-bottom:6px;word-break:break-word}
+.rut-pill{display:inline-block;background:rgba(255,255,255,.18);padding:5px 14px;border-radius:999px;font-size:.82rem;font-weight:600}
+.profile-body{padding:18px 22px}
+.info-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9;font-size:.9rem}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--muted);font-weight:500}
+.info-value{color:var(--text);font-weight:600}
+.status-active{color:var(--success)}
+.avg-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:18px}
+.avg-card h3{font-size:.95rem;color:var(--primary-dark);font-weight:700;margin-bottom:14px}
+.avg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center}
+.avg-item{background:#f8fafc;border-radius:10px;padding:14px 8px;border:1px solid #e2e8f0}
+.avg-item .val{font-size:1.35rem;font-weight:700}
+.avg-item .lbl{font-size:.72rem;color:var(--muted);margin-top:3px}
+.prom-ok{color:#065f46}.prom-mid{color:#92400e}.prom-bad{color:#991b1b}.prom-na{color:#94a3b8}
+.section-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:18px}
+.section-card h3{font-size:1rem;color:var(--primary-dark);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sem-tabs{display:flex;gap:6px;margin-bottom:12px}
+.sem-tab{flex:1;padding:8px;border:1.5px solid var(--border);background:#f8fafc;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);text-align:center}
+.sem-tab.active{background:#eff6ff;border-color:#93c5fd;color:var(--primary-dark)}
+textarea{width:100%;height:90px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;resize:vertical;background:#fafbfc;font-family:inherit}
+textarea:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12);background:#fff}
+.btn-send{margin-top:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.88rem;font-weight:600;cursor:pointer;float:right;box-shadow:0 4px 12px rgba(5,150,105,.25)}
+.notas-list{list-style:none;display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto}
+.nota-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nota-info{flex:1;min-width:0}
+.nota-asignatura{font-size:.88rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nota-meta{font-size:.75rem;color:var(--muted);margin-top:2px}
+.nota-badge{padding:5px 12px;border-radius:8px;font-weight:700;font-size:1rem;flex-shrink:0}
+.badge-ok{background:#d1fae5;color:#065f46}.badge-mid{background:#fef3c7;color:#92400e}.badge-bad{background:#fee2e2;color:#991b1b}
+.sin-notas{text-align:center;color:var(--muted);font-size:.88rem;padding:20px 10px;font-style:italic}
+.obs-item{background:#f8fafc;border-left:3px solid var(--primary-light);padding:10px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;font-size:.85rem}
+.obs-item.neg{border-left-color:var(--danger)}
+.obs-meta{font-size:.72rem;color:var(--muted);margin-top:4px}
+.btn-print{width:100%;padding:12px;background:#eff6ff;color:var(--primary-dark);border:1.5px solid #bfdbfe;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:12px}
+.btn-logout{width:100%;padding:13px;background:#fff;color:var(--primary-dark);border:1.5px solid var(--border);border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer}
+.btn-logout:hover{background:#f8fafc}
+footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
+.clearfix::after{content:"";display:table;clear:both}
+@media print{
+  header,footer,.btn-send,.btn-logout,.btn-print,textarea,.section-card:has(textarea){display:none!important}
+  body{background:#fff}.panel{max-width:100%}.section-card{box-shadow:none;border:1px solid #ccc}
+}
+@media(max-width:480px){.profile-header{padding:22px 18px 18px}.profile-body,.section-card,.avg-card{padding:16px 18px}.avg-grid{grid-template-columns:1fr 1fr 1fr}}
+</style>
 </head>
 <body>
+<header>
+  <div class="logo">CP</div>
+  <div class="header-info">
+    <h1>Escuela Candelaria Pérez</h1>
+    <p>Portal del Estudiante · San Javier</p>
+  </div>
+</header>
+<main>
+  <div class="panel">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">🎓</div>
+        <h2 id="saludo">Cargando...</h2>
+        <div class="rut-pill" id="rut-estudiante">RUT: --</div>
+      </div>
+      <div class="profile-body">
+        <div class="info-row"><span class="info-label">Establecimiento</span><span class="info-value">Escuela Candelaria Pérez</span></div>
+        <div class="info-row"><span class="info-label">Curso</span><span class="info-value" id="curso-estudiante">—</span></div>
+        <div class="info-row"><span class="info-label">Estado</span><span class="info-value status-active">Matriculado / Activo</span></div>
+      </div>
+    </div>
 
-    <header>
-        <div class="logo">CP</div>
-        <div class="header-info">
-            <h1>Escuela Candelaria Pérez</h1>
-            <p>Portal del Estudiante · San Javier</p>
-        </div>
-    </header>
+    <div class="avg-card">
+      <h3>📊 Promedios</h3>
+      <div class="avg-grid">
+        <div class="avg-item"><div class="val prom-na" id="avgS1">—</div><div class="lbl">1° Semestre</div></div>
+        <div class="avg-item"><div class="val prom-na" id="avgS2">—</div><div class="lbl">2° Semestre</div></div>
+        <div class="avg-item"><div class="val prom-na" id="avgGen">—</div><div class="lbl">General</div></div>
+      </div>
+    </div>
 
-    <main>
-        <div class="panel">
-            <!-- Perfil -->
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="avatar">🎓</div>
-                    <h2 id="saludo">Cargando...</h2>
-                    <div class="rut-pill" id="rut-estudiante">RUT: --</div>
-                </div>
-                <div class="profile-body">
-                    <div class="info-row">
-                        <span class="info-label">Establecimiento</span>
-                        <span class="info-value">Escuela Candelaria Pérez</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Curso</span>
-                        <span class="info-value" id="curso-estudiante">—</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Estado</span>
-                        <span class="info-value status-active">Matriculado / Activo</span>
-                    </div>
-                </div>
-            </div>
+    <div class="section-card clearfix">
+      <h3>📝 Justificar asistencia</h3>
+      <textarea id="textoJustificacion" placeholder="Escribe el motivo de la justificación..."></textarea>
+      <button type="button" class="btn-send" onclick="subirJustificacion()">Enviar</button>
+    </div>
 
-            <!-- Justificar -->
-            <div class="section-card clearfix">
-                <h3>📝 Justificar asistencia</h3>
-                <textarea id="textoJustificacion" placeholder="Escribe el motivo de la justificación..."></textarea>
-                <button type="button" class="btn-send" onclick="subirJustificacion()">Enviar justificación</button>
-            </div>
+    <div class="section-card">
+      <h3>📋 Mis calificaciones</h3>
+      <div class="sem-tabs">
+        <button class="sem-tab active" data-sem="all" onclick="filtrarSem(this)">Todas</button>
+        <button class="sem-tab" data-sem="1" onclick="filtrarSem(this)">1° Sem</button>
+        <button class="sem-tab" data-sem="2" onclick="filtrarSem(this)">2° Sem</button>
+      </div>
+      <ul id="listaNotas" class="notas-list"><li class="sin-notas">Aún no hay calificaciones.</li></ul>
+    </div>
 
-            <!-- Notas -->
-            <div class="section-card">
-                <h3>📊 Mis calificaciones</h3>
-                <ul id="listaNotas" class="notas-list">
-                    <li class="sin-notas">Aún no hay calificaciones registradas.</li>
-                </ul>
-            </div>
+    <div class="section-card" id="seccionObs" style="display:none">
+      <h3>📌 Observaciones</h3>
+      <div id="listaObs"></div>
+    </div>
 
-            <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
-        </div>
-    </main>
+    <button class="btn-print" onclick="window.print()">🖨 Imprimir resumen de notas</button>
+    <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</main>
+<footer>Escuela Candelaria Pérez · San Javier · Portal Estudiante v2.1</footer>
 
-    <footer>
-        Escuela Candelaria Pérez · San Javier · Portal Estudiante
-    </footer>
+<script>
+const mapaCursosBase = {
+  "27109816-2":"1° Básico","27102017-1":"1° Básico","26826120-6":"1° Básico","26865752-5":"1° Básico","27204005-2":"1° Básico","26792929-7":"1° Básico","26898511-5":"1° Básico","26758311-0":"1° Básico","26729600-6":"1° Básico","27191114-9":"1° Básico","27009108-3":"1° Básico",
+  "25796184-2":"2° Básico","26402298-3":"2° Básico","26752038-0":"2° Básico","26659139-K":"2° Básico","26365506-K":"2° Básico","26533453-9":"2° Básico","26117713-7":"2° Básico",
+  "25919681-7":"3° Básico","25725971-4":"3° Básico","26159496-K":"3° Básico","25864356-9":"3° Básico","25928875-4":"3° Básico","26025635-1":"3° Básico","25935326-2":"3° Básico",
+  "25377391-K":"4° Básico","25215012-9":"4° Básico","25717568-5":"4° Básico","25374420-0":"4° Básico","25510730-5":"4° Básico","25269634-2":"4° Básico","24961971-K":"4° Básico",
+  "25201656-2":"5° Básico","25054488-K":"5° Básico","25058732-5":"5° Básico","25058760-0":"5° Básico","24533270-K":"5° Básico","25030936-8":"5° Básico","25003701-5":"5° Básico","25052798-5":"5° Básico","25284224-1":"5° Básico","25042294-6":"5° Básico","25241982-9":"5° Básico","24954101-K":"5° Básico","25106705-8":"5° Básico","25291352-1":"5° Básico","25241359-6":"5° Básico","25212963-4":"5° Básico","25017516-7":"5° Básico",
+  "24934084-7":"6° Básico","24890180-2":"6° Básico","24356402-6":"6° Básico","24714647-4":"6° Básico","24893220-1":"6° Básico","24748067-6":"6° Básico","24502047-3":"6° Básico","24502029-5":"6° Básico","24906925-6":"6° Básico",
+  "24545483-K":"7° Básico","24503476-8":"7° Básico","24434484-4":"7° Básico","24389919-2":"7° Básico","24318562-9":"7° Básico","23889737-8":"7° Básico","24490056-9":"7° Básico","24339330-2":"7° Básico","24557543-2":"7° Básico",
+  "23977218-8":"8° Básico","24313880-9":"8° Básico","24075427-4":"8° Básico","24022904-8":"8° Básico","24198053-7":"8° Básico","24228200-0":"8° Básico","23754523-0":"8° Básico","24085862-2":"8° Básico","24147417-8":"8° Básico","23948205-8":"8° Básico","24160899-9":"8° Básico","23728030-K":"8° Básico"
+};
 
-    <script>
-        // Mapa base RUT → curso
-        const mapaCursosBase = {
-            "27109816-2": "1° Básico", "27102017-1": "1° Básico", "26826120-6": "1° Básico", "26865752-5": "1° Básico", "27204005-2": "1° Básico", "26792929-7": "1° Básico", "26898511-5": "1° Básico", "26758311-0": "1° Básico", "26729600-6": "1° Básico", "27191114-9": "1° Básico", "27009108-3": "1° Básico",
-            "25796184-2": "2° Básico", "26402298-3": "2° Básico", "26752038-0": "2° Básico", "26659139-K": "2° Básico", "26365506-K": "2° Básico", "26533453-9": "2° Básico", "26117713-7": "2° Básico",
-            "25919681-7": "3° Básico", "25725971-4": "3° Básico", "26159496-K": "3° Básico", "25864356-9": "3° Básico", "25928875-4": "3° Básico", "26025635-1": "3° Básico", "25935326-2": "3° Básico",
-            "25377391-K": "4° Básico", "25215012-9": "4° Básico", "25717568-5": "4° Básico", "25374420-0": "4° Básico", "25510730-5": "4° Básico", "25269634-2": "4° Básico", "24961971-K": "4° Básico",
-            "25201656-2": "5° Básico", "25054488-K": "5° Básico", "25058732-5": "5° Básico", "25058760-0": "5° Básico", "24533270-K": "5° Básico", "25030936-8": "5° Básico", "25003701-5": "5° Básico", "25052798-5": "5° Básico", "25284224-1": "5° Básico", "25042294-6": "5° Básico", "25241982-9": "5° Básico", "24954101-K": "5° Básico", "25106705-8": "5° Básico", "25291352-1": "5° Básico", "25241359-6": "5° Básico", "25212963-4": "5° Básico", "25017516-7": "5° Básico",
-            "24934084-7": "6° Básico", "24890180-2": "6° Básico", "24356402-6": "6° Básico", "24714647-4": "6° Básico", "24893220-1": "6° Básico", "24748067-6": "6° Básico", "24502047-3": "6° Básico", "24502029-5": "6° Básico", "24906925-6": "6° Básico",
-            "24545483-K": "7° Básico", "24503476-8": "7° Básico", "24434484-4": "7° Básico", "24389919-2": "7° Básico", "24318562-9": "7° Básico", "23889737-8": "7° Básico", "24490056-9": "7° Básico", "24339330-2": "7° Básico", "24557543-2": "7° Básico",
-            "23977218-8": "8° Básico", "24313880-9": "8° Básico", "24075427-4": "8° Básico", "24022904-8": "8° Básico", "24198053-7": "8° Básico", "24228200-0": "8° Básico", "23754523-0": "8° Básico", "24085862-2": "8° Básico", "24147417-8": "8° Básico", "23948205-8": "8° Básico", "24160899-9": "8° Básico", "23728030-K": "8° Básico"
-        };
+const params = new URLSearchParams(window.location.search);
+const nombreAlumnoGlobal = params.get('nombre');
+const rutAlumnoGlobal = params.get('rut');
+let notasCache = [];
 
-        const params = new URLSearchParams(window.location.search);
-        const nombreAlumnoGlobal = params.get('nombre');
-        const rutAlumnoGlobal = params.get('rut');
+function parseNota(str){ if(!str) return NaN; const n=parseFloat(String(str).replace(',','.')); return (n>=1&&n<=7)?n:NaN; }
+function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return n.toFixed(1).replace('.',','); }
+function claseProm(n){ if(n==null||isNaN(n)) return 'prom-na'; if(n>=5.5) return 'prom-ok'; if(n>=4.0) return 'prom-mid'; return 'prom-bad'; }
+function badgeClase(n){ if(isNaN(n)) return 'badge-mid'; if(n>=5.5) return 'badge-ok'; if(n>=4.0) return 'badge-mid'; return 'badge-bad'; }
+function calcPromedio(notas, semestre){
+  let list = notas;
+  if(semestre) list = notas.filter(x => String(x.semestre||'1')===String(semestre));
+  const byAsig = {};
+  list.forEach(n=>{
+    const v = parseNota(n.nota);
+    if(isNaN(v)) return;
+    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
+    byAsig[n.asignatura].push(v);
+  });
+  const avgs = Object.values(byAsig).map(a=>a.reduce((x,y)=>x+y,0)/a.length);
+  if(!avgs.length) return null;
+  return avgs.reduce((a,b)=>a+b,0)/avgs.length;
+}
 
-        if (!nombreAlumnoGlobal || !rutAlumnoGlobal) {
-            alert("Acceso no autorizado.");
-            window.location.href = "index.html";
-        } else {
-            // Verificar si fue eliminado
-            const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-            if (eliminados.includes(rutAlumnoGlobal.toUpperCase())) {
-                alert("Tu matrícula ya no está activa en el establecimiento.");
-                window.location.href = "index.html";
-            }
+if(!nombreAlumnoGlobal||!rutAlumnoGlobal){
+  alert("Acceso no autorizado.");
+  window.location.href="index.html";
+} else {
+  const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
+  if(eliminados.includes(rutAlumnoGlobal.toUpperCase())){
+    alert("Tu matrícula ya no está activa.");
+    window.location.href="index.html";
+  }
+  document.getElementById('saludo').textContent = nombreAlumnoGlobal;
+  document.getElementById('rut-estudiante').textContent = 'RUT: '+rutAlumnoGlobal;
+  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
+  const curso = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "—";
+  document.getElementById('curso-estudiante').textContent = curso;
+  cargarTodo();
+}
 
-            document.getElementById('saludo').textContent = nombreAlumnoGlobal;
-            document.getElementById('rut-estudiante').textContent = `RUT: ${rutAlumnoGlobal}`;
+function cargarTodo(){
+  notasCache = JSON.parse(localStorage.getItem('notas_'+rutAlumnoGlobal)||'[]');
+  // migrar notas viejas sin semestre
+  notasCache = notasCache.map(n => ({ semestre:'1', ...n }));
+  const p1 = calcPromedio(notasCache,'1');
+  const p2 = calcPromedio(notasCache,'2');
+  const pg = calcPromedio(notasCache);
+  const e1=document.getElementById('avgS1'), e2=document.getElementById('avgS2'), eg=document.getElementById('avgGen');
+  e1.textContent=fmtNota(p1); e1.className='val '+claseProm(p1);
+  e2.textContent=fmtNota(p2); e2.className='val '+claseProm(p2);
+  eg.textContent=fmtNota(pg); eg.className='val '+claseProm(pg);
+  renderNotas('all');
+  cargarObs();
+}
 
-            // Curso: primero de los creados, luego de la base
-            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
-            const curso = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "—";
-            document.getElementById('curso-estudiante').textContent = curso;
+function renderNotas(sem){
+  let list = notasCache.slice().reverse();
+  if(sem!=='all') list = list.filter(n=>String(n.semestre||'1')===sem);
+  const cont = document.getElementById('listaNotas');
+  if(!list.length){ cont.innerHTML='<li class="sin-notas">Sin calificaciones en este período.</li>'; return; }
+  cont.innerHTML = list.map(item=>{
+    const v = parseNota(item.nota);
+    return '<li class="nota-item"><div class="nota-info"><div class="nota-asignatura">'+item.asignatura+'</div><div class="nota-meta">'+(item.fecha||'')+' · Sem '+(item.semestre||'1')+(item.docente?' · '+item.docente.split(' ')[0]:'')+'</div></div><span class="nota-badge '+badgeClase(v)+'">'+item.nota+'</span></li>';
+  }).join('');
+}
 
-            cargarNotasEstudiante(rutAlumnoGlobal);
-        }
+function filtrarSem(btn){
+  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderNotas(btn.dataset.sem);
+}
 
-        function subirJustificacion() {
-            const texto = document.getElementById('textoJustificacion').value.trim();
-            if (!texto) {
-                alert("Escribe la justificación antes de enviar.");
-                return;
-            }
+function cargarObs(){
+  const obs = JSON.parse(localStorage.getItem('obs_'+rutAlumnoGlobal)||'[]');
+  if(!obs.length){ document.getElementById('seccionObs').style.display='none'; return; }
+  document.getElementById('seccionObs').style.display='block';
+  document.getElementById('listaObs').innerHTML = obs.slice().reverse().map(o=>
+    '<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+(o.docente?' · '+o.docente.split(' ').slice(0,2).map(x=>x.charAt(0)+x.slice(1).toLowerCase()).join(' '):'')+'</div></div>'
+  ).join('');
+}
 
-            const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos') || '{}');
-            const cursoAlumno = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "1° Básico";
+function subirJustificacion(){
+  const texto = document.getElementById('textoJustificacion').value.trim();
+  if(!texto){ alert("Escribe la justificación antes de enviar."); return; }
+  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
+  const cursoAlumno = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "1° Básico";
+  let j = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
+  j.push({ de:nombreAlumnoGlobal, rut:rutAlumnoGlobal, curso:cursoAlumno, mensaje:texto, fecha:new Date().toLocaleDateString('es-CL') });
+  localStorage.setItem('justificacionesDocentes', JSON.stringify(j));
+  document.getElementById('textoJustificacion').value='';
+  alert("✓ Justificación enviada correctamente.");
+}
 
-            let justificaciones = JSON.parse(localStorage.getItem('justificacionesDocentes') || '[]');
-            justificaciones.push({
-                de: nombreAlumnoGlobal,
-                rut: rutAlumnoGlobal,
-                curso: cursoAlumno,
-                mensaje: texto,
-                fecha: new Date().toLocaleDateString('es-CL')
-            });
-            localStorage.setItem('justificacionesDocentes', JSON.stringify(justificaciones));
-
-            document.getElementById('textoJustificacion').value = '';
-            alert("✓ Justificación enviada correctamente.");
-        }
-
-        function cargarNotasEstudiante(rut) {
-            const notas = JSON.parse(localStorage.getItem(`notas_${rut}`) || '[]');
-            const cont = document.getElementById('listaNotas');
-
-            if (notas.length === 0) {
-                cont.innerHTML = '<li class="sin-notas">Aún no hay calificaciones registradas.</li>';
-                return;
-            }
-
-            // Mostrar las más recientes primero
-            const ordenadas = [...notas].reverse();
-            cont.innerHTML = ordenadas.map(item => `
-                <li class="nota-item">
-                    <div class="nota-info">
-                        <div class="nota-asignatura">${item.asignatura}</div>
-                        <div class="nota-meta">${item.fecha || ''}${item.docente ? ' · ' + item.docente.split(' ')[0] : ''}</div>
-                    </div>
-                    <span class="nota-badge">${item.nota}</span>
-                </li>
-            `).join('');
-        }
-
-        function cerrarSesion() {
-            window.location.href = "index.html";
-        }
-    </script>
+function cerrarSesion(){ window.location.href="index.html"; }
+</script>
 </body>
 </html>
