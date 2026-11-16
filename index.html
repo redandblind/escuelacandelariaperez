@@ -145,7 +145,7 @@
                 <p>San Javier · Portal Escolar</p>
             </div>
         </div>
-        <div class="topbar-badge">v2.1</div>
+        <div class="topbar-badge">v3.0 · Cloud</div>
     </header>
 
     <main>
@@ -182,7 +182,7 @@
                             <label for="rutInput">RUT del estudiante</label>
                             <input type="text" id="rutInput" placeholder="Ej: 27109816-2" autocomplete="off">
                         </div>
-                        <button type="button" class="btn-primary" onclick="ingresarEstudiante()">Entrar al Portal</button>
+                        <button type="button" class="btn-primary" id="btnLoginEstudiante" onclick="ingresarEstudiante()">Entrar al Portal</button>
                     </div>
 
                     <p class="help-text">
@@ -203,35 +203,15 @@
     <footer>Desarrollado para Escuela Candelaria Pérez · San Javier · Uso exclusivo del establecimiento</footer>
 
     <script>
-        const profesoresValidos = {
-            "MARTA QUEVEDO VILLALOBOS": ["1° Básico", "2° Básico"],
-            "EDUARDO FUENTES REYES": ["3° Básico", "4° Básico"],
-            "HÉCTOR GONZÁLEZ GAETE": ["5° Básico"],
-            "EUGENIA BARROS BUSTAMANTE": ["6° Básico"],
-            "KARINA SOTELO VALDÉS": ["7° Básico"],
-            "ANA COFRÉ MUÑOZ": ["8° Básico"]
-        };
-
-        const baseDatosAlumnosGlobal = {
-            "27109816-2": "BASTIAN ALONSO CAMPOS BAEZA", "27102017-1": "KHIARA EMILY CASTRO CARREÑO", "26826120-6": "IAN CALEB CONTRERAS GÓMEZ", "26865752-5": "COLOMBA ESTER DÍAZ VALVERDE", "27204005-2": "HANDERZON HELIEL HERNÁNDEZ ESQUIVEL", "26792929-7": "ESTEBAN JOSJUE NORAMBUENA CASTRO", "26898511-5": "SIMONEY ORTEGA BRIONES", "26758311-0": "DOMINIQUE AMELIA REICHENBACH VEGA", "26729600-6": "DANIEL ESTEBAN VILLEGAS VÁSQUEZ", "27191114-9": "IAN LUCIANO PÉREZ GONZÁLEZ", "27009108-3": "TRINIDAD ANDREA LARA QUIROZ",
-            "25796184-2": "ELÍAS HEVER CASTRO CARREÑO", "26402298-3": "MATEO LUCIANO CORREA SEQUINI", "26752038-0": "LEMÓN ELUNEY FUENZALIDA ARAVENA", "26659139-K": "MATILDE TRINIDAD MUÑOZ ARAYA", "26365506-K": "SOFÍA IGNACIA PAILLAN ANCATÉN", "26533453-9": "AGUSTINA ALEJANDRA ROJAS GÓMEZ", "26117713-7": "DAVID ALEXIS RUIZ GONZÁLEZ",
-            "25919681-7": "MATEO EXEQUIEL CAMPOS QUINTANA", "25725971-4": "JULIETA ISABELLA CANCINO ORMEÑO", "26159496-K": "AMARO LEÓN CIFUENTES CORREA", "25864356-9": "NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL", "25928875-4": "EMILIANO ALONSO JAQUE PEÑALOZA", "26025635-1": "FIORELLA IGNACIA MÉNDEZ ORTEGA", "25935326-2": "ISAAC ANDRÉS MORA MARTÍNEZ",
-            "25377391-K": "AMARO ANDRÉS ARANEDA RAMÍREZ", "25215012-9": "JEREMIAS EDGAR CASTRO CARREÑO", "25717568-5": "MANUEL JESÚS ESQUIVEL GONZÁLEZ", "25374420-0": "MARÍA JOSÉ GÓMEZ GÓMEZ", "25510730-5": "AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO", "25269634-2": "JAVIER IGNACIO MARDONES IBACACHE", "24961971-K": "STEFAN ANTONIO REICHENBACH VEGA",
-            "25201656-2": "FRANCO ANTONIO ACEVEDO ACUÑA", "25054488-K": "PAZ FRANCISCA BAEZA DÍAZ", "25058732-5": "JOSÉ HUMBERTO BUENO PAVEZ", "25058760-0": "JOSÉ OMAR BUENO PAVEZ", "24533270-K": "EDUARDO JAVIER CASTRO CARREÑO", "25030936-8": "MATÍAS NICOLÁS FAÚNDEZ SOTO", "25003701-5": "EMILYA JESÚS MARTINA GARRIDO HERRERA", "25052798-5": "ABHAY NITAY MARTÍNEZ ARAVENA", "25284224-1": "GERALDYNE ALEJANDRA MOYA CANCINO", "25042294-6": "MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA", "25241982-9": "BENJAMÍN ANTONIO OLIVARES MORALES", "24954101-K": "JAVIER IGNACIO ORELLANA VALDES", "25106705-8": "JULIETA VALERIA SANDOVAL JAQUE", "25291352-1": "MARTIN ALONSO SILVA ROA", "25241359-6": "AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ", "25212963-4": "JOSÉ IGNACIO VERA MEDEL", "25017516-7": "MARTIN IGNACIO JARA BARRA",
-            "24934084-7": "JOSEPH THOMAS BARBETT PINTO", "24890180-2": "MARIA ELENA BUENO PALMA", "24356402-6": "ALEXIS DAVID ALEJANDRO CANCINO PASTENES", "24714647-4": "EMILIA DEL CARMEN INOSTROZA TARAZONA", "24893220-1": "GABRIELA JESÚS MUÑOZ ORELLANA", "24748067-6": "VICTORIA ANABELLA SALGADO CARRASCO", "24502047-3": "DIEGO ALONZO VILLALOBOS VALDÉS", "24502029-5": "VICENTE IGNASIO VILLALOBOS VALDÉS", "24906925-6": "MATEO IGNACIO VIÑALS COFRE",
-            "24545483-K": "ISAIASS ELIUDT ARANEDA RAMÍREZ", "24503476-8": "DANIEL ALEXIS CAMPOS YÁÑEZ", "24434484-4": "AGUSTÍN EFRAIN CASTRO CANALES", "24389919-2": "BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA", "24318562-9": "SOFÍA AMANDA MUÑOZ ARAYA", "23889737-8": "ALEJANDRO ANÍBAL PINO ESQUIVEL", "24490056-9": "AARÓN ELÍAS SANTANDER CÉSPEDES", "24339330-2": "ANDY ANGEL URRUTIA GÓMEZ", "24557543-2": "MATEO ALONSO VALDÉS CABELLO",
-            "23977218-8": "KIARA JULIANA ACEVEDO ACUÑA", "24313880-9": "DAMARIS ANDREA ALBORNOZ ZÁRATE", "24075427-4": "BENJAMÍN FRANCISCO ASTUDILLO CANALES", "24022904-8": "CRISTIAN YHEREMY CAMPOS BAEZA", "24198053-7": "TRIANA ANDREA CORREA ORMEÑO", "24228200-0": "ANA KARINA FAÚNDEZ SOTO", "23754523-0": "LUIS HUMBERTO FAÚNDEZ SOTO", "24085862-2": "CRISTÓBAL IGNACIO LOYOLA DÍAZ", "24147417-8": "YARIEL ANÍBAL MENA CANCINO", "23948205-8": "MANUEL ALEJANDRO ROJAS GÓMEZ", "24160899-9": "JESÚS ANTONIO SALGADO SALGADO", "23728030-K": "ROCÍO ANTONELLA SUAZO PIZARRO"
-        };
-
-        const PASS_SALT = "cp_sanjavier_2026";
+        const API_URL = "/api";
         const MAX_ATTEMPTS = 5;
         const LOCK_MINUTES = 2;
 
         function getAttempts() {
-            try { return JSON.parse(localStorage.getItem('login_attempts') || '{"count":0,"until":0}'); }
+            try { return JSON.parse(sessionStorage.getItem('login_attempts') || '{"count":0,"until":0}'); }
             catch { return { count: 0, until: 0 }; }
         }
-        function setAttempts(data) { localStorage.setItem('login_attempts', JSON.stringify(data)); }
+        function setAttempts(data) { sessionStorage.setItem('login_attempts', JSON.stringify(data)); }
         function isLocked() { return Date.now() < getAttempts().until; }
         function remainingLockSecs() { return Math.max(0, Math.ceil((getAttempts().until - Date.now()) / 1000)); }
 
@@ -260,14 +240,18 @@
             }
         }
 
-        async function hashPass(pass) {
-            const data = new TextEncoder().encode(pass + PASS_SALT);
-            const buf = await crypto.subtle.digest('SHA-256', data);
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        function validarRutChileno(rutCompleto) {
+            if (!/^[0-9]{7,8}-[0-9kK]{1}$/.test(rutCompleto)) return false;
+            const [cuerpo, dv] = rutCompleto.split('-');
+            let suma = 0, multiplo = 2;
+            for (let i = cuerpo.length - 1; i >= 0; i--) {
+                suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+                multiplo = multiplo < 7 ? multiplo + 1 : 2;
+            }
+            const dvEsperado = 11 - (suma % 11);
+            const dvCalc = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : String(dvEsperado);
+            return dvCalc === dv.toUpperCase();
         }
-
-        let EXPECTED_HASH = null;
-        (async () => { EXPECTED_HASH = await hashPass("candelaria16"); })();
 
         function togglePass() {
             const inp = document.getElementById('passInput');
@@ -281,28 +265,43 @@
             document.getElementById('seccionEstudiantes').classList.toggle('active', rol === 'estudiantes');
         }
 
-        function obtenerTodosLosAlumnos() {
-            const creados = JSON.parse(localStorage.getItem('alumnosCreados') || '{}');
-            return Object.assign({}, baseDatosAlumnosGlobal, creados);
-        }
-
-        function ingresarEstudiante() {
+        async function ingresarEstudiante() {
             const input = document.getElementById('rutInput');
             const rut = input.value.trim().toUpperCase();
             if (!rut) { alert("Por favor, introduce tu RUT."); input.focus(); return; }
-
-            const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados') || '[]');
-            if (eliminados.includes(rut)) {
-                alert("El estudiante ha sido desvinculado o ya no se encuentra matriculado.");
+            if (!validarRutChileno(rut)) {
+                alert("El RUT ingresado no es válido. Verifica el formato (Ej: 27109816-2) y el dígito verificador.");
                 input.focus(); return;
             }
 
-            const todos = obtenerTodosLosAlumnos();
-            if (todos[rut]) {
-                window.location.href = 'estudiante.html?nombre=' + encodeURIComponent(todos[rut]) + '&rut=' + encodeURIComponent(rut);
-            } else {
-                alert("El RUT ingresado no se encuentra registrado en el sistema.");
-                input.focus();
+            const btn = document.getElementById('btnLoginEstudiante');
+            btn.disabled = true;
+            btn.textContent = "Verificando...";
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ rol: "estudiante", identificador: rut })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.detail || "El RUT ingresado no se encuentra registrado o está inactivo.");
+                    input.focus();
+                    return;
+                }
+
+                sessionStorage.setItem('estudiante_session', JSON.stringify({
+                    ...data,
+                    exp: Date.now() + 8 * 60 * 60 * 1000
+                }));
+                window.location.href = 'estudiante.html';
+            } catch (e) {
+                alert("No se pudo conectar con el servidor.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Entrar al Portal";
             }
         }
 
@@ -312,36 +311,50 @@
             const nombre = document.getElementById('profesorInput').value.trim().toUpperCase();
             const pass = document.getElementById('passInput').value.trim();
 
-            if (!EXPECTED_HASH) EXPECTED_HASH = await hashPass("candelaria16");
-            const hash = await hashPass(pass);
+            if (!nombre || !pass) {
+                alert("Ingresa tu nombre completo y contraseña.");
+                return;
+            }
 
-            if (hash !== EXPECTED_HASH) {
-                registerFail();
-                const a = getAttempts();
-                if (isLocked()) {
-                    alert('Contraseña incorrecta. Cuenta bloqueada temporalmente por ' + LOCK_MINUTES + ' minutos.');
-                } else {
-                    alert('Contraseña incorrecta. Intentos restantes: ' + (MAX_ATTEMPTS - a.count));
+            const btn = document.getElementById('btnLoginDocente');
+            btn.disabled = true;
+            btn.textContent = "Verificando...";
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ rol: "docente", identificador: nombre, password: pass })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    registerFail();
+                    const a = getAttempts();
+                    if (isLocked()) {
+                        alert('Credenciales incorrectas. Cuenta bloqueada temporalmente por ' + LOCK_MINUTES + ' minutos.');
+                    } else {
+                        alert((data.detail || 'Credenciales incorrectas') + '. Intentos restantes: ' + (MAX_ATTEMPTS - a.count));
+                    }
+                    document.getElementById('passInput').value = "";
+                    document.getElementById('passInput').focus();
+                    return;
                 }
-                document.getElementById('passInput').value = "";
-                document.getElementById('passInput').focus();
-                return;
-            }
 
-            if (!profesoresValidos[nombre]) {
-                alert("Nombre de docente no encontrado.\nEscribe tu 1er nombre + 2 apellidos (Ej: Marta Quevedo Villalobos).");
-                document.getElementById('profesorInput').focus();
-                return;
+                registerSuccess();
+                sessionStorage.setItem('docente_session', JSON.stringify({
+                    ...data,
+                    exp: Date.now() + 8 * 60 * 60 * 1000
+                }));
+                window.location.href = 'docente.html';
+            } catch (e) {
+                alert("No se pudo conectar con el servidor.");
+            } finally {
+                if (!isLocked()) {
+                    btn.disabled = false;
+                    btn.textContent = "Ingresar como Docente";
+                }
             }
-
-            registerSuccess();
-            const session = {
-                nombre: nombre,
-                exp: Date.now() + 8 * 60 * 60 * 1000,
-                token: Math.random().toString(36).slice(2) + Date.now().toString(36)
-            };
-            sessionStorage.setItem('docente_session', JSON.stringify(session));
-            window.location.href = 'docente.html?nombre=' + encodeURIComponent(nombre);
         }
 
         setInterval(updateLockUI, 1000);

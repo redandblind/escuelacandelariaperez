@@ -84,6 +84,8 @@ tr:hover td{background:#f8fafc}
 .sem-tab.active{background:#eff6ff;border-color:#93c5fd;color:var(--primary-dark)}
 .nota-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
 .nota-row:last-child{border-bottom:none}
+.btn-del-nota{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;margin-left:8px;padding:2px 6px;border-radius:4px}
+.btn-del-nota:hover{background:#fee2e2}
 .avg-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-around;text-align:center;gap:8px}
 .avg-box .avg-val{font-size:1.4rem;font-weight:700}
 .avg-box .avg-lbl{font-size:.72rem;color:var(--muted);margin-top:2px}
@@ -119,12 +121,12 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
   <div class="toolbar">
     <div class="search-box"><input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()"></div>
+    <button class="btn-action btn-secondary" onclick="abrirModalAnuncio()">📢 Anuncio</button>
     <button class="btn-action btn-create" onclick="abrirModalCrearAlumno()">＋ Nuevo alumno</button>
   </div>
-  <div id="contenedorCursos"></div>
+  <div id="contenedorCursos"><div class="empty-state">Cargando datos desde la base de datos...</div></div>
 </main>
 
-<!-- Modal Nota -->
 <div id="modalNota" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3 id="modalTituloNota">Agregar calificación</h3><button class="modal-close" onclick="cerrarModal('modalNota')">×</button></div>
@@ -158,7 +160,6 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<!-- Modal Ver Notas / Promedios -->
 <div id="modalVerNotas" class="modal-overlay">
   <div class="modal wide">
     <div class="modal-header"><h3 id="tituloVerNotas">Calificaciones</h3><button class="modal-close" onclick="cerrarModal('modalVerNotas')">×</button></div>
@@ -179,7 +180,6 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<!-- Modal Observación -->
 <div id="modalObs" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3 id="tituloObs">Observación</h3><button class="modal-close" onclick="cerrarModal('modalObs')">×</button></div>
@@ -200,7 +200,22 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<!-- Modal Crear Alumno -->
+<div id="modalAnuncio" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><h3>📢 Publicar anuncio al curso</h3><button class="modal-close" onclick="cerrarModal('modalAnuncio')">×</button></div>
+    <div class="modal-body">
+      <label>Curso destino</label>
+      <select id="cursoAnuncio"></select>
+      <label>Mensaje del anuncio</label>
+      <textarea id="textoAnuncio" rows="4" placeholder="Ej: Recordatorio prueba de Matemática el viernes..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalAnuncio')">Cancelar</button>
+      <button class="btn-modal btn-save" onclick="guardarAnuncio()">Publicar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modalCrearAlumno" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>Crear nuevo perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button></div>
@@ -219,7 +234,6 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<!-- Modal Justificaciones -->
 <div id="modalJustificaciones" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>📥 Buzón de justificaciones</h3><button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button></div>
@@ -228,64 +242,50 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v2.1</footer>
+<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v3.0</footer>
 
 <script>
-const baseDatosCursos = {
-  "1° Básico":{"27109816-2":"BASTIAN ALONSO CAMPOS BAEZA","27102017-1":"KHIARA EMILY CASTRO CARREÑO","26826120-6":"IAN CALEB CONTRERAS GÓMEZ","26865752-5":"COLOMBA ESTER DÍAZ VALVERDE","27204005-2":"HANDERZON HELIEL HERNÁNDEZ ESQUIVEL","26792929-7":"ESTEBAN JOSJUE NORAMBUENA CASTRO","26898511-5":"SIMONEY ORTEGA BRIONES","26758311-0":"DOMINIQUE AMELIA REICHENBACH VEGA","26729600-6":"DANIEL ESTEBAN VILLEGAS VÁSQUEZ","27191114-9":"IAN LUCIANO PÉREZ GONZÁLEZ","27009108-3":"TRINIDAD ANDREA LARA QUIROZ"},
-  "2° Básico":{"25796184-2":"ELÍAS HEVER CASTRO CARREÑO","26402298-3":"MATEO LUCIANO CORREA SEQUINI","26752038-0":"LEMÓN ELUNEY FUENZALIDA ARAVENA","26659139-K":"MATILDE TRINIDAD MUÑOZ ARAYA","26365506-K":"SOFÍA IGNACIA PAILLAN ANCATÉN","26533453-9":"AGUSTINA ALEJANDRA ROJAS GÓMEZ","26117713-7":"DAVID ALEXIS RUIZ GONZÁLEZ"},
-  "3° Básico":{"25919681-7":"MATEO EXEQUIEL CAMPOS QUINTANA","25725971-4":"JULIETA ISABELLA CANCINO ORMEÑO","26159496-K":"AMARO LEÓN CIFUENTES CORREA","25864356-9":"NEIDAN ANDRÉS HERNÁNDEZ ESQUIVEL","25928875-4":"EMILIANO ALONSO JAQUE PEÑALOZA","26025635-1":"FIORELLA IGNACIA MÉNDEZ ORTEGA","25935326-2":"ISAAC ANDRÉS MORA MARTÍNEZ"},
-  "4° Básico":{"25377391-K":"AMARO ANDRÉS ARANEDA RAMÍREZ","25215012-9":"JEREMIAS EDGAR CASTRO CARREÑO","25717568-5":"MANUEL JESÚS ESQUIVEL GONZÁLEZ","25374420-0":"MARÍA JOSÉ GÓMEZ GÓMEZ","25510730-5":"AMANDA MARÍA ELIZABETH LUKSIC ASTUDILLO","25269634-2":"JAVIER IGNACIO MARDONES IBACACHE","24961971-K":"STEFAN ANTONIO REICHENBACH VEGA"},
-  "5° Básico":{"25201656-2":"FRANCO ANTONIO ACEVEDO ACUÑA","25054488-K":"PAZ FRANCISCA BAEZA DÍAZ","25058732-5":"JOSÉ HUMBERTO BUENO PAVEZ","25058760-0":"JOSÉ OMAR BUENO PAVEZ","24533270-K":"EDUARDO JAVIER CASTRO CARREÑO","25030936-8":"MATÍAS NICOLÁS FAÚNDEZ SOTO","25003701-5":"EMILYA JESÚS MARTINA GARRIDO HERRERA","25052798-5":"ABHAY NITAY MARTÍNEZ ARAVENA","25284224-1":"GERALDYNE ALEJANDRA MOYA CANCINO","25042294-6":"MAGDALENA IGNACIA DEL CARMEN MUÑOZ ARAYA","25241982-9":"BENJAMÍN ANTONIO OLIVARES MORALES","24954101-K":"JAVIER IGNACIO ORELLANA VALDES","25106705-8":"JULIETA VALERIA SANDOVAL JAQUE","25291352-1":"MARTIN ALONSO SILVA ROA","25241359-6":"AGUSTÍN ANTONIO VÁSQUEZ VÁSQUEZ","25212963-4":"JOSÉ IGNACIO VERA MEDEL","25017516-7":"MARTIN IGNACIO JARA BARRA"},
-  "6° Básico":{"24934084-7":"JOSEPH THOMAS BARBETT PINTO","24890180-2":"MARIA ELENA BUENO PALMA","24356402-6":"ALEXIS DAVID ALEJANDRO CANCINO PASTENES","24714647-4":"EMILIA DEL CARMEN INOSTROZA TARAZONA","24893220-1":"GABRIELA JESÚS MUÑOZ ORELLANA","24748067-6":"VICTORIA ANABELLA SALGADO CARRASCO","24502047-3":"DIEGO ALONZO VILLALOBOS VALDÉS","24502029-5":"VICENTE IGNASIO VILLALOBOS VALDÉS","24906925-6":"MATEO IGNACIO VIÑALS COFRE"},
-  "7° Básico":{"24545483-K":"ISAIASS ELIUDT ARANEDA RAMÍREZ","24503476-8":"DANIEL ALEXIS CAMPOS YÁÑEZ","24434484-4":"AGUSTÍN EFRAIN CASTRO CANALES","24389919-2":"BAYTHIARE ALEXANDRA MÉNDEZ ORTEGA","24318562-9":"SOFÍA AMANDA MUÑOZ ARAYA","23889737-8":"ALEJANDRO ANÍBAL PINO ESQUIVEL","24490056-9":"AARÓN ELÍAS SANTANDER CÉSPEDES","24339330-2":"ANDY ANGEL URRUTIA GÓMEZ","24557543-2":"MATEO ALONSO VALDÉS CABELLO"},
-  "8° Básico":{"23977218-8":"KIARA JULIANA ACEVEDO ACUÑA","24313880-9":"DAMARIS ANDREA ALBORNOZ ZÁRATE","24075427-4":"BENJAMÍN FRANCISCO ASTUDILLO CANALES","24022904-8":"CRISTIAN YHEREMY CAMPOS BAEZA","24198053-7":"TRIANA ANDREA CORREA ORMEÑO","24228200-0":"ANA KARINA FAÚNDEZ SOTO","23754523-0":"LUIS HUMBERTO FAÚNDEZ SOTO","24085862-2":"CRISTÓBAL IGNACIO LOYOLA DÍAZ","24147417-8":"YARIEL ANÍBAL MENA CANCINO","23948205-8":"MANUEL ALEJANDRO ROJAS GÓMEZ","24160899-9":"JESÚS ANTONIO SALGADO SALGADO","23728030-K":"ROCÍO ANTONELLA SUAZO PIZARRO"}
-};
-const profesorCursos = {
-  "MARTA QUEVEDO VILLALOBOS":["1° Básico","2° Básico"],
-  "EDUARDO FUENTES REYES":["3° Básico","4° Básico"],
-  "HÉCTOR GONZÁLEZ GAETE":["5° Básico"],
-  "EUGENIA BARROS BUSTAMANTE":["6° Básico"],
-  "KARINA SOTELO VALDÉS":["7° Básico"],
-  "ANA COFRÉ MUÑOZ":["8° Básico"]
-};
+const API_URL = "/api";
 
-const params = new URLSearchParams(window.location.search);
-const nombreProfe = params.get('nombre');
+let sesion = null;
+let nombreProfe = "";
+let cursosDelProfe = [];
 let alumnoSeleccionadoRut = null;
 let alumnoVerNotasRut = null;
+let alumnoVerNotasNombre = "";
 let notasVerCache = [];
-let cursosDelProfe = [];
 
-// Sesión
+let alumnosCache = [];
+let notasCache = [];
+let justificacionesCache = [];
+
 (function checkSession(){
   try {
-    const s = JSON.parse(sessionStorage.getItem('docente_session')||'null');
-    if (!s || s.nombre !== nombreProfe || Date.now() > s.exp) {
-      // permitir acceso por URL pero recomendar login
+    const s = JSON.parse(sessionStorage.getItem('docente_session') || 'null');
+    if (!s || s.rol !== 'docente' || Date.now() > s.exp) {
+      sessionStorage.removeItem('docente_session');
+      window.location.href = "index.html";
+      return;
     }
-  } catch(e){}
+    sesion = s;
+    nombreProfe = s.nombre;
+    cursosDelProfe = s.cursos || [];
+    document.getElementById('saludoProfe').textContent = 'Hola, ' + formatearNombre(nombreProfe);
+    cargarTodoDesdeAPI();
+  } catch(e) {
+    window.location.href = "index.html";
+  }
 })();
 
-if (!nombreProfe || !profesorCursos[nombreProfe]) {
-  alert("Acceso no autorizado.");
-  window.location.href = "index.html";
-} else {
-  cursosDelProfe = profesorCursos[nombreProfe];
-  document.getElementById('saludoProfe').textContent = 'Hola, ' + formatearNombre(nombreProfe);
-  renderizarTodo();
-  actualizarNotificacionesJustificaciones();
-}
-
-function formatearNombre(n){return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' ')}
+function formatearNombre(n){ return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' '); }
 function parseNota(str){
-  if(!str) return NaN;
+  if(str==null) return NaN;
   const n = parseFloat(String(str).replace(',','.'));
   return (n>=1 && n<=7) ? n : NaN;
 }
 function fmtNota(n){
   if(n==null||isNaN(n)) return '—';
-  return n.toFixed(1).replace('.',',');
+  return Number(n).toFixed(1).replace('.',',');
 }
 function claseProm(n){
   if(n==null||isNaN(n)) return 'prom-na';
@@ -296,7 +296,6 @@ function claseProm(n){
 function calcPromedio(notas, semestre){
   let list = notas;
   if(semestre) list = notas.filter(x => String(x.semestre||'1')===String(semestre));
-  // promedio por asignatura primero, luego promedio de asignaturas
   const byAsig = {};
   list.forEach(n=>{
     const v = parseNota(n.nota);
@@ -308,54 +307,68 @@ function calcPromedio(notas, semestre){
   if(!asigAvgs.length) return null;
   return asigAvgs.reduce((a,b)=>a+b,0)/asigAvgs.length;
 }
-function getNotas(rut){ return JSON.parse(localStorage.getItem('notas_'+rut)||'[]'); }
 
-function obtenerCursosCompletos(){
-  const cursos = JSON.parse(JSON.stringify(baseDatosCursos));
-  const creados = JSON.parse(localStorage.getItem('alumnosCreados')||'{}');
-  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
-  for(const [rut,nombre] of Object.entries(creados)){
-    const c = cursosCreados[rut];
-    if(c && cursos[c]) cursos[c][rut]=nombre;
+async function cargarTodoDesdeAPI(){
+  try {
+    const [resAl, resNo, resJu] = await Promise.all([
+      fetch(`${API_URL}/alumnos`),
+      fetch(`${API_URL}/notas`),
+      fetch(`${API_URL}/justificaciones`).catch(() => ({ ok: false }))
+    ]);
+    alumnosCache = resAl.ok ? await resAl.json() : [];
+    notasCache = resNo.ok ? await resNo.json() : [];
+    if (resJu.ok) {
+      const todasJust = await resJu.json();
+      justificacionesCache = todasJust.filter(j => cursosDelProfe.includes(j.curso));
+    }
+    renderizarTodo();
+    actualizarNotificacionesJustificaciones();
+  } catch (err) {
+    document.getElementById('contenedorCursos').innerHTML = '<div class="empty-state" style="color:#dc2626">Error conectando con el servidor.</div>';
   }
-  return cursos;
 }
 
 function renderizarTodo(){
-  const cursos = obtenerCursosCompletos();
-  const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
   const cont = document.getElementById('contenedorCursos');
   cont.innerHTML = '';
-  let total=0;
-  cursosDelProfe.forEach(cursoNombre=>{
-    const alumnos = cursos[cursoNombre]||{};
-    const activos = Object.entries(alumnos).filter(([r])=>!eliminados.includes(r));
+  let total = 0;
+
+  cursosDelProfe.forEach(cursoNombre => {
+    const activos = alumnosCache.filter(a => a.curso === cursoNombre && a.activo === 1);
     total += activos.length;
     let filas = '';
-    activos.forEach(([rut,nombre])=>{
-      const notas = getNotas(rut);
-      const prom = calcPromedio(notas);
+
+    activos.forEach(al => {
+      const rut = al.rut;
+      const nombre = al.nombre;
+      const notasAl = notasCache.filter(n => n.rut === rut);
+      const prom = calcPromedio(notasAl);
       const chip = '<span class="prom-chip '+claseProm(prom)+'">'+(prom!=null?fmtNota(prom):'—')+'</span>';
+      const nombreEsc = nombre.replace(/'/g,"\'");
+
       filas += '<tr id="fila-'+rut+'" data-nombre="'+nombre.toLowerCase()+'" data-rut="'+rut+'">'+
         '<td style="font-family:monospace;font-size:.84rem">'+rut+'</td>'+
         '<td>'+nombre+'</td>'+
         '<td style="text-align:center">'+chip+'</td>'+
         '<td class="acciones">'+
-          '<button class="menu-dots" onclick="toggleMenu(\''+rut+'\')">⋮</button>'+
+          '<button class="menu-dots" onclick="toggleMenu(''+rut+'')">⋮</button>'+
           '<div id="menu-'+rut+'" class="dropdown-menu">'+
-            '<button onclick="abrirModalNota(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">➕ Agregar nota</button>'+
-            '<button onclick="abrirVerNotas(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">📊 Ver notas / promedio</button>'+
-            '<button onclick="abrirObs(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">📝 Observación</button>'+
-            '<button class="danger" onclick="eliminarAlumno(\''+rut+'\',\''+nombre.replace(/'/g,"\\'")+'\')">🗑️ Eliminar</button>'+
+            '<button onclick="abrirModalNota(''+rut+'',''+nombreEsc+'')">➕ Agregar nota</button>'+
+            '<button onclick="abrirVerNotas(''+rut+'',''+nombreEsc+'')">📊 Ver notas / promedio</button>'+
+            '<button onclick="abrirObs(''+rut+'',''+nombreEsc+'')">📝 Observación</button>'+
+            '<button class="danger" onclick="eliminarAlumno(''+rut+'',''+nombreEsc+'')">🗑️ Desactivar</button>'+
           '</div></td></tr>';
     });
-    if(!activos.length) filas='<tr><td colspan="4" class="empty-state">No hay alumnos en este curso.</td></tr>';
+
+    if(!activos.length) filas='<tr><td colspan="4" class="empty-state">No hay alumnos activos en este curso.</td></tr>';
     cont.innerHTML += '<div class="curso-section" data-curso="'+cursoNombre+'">'+
       '<div class="curso-header"><h3>'+cursoNombre+'</h3><span class="curso-count">'+activos.length+' alumno'+(activos.length!==1?'s':'')+'</span></div>'+
       '<table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>'+filas+'</tbody></table></div>';
   });
+
   document.getElementById('statAlumnos').textContent = total;
   document.getElementById('statCursos').textContent = cursosDelProfe.length;
+  filtrarAlumnos();
 }
 
 function filtrarAlumnos(){
@@ -387,28 +400,47 @@ function abrirModalNota(rut, nombre){
   setTimeout(()=>document.getElementById('inputNota').focus(),80);
 }
 
-function guardarNota(){
+async function guardarNota(){
   const asignatura = document.getElementById('selectAsignatura').value;
-  const semestre = document.getElementById('selectSemestre').value;
+  const semestre = parseInt(document.getElementById('selectSemestre').value, 10);
   const notaRaw = document.getElementById('inputNota').value.trim();
   const val = parseNota(notaRaw);
   if(isNaN(val)){ alert('Ingresa una nota válida entre 1,0 y 7,0'); document.getElementById('inputNota').focus(); return; }
-  let notas = getNotas(alumnoSeleccionadoRut);
-  notas.push({
-    asignatura, nota: fmtNota(val), semestre,
-    fecha: new Date().toLocaleDateString('es-CL'),
-    docente: nombreProfe
-  });
-  localStorage.setItem('notas_'+alumnoSeleccionadoRut, JSON.stringify(notas));
-  alert('✓ Nota '+fmtNota(val)+' registrada en '+asignatura+' ('+semestre+'° Semestre)');
-  cerrarModal('modalNota');
-  renderizarTodo();
+
+  try {
+    const res = await fetch(`${API_URL}/notas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rut: alumnoSeleccionadoRut,
+        asignatura,
+        nota: val,
+        semestre,
+        docente: nombreProfe
+      })
+    });
+    if (!res.ok) throw new Error();
+    alert('✓ Nota '+fmtNota(val)+' registrada en '+asignatura+' ('+semestre+'° Semestre)');
+    cerrarModal('modalNota');
+    await cargarTodoDesdeAPI();
+  } catch (e) {
+    alert('Error al guardar la nota en la base de datos.');
+  }
 }
 
 function abrirVerNotas(rut, nombre){
   alumnoVerNotasRut = rut;
+  alumnoVerNotasNombre = nombre;
   document.getElementById('tituloVerNotas').textContent = 'Notas · '+nombre;
-  notasVerCache = getNotas(rut);
+  notasVerCache = notasCache.filter(n => n.rut === rut);
+  actualizarVistaVerNotas();
+  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.toggle('active', t.dataset.sem==='all'));
+  renderListaNotasDocente('all');
+  document.getElementById('modalVerNotas').classList.add('show');
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+}
+
+function actualizarVistaVerNotas(){
   const p1 = calcPromedio(notasVerCache,'1');
   const p2 = calcPromedio(notasVerCache,'2');
   const pg = calcPromedio(notasVerCache);
@@ -416,46 +448,108 @@ function abrirVerNotas(rut, nombre){
   el1.textContent=fmtNota(p1); el1.className='avg-val '+claseProm(p1);
   el2.textContent=fmtNota(p2); el2.className='avg-val '+claseProm(p2);
   elg.textContent=fmtNota(pg); elg.className='avg-val '+claseProm(pg);
-  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.toggle('active', t.dataset.sem==='all'));
-  renderListaNotasDocente('all');
-  document.getElementById('modalVerNotas').classList.add('show');
-  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
 }
+
 function filtrarSemVer(btn){
   document.querySelectorAll('.sem-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   renderListaNotasDocente(btn.dataset.sem);
 }
+
 function renderListaNotasDocente(sem){
   let list = notasVerCache.slice().reverse();
   if(sem!=='all') list = list.filter(n=>String(n.semestre||'1')===sem);
   const cont = document.getElementById('listaNotasDocente');
   if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones en este período.</div>'; return; }
-  cont.innerHTML = list.map(n=>'<div class="nota-row" data-sem="'+(n.semestre||'1')+'"><div><strong>'+n.asignatura+'</strong><div style="font-size:.75rem;color:#64748b">'+(n.fecha||'')+' · Sem '+(n.semestre||'1')+'</div></div><span class="prom-chip '+claseProm(parseNota(n.nota))+'">'+n.nota+'</span></div>').join('');
+  cont.innerHTML = list.map(n=>{
+    const v = parseNota(n.nota);
+    return '<div class="nota-row" data-sem="'+(n.semestre||'1')+'">'+
+      '<div><strong>'+n.asignatura+'</strong><div style="font-size:.75rem;color:#64748b">'+(n.fecha||'')+' · Sem '+(n.semestre||'1')+'</div></div>'+
+      '<div><span class="prom-chip '+claseProm(v)+'">'+fmtNota(v)+'</span>'+
+      (n.id ? '<button class="btn-del-nota" onclick="borrarNota('+n.id+')" title="Eliminar nota">✕</button>' : '')+
+      '</div></div>';
+  }).join('');
 }
 
-function abrirObs(rut, nombre){
+async function borrarNota(notaId){
+  if(!confirm('¿Eliminar esta calificación?')) return;
+  try {
+    const res = await fetch(`${API_URL}/notas/${notaId}`, { method: "DELETE" });
+    if(!res.ok) throw new Error();
+    await cargarTodoDesdeAPI();
+    notasVerCache = notasCache.filter(n => n.rut === alumnoVerNotasRut);
+    actualizarVistaVerNotas();
+    const activeSem = document.querySelector('.sem-tab.active')?.dataset.sem || 'all';
+    renderListaNotasDocente(activeSem);
+  } catch (e) {
+    alert('No se pudo eliminar la nota.');
+  }
+}
+
+async function abrirObs(rut, nombre){
   alumnoSeleccionadoRut = rut;
   document.getElementById('tituloObs').textContent = 'Observación · '+nombre;
   document.getElementById('textoObs').value = '';
-  const obs = JSON.parse(localStorage.getItem('obs_'+rut)||'[]');
   const cont = document.getElementById('listaObsPrevias');
-  if(obs.length){
-    cont.innerHTML = '<div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:#64748b">Historial</div>' +
-      obs.slice().reverse().map(o=>'<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+' · '+(o.docente||'')+'</div></div>').join('');
-  } else cont.innerHTML = '';
+  cont.innerHTML = '<div style="font-size:.8rem;color:#64748b">Cargando historial...</div>';
   document.getElementById('modalObs').classList.add('show');
   document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
+
+  try {
+    const res = await fetch(`${API_URL}/portal/${rut}`);
+    if(res.ok){
+      const data = await res.json();
+      const obs = data.observaciones || [];
+      if(obs.length){
+        cont.innerHTML = '<div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:#64748b">Historial</div>' +
+          obs.map(o=>'<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+' · '+(o.docente||'')+'</div></div>').join('');
+      } else cont.innerHTML = '';
+    }
+  } catch(e){ cont.innerHTML = ''; }
 }
-function guardarObs(){
+
+async function guardarObs(){
   const texto = document.getElementById('textoObs').value.trim();
   const tipo = document.getElementById('selectTipoObs').value;
   if(!texto){ alert('Escribe la observación.'); return; }
-  let obs = JSON.parse(localStorage.getItem('obs_'+alumnoSeleccionadoRut)||'[]');
-  obs.push({ texto, tipo, fecha: new Date().toLocaleDateString('es-CL'), docente: nombreProfe });
-  localStorage.setItem('obs_'+alumnoSeleccionadoRut, JSON.stringify(obs));
-  alert('✓ Observación registrada');
-  cerrarModal('modalObs');
+
+  try {
+    const res = await fetch(`${API_URL}/observaciones`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rut: alumnoSeleccionadoRut, tipo, texto, docente: nombreProfe })
+    });
+    if(!res.ok) throw new Error();
+    alert('✓ Observación registrada');
+    cerrarModal('modalObs');
+  } catch(e) {
+    alert('Error al guardar observación.');
+  }
+}
+
+function abrirModalAnuncio(){
+  document.getElementById('cursoAnuncio').innerHTML = cursosDelProfe.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  document.getElementById('textoAnuncio').value = '';
+  document.getElementById('modalAnuncio').classList.add('show');
+}
+
+async function guardarAnuncio(){
+  const curso = document.getElementById('cursoAnuncio').value;
+  const texto = document.getElementById('textoAnuncio').value.trim();
+  if(!texto){ alert('Escribe el mensaje del anuncio.'); return; }
+
+  try {
+    const res = await fetch(`${API_URL}/anuncios`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ curso, texto, docente: nombreProfe })
+    });
+    if(!res.ok) throw new Error();
+    alert('✓ Anuncio publicado para ' + curso);
+    cerrarModal('modalAnuncio');
+  } catch(e) {
+    alert('Error al publicar anuncio.');
+  }
 }
 
 function abrirModalCrearAlumno(){
@@ -465,52 +559,61 @@ function abrirModalCrearAlumno(){
   document.getElementById('modalCrearAlumno').classList.add('show');
   setTimeout(()=>document.getElementById('nuevoRut').focus(),80);
 }
-function crearNuevoAlumno(){
+
+async function crearNuevoAlumno(){
   const rut = document.getElementById('nuevoRut').value.trim().toUpperCase();
   const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
   const curso = document.getElementById('nuevoCurso').value;
   if(!rut||!nombre){ alert('RUT y nombre son obligatorios.'); return; }
   if(!/^\d{7,8}-[\dkK]$/.test(rut)){ alert('Formato de RUT inválido. Usa 12345678-9'); return; }
-  const todos = obtenerCursosCompletos();
-  let existe=false;
-  for(const c of Object.values(todos)){ if(c[rut]){existe=true;break;} }
-  const creados = JSON.parse(localStorage.getItem('alumnosCreados')||'{}');
-  if(creados[rut]||existe){ alert('Ya existe un alumno con ese RUT.'); return; }
-  creados[rut]=nombre;
-  localStorage.setItem('alumnosCreados', JSON.stringify(creados));
-  const cm = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
-  cm[rut]=curso;
-  localStorage.setItem('alumnosCursos', JSON.stringify(cm));
-  let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]').filter(r=>r!==rut);
-  localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados));
-  alert('✓ Perfil creado:\\n'+nombre+'\\nCurso: '+curso);
-  cerrarModal('modalCrearAlumno');
-  renderizarTodo();
+
+  try {
+    const res = await fetch(`${API_URL}/alumnos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rut, nombre, curso })
+    });
+    const data = await res.json();
+    if(!res.ok){ alert(data.detail || 'Error al crear alumno.'); return; }
+    alert('✓ Perfil creado:
+'+nombre+'
+Curso: '+curso);
+    cerrarModal('modalCrearAlumno');
+    await cargarTodoDesdeAPI();
+  } catch(e) {
+    alert('Error de conexión con el servidor.');
+  }
 }
 
-function eliminarAlumno(rut, nombre){
-  if(!confirm('¿Eliminar a '+nombre+' del sistema?\\nEl alumno ya no podrá ingresar.')) return;
-  let eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
-  if(!eliminados.includes(rut)){ eliminados.push(rut); localStorage.setItem('alumnosEliminados', JSON.stringify(eliminados)); }
-  renderizarTodo();
-  alert('Estudiante '+nombre+' eliminado.');
+async function eliminarAlumno(rut, nombre){
+  if(!confirm('¿Desactivar a '+nombre+' del sistema?
+El alumno ya no podrá ingresar.')) return;
+  try {
+    const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=0`, { method: "PATCH" });
+    if(!res.ok) throw new Error();
+    await cargarTodoDesdeAPI();
+    alert('Estudiante '+nombre+' desactivado.');
+  } catch(e) {
+    alert('No se pudo desactivar al estudiante.');
+  }
 }
 
 function actualizarNotificacionesJustificaciones(){
-  const todas = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
-  const mias = todas.filter(j=>cursosDelProfe.includes(j.curso));
   const badge = document.getElementById('contadorJustificaciones');
   const stat = document.getElementById('statJustif');
-  if(mias.length>0){ badge.textContent=mias.length; badge.style.display='flex'; }
+  if(justificacionesCache.length>0){ badge.textContent=justificacionesCache.length; badge.style.display='flex'; }
   else badge.style.display='none';
-  if(stat) stat.textContent=mias.length;
+  if(stat) stat.textContent=justificacionesCache.length;
 }
+
 function abrirBuzonJustificaciones(){
-  const todas = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
-  const mias = todas.filter(j=>cursosDelProfe.includes(j.curso));
   const cont = document.getElementById('listaJustificacionesBuzon');
-  if(!mias.length) cont.innerHTML='<div class="empty-state">No hay justificaciones recibidas.</div>';
-  else cont.innerHTML = mias.map(j=>'<div class="justificacion-card"><strong>'+j.de+'</strong><div class="meta">'+j.curso+' · '+j.fecha+(j.rut?' · '+j.rut:'')+'</div><p>"'+j.mensaje+'"</p></div>').join('');
+  if(!justificacionesCache.length) cont.innerHTML='<div class="empty-state">No hay justificaciones recibidas.</div>';
+  else cont.innerHTML = justificacionesCache.map(j=>{
+    const al = alumnosCache.find(a => a.rut === j.rut);
+    const nombreAl = al ? al.nombre : j.rut;
+    return '<div class="justificacion-card"><strong>'+nombreAl+'</strong><div class="meta">'+j.curso+' · '+j.fecha+' · '+j.rut+'</div><p>"'+j.mensaje+'"</p></div>';
+  }).join('');
   document.getElementById('modalJustificaciones').classList.add('show');
 }
 </script>

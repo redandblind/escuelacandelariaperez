@@ -50,6 +50,7 @@ textarea:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,13
 .sin-notas{text-align:center;color:var(--muted);font-size:.88rem;padding:20px 10px;font-style:italic}
 .obs-item{background:#f8fafc;border-left:3px solid var(--primary-light);padding:10px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;font-size:.85rem}
 .obs-item.neg{border-left-color:var(--danger)}
+.obs-item.anuncio{border-left-color:#f59e0b;background:#fffbeb}
 .obs-meta{font-size:.72rem;color:var(--muted);margin-top:4px}
 .btn-print{width:100%;padding:12px;background:#eff6ff;color:var(--primary-dark);border:1.5px solid #bfdbfe;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:12px}
 .btn-logout{width:100%;padding:13px;background:#fff;color:var(--primary-dark);border:1.5px solid var(--border);border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer}
@@ -86,6 +87,11 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
       </div>
     </div>
 
+    <div class="section-card" id="seccionAnuncios" style="display:none">
+      <h3>📢 Anuncios del curso</h3>
+      <div id="listaAnuncios"></div>
+    </div>
+
     <div class="avg-card">
       <h3>📊 Promedios</h3>
       <div class="avg-grid">
@@ -108,7 +114,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
         <button class="sem-tab" data-sem="1" onclick="filtrarSem(this)">1° Sem</button>
         <button class="sem-tab" data-sem="2" onclick="filtrarSem(this)">2° Sem</button>
       </div>
-      <ul id="listaNotas" class="notas-list"><li class="sin-notas">Aún no hay calificaciones.</li></ul>
+      <ul id="listaNotas" class="notas-list"><li class="sin-notas">Cargando calificaciones...</li></ul>
     </div>
 
     <div class="section-card" id="seccionObs" style="display:none">
@@ -120,27 +126,18 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
     <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
   </div>
 </main>
-<footer>Escuela Candelaria Pérez · San Javier · Portal Estudiante v2.1</footer>
+<footer>Escuela Candelaria Pérez · San Javier · Portal Estudiante v3.0</footer>
 
 <script>
-const mapaCursosBase = {
-  "27109816-2":"1° Básico","27102017-1":"1° Básico","26826120-6":"1° Básico","26865752-5":"1° Básico","27204005-2":"1° Básico","26792929-7":"1° Básico","26898511-5":"1° Básico","26758311-0":"1° Básico","26729600-6":"1° Básico","27191114-9":"1° Básico","27009108-3":"1° Básico",
-  "25796184-2":"2° Básico","26402298-3":"2° Básico","26752038-0":"2° Básico","26659139-K":"2° Básico","26365506-K":"2° Básico","26533453-9":"2° Básico","26117713-7":"2° Básico",
-  "25919681-7":"3° Básico","25725971-4":"3° Básico","26159496-K":"3° Básico","25864356-9":"3° Básico","25928875-4":"3° Básico","26025635-1":"3° Básico","25935326-2":"3° Básico",
-  "25377391-K":"4° Básico","25215012-9":"4° Básico","25717568-5":"4° Básico","25374420-0":"4° Básico","25510730-5":"4° Básico","25269634-2":"4° Básico","24961971-K":"4° Básico",
-  "25201656-2":"5° Básico","25054488-K":"5° Básico","25058732-5":"5° Básico","25058760-0":"5° Básico","24533270-K":"5° Básico","25030936-8":"5° Básico","25003701-5":"5° Básico","25052798-5":"5° Básico","25284224-1":"5° Básico","25042294-6":"5° Básico","25241982-9":"5° Básico","24954101-K":"5° Básico","25106705-8":"5° Básico","25291352-1":"5° Básico","25241359-6":"5° Básico","25212963-4":"5° Básico","25017516-7":"5° Básico",
-  "24934084-7":"6° Básico","24890180-2":"6° Básico","24356402-6":"6° Básico","24714647-4":"6° Básico","24893220-1":"6° Básico","24748067-6":"6° Básico","24502047-3":"6° Básico","24502029-5":"6° Básico","24906925-6":"6° Básico",
-  "24545483-K":"7° Básico","24503476-8":"7° Básico","24434484-4":"7° Básico","24389919-2":"7° Básico","24318562-9":"7° Básico","23889737-8":"7° Básico","24490056-9":"7° Básico","24339330-2":"7° Básico","24557543-2":"7° Básico",
-  "23977218-8":"8° Básico","24313880-9":"8° Básico","24075427-4":"8° Básico","24022904-8":"8° Básico","24198053-7":"8° Básico","24228200-0":"8° Básico","23754523-0":"8° Básico","24085862-2":"8° Básico","24147417-8":"8° Básico","23948205-8":"8° Básico","24160899-9":"8° Básico","23728030-K":"8° Básico"
-};
+const API_URL = "/api";
 
-const params = new URLSearchParams(window.location.search);
-const nombreAlumnoGlobal = params.get('nombre');
-const rutAlumnoGlobal = params.get('rut');
+let nombreAlumnoGlobal = "";
+let rutAlumnoGlobal = "";
+let cursoAlumnoGlobal = "";
 let notasCache = [];
 
-function parseNota(str){ if(!str) return NaN; const n=parseFloat(String(str).replace(',','.')); return (n>=1&&n<=7)?n:NaN; }
-function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return n.toFixed(1).replace('.',','); }
+function parseNota(str){ if(str==null) return NaN; const n=parseFloat(String(str).replace(',','.')); return (n>=1&&n<=7)?n:NaN; }
+function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toFixed(1).replace('.',','); }
 function claseProm(n){ if(n==null||isNaN(n)) return 'prom-na'; if(n>=5.5) return 'prom-ok'; if(n>=4.0) return 'prom-mid'; return 'prom-bad'; }
 function badgeClase(n){ if(isNaN(n)) return 'badge-mid'; if(n>=5.5) return 'badge-ok'; if(n>=4.0) return 'badge-mid'; return 'badge-bad'; }
 function calcPromedio(notas, semestre){
@@ -158,36 +155,61 @@ function calcPromedio(notas, semestre){
   return avgs.reduce((a,b)=>a+b,0)/avgs.length;
 }
 
-if(!nombreAlumnoGlobal||!rutAlumnoGlobal){
-  alert("Acceso no autorizado.");
-  window.location.href="index.html";
-} else {
-  const eliminados = JSON.parse(localStorage.getItem('alumnosEliminados')||'[]');
-  if(eliminados.includes(rutAlumnoGlobal.toUpperCase())){
-    alert("Tu matrícula ya no está activa.");
-    window.location.href="index.html";
-  }
-  document.getElementById('saludo').textContent = nombreAlumnoGlobal;
-  document.getElementById('rut-estudiante').textContent = 'RUT: '+rutAlumnoGlobal;
-  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
-  const curso = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "—";
-  document.getElementById('curso-estudiante').textContent = curso;
-  cargarTodo();
-}
+(function initEstudiante(){
+  try {
+    const s = JSON.parse(sessionStorage.getItem('estudiante_session') || 'null');
+    if(!s || s.rol !== 'estudiante' || Date.now() > s.exp){
+      sessionStorage.removeItem('estudiante_session');
+      window.location.href = "index.html";
+      return;
+    }
+    nombreAlumnoGlobal = s.nombre;
+    rutAlumnoGlobal = s.rut;
+    cursoAlumnoGlobal = s.curso;
 
-function cargarTodo(){
-  notasCache = JSON.parse(localStorage.getItem('notas_'+rutAlumnoGlobal)||'[]');
-  // migrar notas viejas sin semestre
-  notasCache = notasCache.map(n => ({ semestre:'1', ...n }));
-  const p1 = calcPromedio(notasCache,'1');
-  const p2 = calcPromedio(notasCache,'2');
-  const pg = calcPromedio(notasCache);
-  const e1=document.getElementById('avgS1'), e2=document.getElementById('avgS2'), eg=document.getElementById('avgGen');
-  e1.textContent=fmtNota(p1); e1.className='val '+claseProm(p1);
-  e2.textContent=fmtNota(p2); e2.className='val '+claseProm(p2);
-  eg.textContent=fmtNota(pg); eg.className='val '+claseProm(pg);
-  renderNotas('all');
-  cargarObs();
+    document.getElementById('saludo').textContent = nombreAlumnoGlobal;
+    document.getElementById('rut-estudiante').textContent = 'RUT: ' + rutAlumnoGlobal;
+    document.getElementById('curso-estudiante').textContent = cursoAlumnoGlobal;
+    cargarTodo();
+  } catch(e) {
+    window.location.href = "index.html";
+  }
+})();
+
+async function cargarTodo(){
+  try {
+    const res = await fetch(`${API_URL}/portal/${rutAlumnoGlobal}`);
+    if(!res.ok){
+      if(res.status === 404){
+        alert("Tu matrícula ya no está activa.");
+        cerrarSesion();
+      }
+      return;
+    }
+    const data = await res.json();
+
+    if(data.alumno && data.alumno.activo === 0){
+      alert("Tu matrícula ya no está activa.");
+      cerrarSesion();
+      return;
+    }
+
+    notasCache = (data.notas || []).map(n => ({ semestre: '1', ...n }));
+    const p1 = calcPromedio(notasCache, '1');
+    const p2 = calcPromedio(notasCache, '2');
+    const pg = calcPromedio(notasCache);
+
+    const e1=document.getElementById('avgS1'), e2=document.getElementById('avgS2'), eg=document.getElementById('avgGen');
+    e1.textContent=fmtNota(p1); e1.className='val '+claseProm(p1);
+    e2.textContent=fmtNota(p2); e2.className='val '+claseProm(p2);
+    eg.textContent=fmtNota(pg); eg.className='val '+claseProm(pg);
+
+    renderNotas('all');
+    renderObs(data.observaciones || []);
+    renderAnuncios(data.anuncios || []);
+  } catch(e) {
+    document.getElementById('listaNotas').innerHTML = '<li class="sin-notas" style="color:#dc2626">No se pudo conectar con el servidor.</li>';
+  }
 }
 
 function renderNotas(sem){
@@ -197,7 +219,7 @@ function renderNotas(sem){
   if(!list.length){ cont.innerHTML='<li class="sin-notas">Sin calificaciones en este período.</li>'; return; }
   cont.innerHTML = list.map(item=>{
     const v = parseNota(item.nota);
-    return '<li class="nota-item"><div class="nota-info"><div class="nota-asignatura">'+item.asignatura+'</div><div class="nota-meta">'+(item.fecha||'')+' · Sem '+(item.semestre||'1')+(item.docente?' · '+item.docente.split(' ')[0]:'')+'</div></div><span class="nota-badge '+badgeClase(v)+'">'+item.nota+'</span></li>';
+    return '<li class="nota-item"><div class="nota-info"><div class="nota-asignatura">'+item.asignatura+'</div><div class="nota-meta">'+(item.fecha||'')+' · Sem '+(item.semestre||'1')+(item.docente?' · '+item.docente.split(' ')[0]:'')+'</div></div><span class="nota-badge '+badgeClase(v)+'">'+fmtNota(v)+'</span></li>';
   }).join('');
 }
 
@@ -207,28 +229,48 @@ function filtrarSem(btn){
   renderNotas(btn.dataset.sem);
 }
 
-function cargarObs(){
-  const obs = JSON.parse(localStorage.getItem('obs_'+rutAlumnoGlobal)||'[]');
+function renderObs(obs){
   if(!obs.length){ document.getElementById('seccionObs').style.display='none'; return; }
   document.getElementById('seccionObs').style.display='block';
-  document.getElementById('listaObs').innerHTML = obs.slice().reverse().map(o=>
+  document.getElementById('listaObs').innerHTML = obs.map(o=>
     '<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+(o.docente?' · '+o.docente.split(' ').slice(0,2).map(x=>x.charAt(0)+x.slice(1).toLowerCase()).join(' '):'')+'</div></div>'
   ).join('');
 }
 
-function subirJustificacion(){
-  const texto = document.getElementById('textoJustificacion').value.trim();
-  if(!texto){ alert("Escribe la justificación antes de enviar."); return; }
-  const cursosCreados = JSON.parse(localStorage.getItem('alumnosCursos')||'{}');
-  const cursoAlumno = cursosCreados[rutAlumnoGlobal.toUpperCase()] || mapaCursosBase[rutAlumnoGlobal.toUpperCase()] || "1° Básico";
-  let j = JSON.parse(localStorage.getItem('justificacionesDocentes')||'[]');
-  j.push({ de:nombreAlumnoGlobal, rut:rutAlumnoGlobal, curso:cursoAlumno, mensaje:texto, fecha:new Date().toLocaleDateString('es-CL') });
-  localStorage.setItem('justificacionesDocentes', JSON.stringify(j));
-  document.getElementById('textoJustificacion').value='';
-  alert("✓ Justificación enviada correctamente.");
+function renderAnuncios(anuncios){
+  if(!anuncios.length){ document.getElementById('seccionAnuncios').style.display='none'; return; }
+  document.getElementById('seccionAnuncios').style.display='block';
+  document.getElementById('listaAnuncios').innerHTML = anuncios.map(a=>
+    '<div class="obs-item anuncio">'+a.texto+'<div class="obs-meta">'+(a.fecha||'')+(a.docente?' · Prof. '+a.docente.split(' ').slice(0,2).map(x=>x.charAt(0)+x.slice(1).toLowerCase()).join(' '):'')+'</div></div>'
+  ).join('');
 }
 
-function cerrarSesion(){ window.location.href="index.html"; }
+async function subirJustificacion(){
+  const texto = document.getElementById('textoJustificacion').value.trim();
+  if(!texto){ alert("Escribe la justificación antes de enviar."); return; }
+
+  try {
+    const res = await fetch(`${API_URL}/justificaciones`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rut: rutAlumnoGlobal,
+        curso: cursoAlumnoGlobal,
+        mensaje: texto
+      })
+    });
+    if(!res.ok) throw new Error();
+    document.getElementById('textoJustificacion').value = '';
+    alert("✓ Justificación enviada correctamente.");
+  } catch(e) {
+    alert("Error al enviar la justificación al servidor.");
+  }
+}
+
+function cerrarSesion(){
+  sessionStorage.removeItem('estudiante_session');
+  window.location.href = "index.html";
+}
 </script>
 </body>
 </html>
