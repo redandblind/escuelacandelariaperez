@@ -167,6 +167,39 @@ def login(data: LoginRequest):
     conn.close()
     raise HTTPException(status_code=400, detail="Rol no válido")
 
+@app.get("/api/docente/panel")
+def panel_docente(cursos: str):
+    lista_cursos = [c.strip() for c in cursos.split(",") if c.strip()]
+    if not lista_cursos:
+        return {"alumnos": [], "notas": [], "justificaciones": []}
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM alumnos WHERE activo = 1 AND curso = ANY(%s) ORDER BY curso, nombre",
+        (lista_cursos,)
+    )
+    alumnos = [dict(r) for r in cursor.fetchall()]
+    ruts = [a["rut"] for a in alumnos]
+
+    notas = []
+    if ruts:
+        cursor.execute("SELECT * FROM notas WHERE rut = ANY(%s)", (ruts,))
+        notas = [dict(r) for r in cursor.fetchall()]
+
+    cursor.execute(
+        "SELECT * FROM justificaciones WHERE curso = ANY(%s) ORDER BY fecha DESC",
+        (lista_cursos,)
+    )
+    justificaciones = [dict(r) for r in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+    return {
+        "alumnos": alumnos,
+        "notas": notas,
+        "justificaciones": justificaciones
+    }
+
 @app.get("/api/alumnos")
 def listar_alumnos(incluir_inactivos: bool = False):
     conn = get_db()

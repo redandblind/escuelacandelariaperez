@@ -310,17 +310,13 @@ function calcPromedio(notas, semestre){
 
 async function cargarTodoDesdeAPI(){
   try {
-    const [resAl, resNo, resJu] = await Promise.all([
-      fetch(`${API_URL}/alumnos`),
-      fetch(`${API_URL}/notas`),
-      fetch(`${API_URL}/justificaciones`).catch(() => ({ ok: false }))
-    ]);
-    alumnosCache = resAl.ok ? await resAl.json() : [];
-    notasCache = resNo.ok ? await resNo.json() : [];
-    if (resJu.ok) {
-      const todasJust = await resJu.json();
-      justificacionesCache = todasJust.filter(j => cursosDelProfe.includes(j.curso));
-    }
+    const queryCursos = encodeURIComponent(cursosDelProfe.join(','));
+    const res = await fetch(`${API_URL}/docente/panel?cursos=${queryCursos}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    alumnosCache = data.alumnos || [];
+    notasCache = data.notas || [];
+    justificacionesCache = data.justificaciones || [];
     renderizarTodo();
     actualizarNotificacionesJustificaciones();
   } catch (err) {
@@ -343,27 +339,27 @@ function renderizarTodo(){
       const nombre = al.nombre;
       const notasAl = notasCache.filter(n => n.rut === rut);
       const prom = calcPromedio(notasAl);
-      const chip = '<span class="prom-chip '+claseProm(prom)+'">'+(prom!=null?fmtNota(prom):'—')+'</span>';
-      const nombreEsc = nombre.replace(/'/g,"\'");
+      const chip = `<span class="prom-chip ${claseProm(prom)}">${prom!=null?fmtNota(prom):'—'}</span>`;
+      const nombreEsc = nombre.replace(/'/g, "\\'");
 
-      filas += '<tr id="fila-'+rut+'" data-nombre="'+nombre.toLowerCase()+'" data-rut="'+rut+'">'+
-        '<td style="font-family:monospace;font-size:.84rem">'+rut+'</td>'+
-        '<td>'+nombre+'</td>'+
-        '<td style="text-align:center">'+chip+'</td>'+
-        '<td class="acciones">'+
-          '<button class="menu-dots" onclick="toggleMenu(''+rut+'')">⋮</button>'+
-          '<div id="menu-'+rut+'" class="dropdown-menu">'+
-            '<button onclick="abrirModalNota(''+rut+'',''+nombreEsc+'')">➕ Agregar nota</button>'+
-            '<button onclick="abrirVerNotas(''+rut+'',''+nombreEsc+'')">📊 Ver notas / promedio</button>'+
-            '<button onclick="abrirObs(''+rut+'',''+nombreEsc+'')">📝 Observación</button>'+
-            '<button class="danger" onclick="eliminarAlumno(''+rut+'',''+nombreEsc+'')">🗑️ Desactivar</button>'+
-          '</div></td></tr>';
+      filas += `<tr id="fila-${rut}" data-nombre="${nombre.toLowerCase()}" data-rut="${rut}">
+        <td style="font-family:monospace;font-size:.84rem">${rut}</td>
+        <td>${nombre}</td>
+        <td style="text-align:center">${chip}</td>
+        <td class="acciones">
+          <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
+          <div id="menu-${rut}" class="dropdown-menu">
+            <button onclick="abrirModalNota('${rut}','${nombreEsc}')">➕ Agregar nota</button>
+            <button onclick="abrirVerNotas('${rut}','${nombreEsc}')">📊 Ver notas / promedio</button>
+            <button onclick="abrirObs('${rut}','${nombreEsc}')">📝 Observación</button>
+            <button class="danger" onclick="eliminarAlumno('${rut}','${nombreEsc}')">🗑️ Desactivar</button>
+          </div></td></tr>`;
     });
 
     if(!activos.length) filas='<tr><td colspan="4" class="empty-state">No hay alumnos activos en este curso.</td></tr>';
-    cont.innerHTML += '<div class="curso-section" data-curso="'+cursoNombre+'">'+
-      '<div class="curso-header"><h3>'+cursoNombre+'</h3><span class="curso-count">'+activos.length+' alumno'+(activos.length!==1?'s':'')+'</span></div>'+
-      '<table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>'+filas+'</tbody></table></div>';
+    cont.innerHTML += `<div class="curso-section" data-curso="${cursoNombre}">
+      <div class="curso-header"><h3>${cursoNombre}</h3><span class="curso-count">${activos.length} alumno${activos.length!==1?'s':''}</span></div>
+      <table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>${filas}</tbody></table></div>`;
   });
 
   document.getElementById('statAlumnos').textContent = total;
@@ -463,11 +459,11 @@ function renderListaNotasDocente(sem){
   if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones en este período.</div>'; return; }
   cont.innerHTML = list.map(n=>{
     const v = parseNota(n.nota);
-    return '<div class="nota-row" data-sem="'+(n.semestre||'1')+'">'+
-      '<div><strong>'+n.asignatura+'</strong><div style="font-size:.75rem;color:#64748b">'+(n.fecha||'')+' · Sem '+(n.semestre||'1')+'</div></div>'+
-      '<div><span class="prom-chip '+claseProm(v)+'">'+fmtNota(v)+'</span>'+
-      (n.id ? '<button class="btn-del-nota" onclick="borrarNota('+n.id+')" title="Eliminar nota">✕</button>' : '')+
-      '</div></div>';
+    return `<div class="nota-row" data-sem="${n.semestre||'1'}">
+      <div><strong>${n.asignatura}</strong><div style="font-size:.75rem;color:#64748b">${n.fecha||''} · Sem ${n.semestre||'1'}</div></div>
+      <div><span class="prom-chip ${claseProm(v)}">${fmtNota(v)}</span>
+      ${n.id ? `<button class="btn-del-nota" onclick="borrarNota(${n.id})" title="Eliminar nota">✕</button>` : ''}
+      </div></div>`;
   }).join('');
 }
 
@@ -502,7 +498,7 @@ async function abrirObs(rut, nombre){
       const obs = data.observaciones || [];
       if(obs.length){
         cont.innerHTML = '<div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:#64748b">Historial</div>' +
-          obs.map(o=>'<div class="obs-item '+(o.tipo==='neg'?'neg':'')+'">'+o.texto+'<div class="obs-meta">'+(o.fecha||'')+' · '+(o.docente||'')+'</div></div>').join('');
+          obs.map(o=>`<div class="obs-item ${o.tipo==='neg'?'neg':''}">${o.texto}<div class="obs-meta">${o.fecha||''} · ${o.docente||''}</div></div>`).join('');
       } else cont.innerHTML = '';
     }
   } catch(e){ cont.innerHTML = ''; }
@@ -528,7 +524,7 @@ async function guardarObs(){
 }
 
 function abrirModalAnuncio(){
-  document.getElementById('cursoAnuncio').innerHTML = cursosDelProfe.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  document.getElementById('cursoAnuncio').innerHTML = cursosDelProfe.map(c=>`<option value="${c}">${c}</option>`).join('');
   document.getElementById('textoAnuncio').value = '';
   document.getElementById('modalAnuncio').classList.add('show');
 }
@@ -553,7 +549,7 @@ async function guardarAnuncio(){
 }
 
 function abrirModalCrearAlumno(){
-  document.getElementById('nuevoCurso').innerHTML = cursosDelProfe.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  document.getElementById('nuevoCurso').innerHTML = cursosDelProfe.map(c=>`<option value="${c}">${c}</option>`).join('');
   document.getElementById('nuevoRut').value='';
   document.getElementById('nuevoNombre').value='';
   document.getElementById('modalCrearAlumno').classList.add('show');
@@ -575,9 +571,7 @@ async function crearNuevoAlumno(){
     });
     const data = await res.json();
     if(!res.ok){ alert(data.detail || 'Error al crear alumno.'); return; }
-    alert('✓ Perfil creado:
-'+nombre+'
-Curso: '+curso);
+    alert(`✓ Perfil creado:\n${nombre}\nCurso: ${curso}`);
     cerrarModal('modalCrearAlumno');
     await cargarTodoDesdeAPI();
   } catch(e) {
@@ -586,13 +580,12 @@ Curso: '+curso);
 }
 
 async function eliminarAlumno(rut, nombre){
-  if(!confirm('¿Desactivar a '+nombre+' del sistema?
-El alumno ya no podrá ingresar.')) return;
+  if(!confirm(`¿Desactivar a ${nombre} del sistema?\nEl alumno ya no podrá ingresar.`)) return;
   try {
     const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=0`, { method: "PATCH" });
     if(!res.ok) throw new Error();
     await cargarTodoDesdeAPI();
-    alert('Estudiante '+nombre+' desactivado.');
+    alert(`Estudiante ${nombre} desactivado.`);
   } catch(e) {
     alert('No se pudo desactivar al estudiante.');
   }
@@ -612,7 +605,7 @@ function abrirBuzonJustificaciones(){
   else cont.innerHTML = justificacionesCache.map(j=>{
     const al = alumnosCache.find(a => a.rut === j.rut);
     const nombreAl = al ? al.nombre : j.rut;
-    return '<div class="justificacion-card"><strong>'+nombreAl+'</strong><div class="meta">'+j.curso+' · '+j.fecha+' · '+j.rut+'</div><p>"'+j.mensaje+'"</p></div>';
+    return `<div class="justificacion-card"><strong>${nombreAl}</strong><div class="meta">${j.curso} · ${j.fecha} · ${j.rut}</div><p>"${j.mensaje}"</p></div>`;
   }).join('');
   document.getElementById('modalJustificaciones').classList.add('show');
 }
