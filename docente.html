@@ -15,7 +15,6 @@
       currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
     } catch (e) { currentUser = null; }
 
-    // Guardia de sesión corregida: permite 'docente' y evita expulsiones falsas
     const rolActual = currentUser && currentUser.rol ? String(currentUser.rol).toLowerCase().trim() : "";
     if (!currentUser || rolActual !== "docente") {
       localStorage.removeItem(SESSION_KEY);
@@ -35,7 +34,6 @@
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Registrar Calificación -->
       <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Ingresar Calificación</h2>
         <form id="form-nota" class="space-y-3">
@@ -51,7 +49,6 @@
         </form>
       </div>
 
-      <!-- Registrar Asistencia -->
       <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Control de Asistencia</h2>
         <form id="form-asistencia" class="space-y-3">
@@ -70,7 +67,6 @@
       </div>
     </div>
 
-    <!-- Historial Reciente de Notas -->
     <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
       <h2 class="text-lg font-bold text-white mb-3">Últimas Calificaciones Registradas</h2>
       <table class="w-full text-left text-sm">
@@ -93,10 +89,7 @@
 
     if (currentUser) {
       document.getElementById("docente-titulo").textContent =
-        `Docente: ${currentUser.nombre} ${currentUser.asignatura ? "(" + currentUser.asignatura + ")" : ""}`;
-      if (currentUser.asignatura) {
-        document.getElementById("n-asignatura").value = currentUser.asignatura;
-      }
+        `Docente: ${currentUser.nombre} ${currentUser.curso ? "(" + currentUser.curso + ")" : ""}`;
     }
 
     function cerrarSesion() {

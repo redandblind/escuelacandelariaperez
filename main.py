@@ -1,10 +1,9 @@
 import os
 import hashlib
-from datetime import datetime
 from typing import Optional
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -19,12 +18,12 @@ app.add_middleware(
 )
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "escuela16")
 
 def get_db():
     if not DATABASE_URL:
         raise HTTPException(status_code=500, detail="DATABASE_URL no configurada en el servidor.")
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-    return conn
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
 def hash_pwd(pwd: str) -> str:
     return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
@@ -34,14 +33,14 @@ def init_db():
         return
     conn = get_db()
     cur = conn.cursor()
-    cur.execute('''
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
             nombre VARCHAR(150) NOT NULL,
             rut VARCHAR(30) UNIQUE,
             email VARCHAR(150),
             rol VARCHAR(30) NOT NULL,
-            curso VARCHAR(50),
+            curso VARCHAR(80),
             asignatura VARCHAR(100),
             password_hash VARCHAR(255) NOT NULL,
             activo BOOLEAN DEFAULT TRUE,
@@ -51,12 +50,6 @@ def init_db():
             id SERIAL PRIMARY KEY,
             nombre VARCHAR(80) UNIQUE NOT NULL,
             profesor_jefe VARCHAR(150)
-        );
-        CREATE TABLE IF NOT EXISTS asignaturas (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            curso VARCHAR(80) NOT NULL,
-            docente_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL
         );
         CREATE TABLE IF NOT EXISTS calificaciones (
             id SERIAL PRIMARY KEY,
@@ -80,31 +73,13 @@ def init_db():
             nivel VARCHAR(30) DEFAULT 'info',
             creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-    ''')
-    # Crear Directora Maestra por defecto si no existe
-    cur.execute("SELECT id FROM usuarios WHERE LOWER(nombre) = LOWER(%s) AND rol = 'maestro'", ("Paulina Toledo",))
+    """)
+    cur.execute("SELECT id FROM usuarios WHERE rol = 'maestro' LIMIT 1")
     if not cur.fetchone():
         cur.execute(
             "INSERT INTO usuarios (nombre, rut, email, rol, password_hash) VALUES (%s, %s, %s, %s, %s)",
-            ("Paulina Toledo", "directora", "direccion@escuelacandelariaperez.cl", "maestro", hash_pwd("escuela16"))
+            ("Paulina Toledo", "directora", "direccion@escuelacandelariaperez.cl", "maestro", hash_pwd(ADMIN_PASSWORD))
         )
-    # Datos demo iniciales si no hay docentes ni estudiantes
-    cur.execute("SELECT COUNT(*) AS total FROM usuarios WHERE rol = 'docente'")
-    if cur.fetchone()["total"] == 0:
-        cur.execute(
-            "INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, password_hash) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            ("Profesor Demo", "11111111-1", "docente@escuelacandelariaperez.cl", "docente", "8° Básico A", "Matemática", hash_pwd("docente123"))
-        )
-    cur.execute("SELECT COUNT(*) AS total FROM usuarios WHERE rol = 'estudiante'")
-    if cur.fetchone()["total"] == 0:
-        cur.execute(
-            "INSERT INTO usuarios (nombre, rut, email, rol, curso, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
-            ("Estudiante Demo", "22222222-2", "estudiante@escuelacandelariaperez.cl", "estudiante", "8° Básico A", hash_pwd("alumno123"))
-        )
-    cur.execute("SELECT COUNT(*) AS total FROM cursos")
-    if cur.fetchone()["total"] == 0:
-        for c in ["1° Básico A", "2° Básico A", "3° Básico A", "4° Básico A", "5° Básico A", "6° Básico A", "7° Básico A", "8° Básico A"]:
-            cur.execute("INSERT INTO cursos (nombre) VALUES (%s) ON CONFLICT DO NOTHING", (c,))
     conn.commit()
     cur.close()
     conn.close()
@@ -119,7 +94,7 @@ def startup_event():
 class LoginRequest(BaseModel):
     identificador: str
     password: str
-    tipo_portal: str  # 'staff' (docentes/maestro) o 'estudiante'
+    tipo_portal: str
 
 class UsuarioCreate(BaseModel):
     nombre: str
@@ -141,10 +116,6 @@ class AsistenciaCreate(BaseModel):
     curso: str
     estado: str
 
-class CursoCreate(BaseModel):
-    nombre: str
-    profesor_jefe: Optional[str] = ""
-
 class AlertaCreate(BaseModel):
     titulo: str
     detalle: str
@@ -163,18 +134,18 @@ def login(data: LoginRequest):
 
     if data.tipo_portal == "staff":
         cur.execute(
-            '''SELECT id, nombre, rut, email, rol, curso, asignatura 
+            """SELECT id, nombre, rut, email, rol, curso, asignatura 
                FROM usuarios 
                WHERE (LOWER(nombre) = LOWER(%s) OR LOWER(rut) = LOWER(%s) OR LOWER(email) = LOWER(%s))
-               AND rol IN ('maestro', 'docente') AND password_hash = %s AND activo = TRUE''',
+               AND rol IN ('maestro', 'docente') AND password_hash = %s AND activo = TRUE""",
             (ident, ident, ident, pwd_h)
         )
     else:
         cur.execute(
-            '''SELECT id, nombre, rut, email, rol, curso, asignatura 
+            """SELECT id, nombre, rut, email, rol, curso, asignatura 
                FROM usuarios 
                WHERE (LOWER(rut) = LOWER(%s) OR LOWER(nombre) = LOWER(%s))
-               AND rol = 'estudiante' AND password_hash = %s AND activo = TRUE''',
+               AND rol = 'estudiante' AND password_hash = %s AND activo = TRUE""",
             (ident, ident, pwd_h)
         )
     user = cur.fetchone()
@@ -184,7 +155,6 @@ def login(data: LoginRequest):
     if not user:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas o usuario no autorizado para este portal.")
 
-    rol_normalizado = str(user["rol"]).strip().lower()
     return {
         "ok": True,
         "usuario": {
@@ -192,7 +162,7 @@ def login(data: LoginRequest):
             "nombre": user["nombre"],
             "rut": user["rut"],
             "email": user["email"],
-            "rol": rol_normalizado,
+            "rol": str(user["rol"]).strip().lower(),
             "curso": user["curso"] or "",
             "asignatura": user["asignatura"] or ""
         }
@@ -202,7 +172,7 @@ def login(data: LoginRequest):
 def dashboard_maestro():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT id, nombre, rut, email, rol, curso, asignatura FROM usuarios ORDER BY rol, nombre")
+    cur.execute("SELECT id, nombre, rut, email, rol, curso, asignatura FROM usuarios ORDER BY rol, curso, nombre")
     usuarios = cur.fetchall()
     cur.execute("SELECT * FROM cursos ORDER BY nombre")
     cursos = cur.fetchall()
@@ -228,15 +198,15 @@ def crear_usuario(u: UsuarioCreate):
         raise HTTPException(status_code=400, detail="Rol inválido.")
     try:
         cur.execute(
-            '''INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, password_hash)
-               VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
+            """INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, password_hash)
+               VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id""",
             (u.nombre.strip(), u.rut.strip(), u.email.strip(), rol_clean, u.curso.strip(), u.asignatura.strip(), hash_pwd(u.password))
         )
         new_id = cur.fetchone()["id"]
         conn.commit()
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail=f"Error al crear usuario (¿RUT duplicado?): {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error al crear usuario: {str(e)}")
     finally:
         cur.close()
         conn.close()
@@ -246,25 +216,10 @@ def crear_usuario(u: UsuarioCreate):
 def eliminar_usuario(user_id: int):
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM usuarios WHERE id = %s AND LOWER(nombre) != 'paulina toledo'", (user_id,))
+    cur.execute("DELETE FROM usuarios WHERE id = %s AND rol != 'maestro'", (user_id,))
     conn.commit()
     cur.close()
     conn.close()
-    return {"ok": True}
-
-@app.post("/api/cursos")
-def crear_curso(c: CursoCreate):
-    conn = get_db()
-    cur = conn.cursor()
-    try:
-        cur.execute("INSERT INTO cursos (nombre, profesor_jefe) VALUES (%s, %s)", (c.nombre.strip(), c.profesor_jefe.strip()))
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise HTTPException(status_code=400, detail="El curso ya existe o datos inválidos.")
-    finally:
-        cur.close()
-        conn.close()
     return {"ok": True}
 
 @app.post("/api/alertas")
@@ -288,12 +243,12 @@ def datos_docente(curso: Optional[str] = ""):
     estudiantes = cur.fetchall()
     cur.execute("SELECT * FROM cursos ORDER BY nombre")
     cursos = cur.fetchall()
-    cur.execute('''
+    cur.execute("""
         SELECT c.id, u.nombre AS estudiante, u.curso, c.asignatura, c.evaluacion, c.nota, c.fecha
         FROM calificaciones c
         JOIN usuarios u ON c.estudiante_id = u.id
         ORDER BY c.id DESC LIMIT 50
-    ''')
+    """)
     notas = cur.fetchall()
     cur.close()
     conn.close()
@@ -350,14 +305,14 @@ def datos_estudiante(estudiante_id: int):
 @app.post("/api/admin/promocion-anual")
 def promocion_anual():
     mapa = {
-        "1° Básico A": "2° Básico A",
-        "2° Básico A": "3° Básico A",
-        "3° Básico A": "4° Básico A",
-        "4° Básico A": "5° Básico A",
-        "5° Básico A": "6° Básico A",
-        "6° Básico A": "7° Básico A",
-        "7° Básico A": "8° Básico A",
-        "8° Básico A": "Egresado"
+        "1° Básico": "2° Básico",
+        "2° Básico": "3° Básico",
+        "3° Básico": "4° Básico",
+        "4° Básico": "5° Básico",
+        "5° Básico": "6° Básico",
+        "6° Básico": "7° Básico",
+        "7° Básico": "8° Básico",
+        "8° Básico": "Egresado"
     }
     conn = get_db()
     cur = conn.cursor()

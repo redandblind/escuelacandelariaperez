@@ -37,7 +37,6 @@
   </header>
 
   <main class="max-w-7xl mx-auto p-6 space-y-6">
-    <!-- KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
         <p class="text-xs text-slate-400 uppercase">Total Estudiantes</p>
@@ -58,7 +57,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Crear Usuario -->
       <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Registrar Docente o Estudiante</h2>
         <form id="form-usuario" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -69,7 +67,7 @@
             <option value="estudiante">Estudiante</option>
             <option value="maestro">Dirección (Maestro)</option>
           </select>
-          <input id="u-curso" type="text" placeholder="Curso (ej: 8° Básico A)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="u-curso" type="text" placeholder="Curso (ej: 8° Básico)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
           <input id="u-asignatura" type="text" placeholder="Asignatura (solo docentes)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
           <input id="u-password" type="text" required placeholder="Contraseña inicial" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
           <button type="submit" class="sm:col-span-2 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold text-sm">
@@ -78,7 +76,6 @@
         </form>
       </div>
 
-      <!-- Crear Alerta / Comunicado -->
       <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Publicar Alerta o Comunicado Institucional</h2>
         <form id="form-alerta" class="space-y-3">
@@ -91,7 +88,6 @@
       </div>
     </div>
 
-    <!-- Listado de Usuarios -->
     <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
       <h2 class="text-lg font-bold text-white mb-3">Nómina de Usuarios Registrados</h2>
       <table class="w-full text-left text-sm">
@@ -139,7 +135,7 @@
             <td class="py-2">${u.curso || "-"}</td>
             <td class="py-2">${u.asignatura || "-"}</td>
             <td class="py-2 text-right">
-              ${u.nombre.toLowerCase() !== "paulina toledo"
+              ${u.rol !== "maestro"
                 ? `<button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>`
                 : `<span class="text-xs text-slate-500">Protegido</span>`}
             </td>
