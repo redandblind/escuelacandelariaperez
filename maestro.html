@@ -1,789 +1,213 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Centro de Mando Dirección · Escuela Candelaria Pérez</title>
-<style>
-:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--success:#059669;--danger:#dc2626;--warn:#d97706;--radius:14px;--shadow:0 4px 20px rgba(15,23,42,.05)}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:40;flex-wrap:wrap;gap:10px}
-.header-left h1{font-size:1.1rem;color:var(--primary-dark);font-weight:700}
-.header-left p{font-size:.78rem;color:var(--primary-light);margin-top:1px}
-.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn-top{background:#f1f5f9;color:#475569;border:1px solid var(--border);padding:8px 13px;border-radius:9px;font-size:.83rem;font-weight:600;cursor:pointer;text-decoration:none}
-.btn-top:hover{background:#e2e8f0}
-.btn-top.primary{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
-main{flex:1;max-width:1120px;width:100%;margin:0 auto;padding:24px 16px 40px}
-.welcome-card{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:22px 24px;border-radius:var(--radius);margin-bottom:20px;box-shadow:0 8px 24px rgba(30,64,175,.25)}
-.welcome-card h2{font-size:1.35rem;font-weight:700;margin-bottom:4px}
-.welcome-card p{font-size:.88rem;opacity:.92}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:22px}
-.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
-.kpi-card .num{font-size:1.65rem;font-weight:700;color:var(--primary-dark)}
-.kpi-card .lbl{font-size:.76rem;color:var(--muted);margin-top:2px;font-weight:500}
-.kpi-card.alert .num{color:var(--danger)}
-.nav-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.nav-tab{padding:9px 15px;border-radius:10px;font-weight:600;font-size:.86rem;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--muted)}
-.nav-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px;margin-bottom:20px;overflow-x:auto}
-.card-title{font-size:1.05rem;font-weight:700;color:var(--primary-dark);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-table{width:100%;border-collapse:collapse;font-size:.86rem}
-th,td{padding:11px 12px;text-align:left;border-bottom:1px solid #f1f5f9}
-th{color:var(--muted);font-weight:600;font-size:.74rem;text-transform:uppercase;background:#fafbfc}
-tr:hover td{background:#f8fafc}
-.btn-action{padding:7px 13px;border-radius:8px;font-weight:600;font-size:.81rem;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:5px}
-.btn-green{background:#059669;color:#fff}
-.btn-blue{background:#2563eb;color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-soft{background:#e0f2fe;color:#0369a1}
-.btn-warn{background:#fef3c7;color:#92400e}
-.badge-pill{padding:3px 8px;border-radius:6px;font-size:.74rem;font-weight:700;display:inline-block}
-.ok{background:#d1fae5;color:#065f46}
-.mid{background:#fef3c7;color:#92400e}
-.bad{background:#fee2e2;color:#991b1b}
-.na{background:#f1f5f9;color:#64748b}
-.toolbar-inline{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.toolbar-inline input,.toolbar-inline select{padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:.88rem;outline:none;background:#fff}
-.checks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px;background:#f8fafc;padding:10px;border-radius:8px;border:1px solid var(--border)}
-.checks-grid label{display:flex;align-items:center;gap:6px;margin:0!important;font-weight:500;cursor:pointer}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:16px;width:100%;max-width:520px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
-.modal label{display:block;font-size:.82rem;font-weight:600;color:#334155;margin-top:12px;margin-bottom:4px}
-.modal input,.modal select,.modal textarea{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;outline:none;font-family:inherit}
-.modal-footer{margin-top:20px;display:flex;gap:10px;justify-content:flex-end}
-footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
-@media print{
-  body *{visibility:hidden}
-  #certificadoArea,#certificadoArea *{visibility:visible}
-  #certificadoArea{position:fixed;inset:0;background:#fff;padding:40px;border:none;box-shadow:none}
-  .no-print{display:none!important}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Mando Directivo | Escuela Candelaria Pérez</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<header>
-  <div class="header-left">
-    <h1>Escuela Candelaria Pérez</h1>
-    <p>Centro de Mando Directivo · Versión 8.0</p>
-  </div>
-  <div class="header-actions">
-    <a href="docente.html" class="btn-top primary" onclick="irPanelDocenteGlobal()">📚 Vista Docente / Notas</a>
-    <button class="btn-top" onclick="abrirModalAnuncioGlobal()">📢 Comunicado Escuela</button>
-    <a href="index.html" class="btn-top" onclick="sessionStorage.clear()">Cerrar sesión</a>
-  </div>
-</header>
-<main>
-  <div class="welcome-card">
-    <h2 id="saludoMaestro">Bienvenida, Directora Paulina Toledo</h2>
-    <p>Control total de perfiles docentes y estudiantiles, cursos dinámicos, alertas tempranas, asistencia, carga masiva y certificados oficiales.</p>
-  </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <script>
+    const SESSION_KEY = "ecp_v8_session";
+    const API_URL = (localStorage.getItem("ecp_v8_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch (e) { currentUser = null; }
 
-  <div class="kpi-grid">
-    <div class="kpi-card"><div class="num" id="kpiAlumnos">0</div><div class="lbl">Estudiantes Activos</div></div>
-    <div class="kpi-card"><div class="num" id="kpiDocentes">0</div><div class="lbl">Docentes / Directivos</div></div>
-    <div class="kpi-card"><div class="num" id="kpiCursos">0</div><div class="lbl">Cursos Activos</div></div>
-    <div class="kpi-card"><div class="num" id="kpiPromEscuela">—</div><div class="lbl">Promedio General Escuela</div></div>
-    <div class="kpi-card alert"><div class="num" id="kpiRiesgo">0</div><div class="lbl">Alertas de Riesgo</div></div>
-  </div>
-
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="cambiarTab('docentes',this)">👨‍🏫 Docentes y Directivos</button>
-    <button class="nav-tab" onclick="cambiarTab('alumnos',this)">🎓 Estudiantes (Control Total)</button>
-    <button class="nav-tab" onclick="cambiarTab('cursos',this)">🏫 Cursos y Asignaturas</button>
-    <button class="nav-tab" onclick="cambiarTab('riesgo',this)">⚠️ Alertas Tempranas</button>
-    <button class="nav-tab" onclick="cambiarTab('masivo',this)">📥 Carga Masiva / Exportar</button>
-    <button class="nav-tab" onclick="cambiarTab('auditoria',this)">🛡️ Auditoría</button>
-  </div>
-
-  <!-- TAB 1: DOCENTES -->
-  <div id="tab-docentes" class="tab-content active">
-    <div class="card">
-      <div class="card-title">
-        <span>Cuerpo Docente y Perfiles Maestro</span>
-        <button class="btn-action btn-green" onclick="abrirModalDocente()">＋ Crear Docente / Maestro</button>
-      </div>
-      <table>
-        <thead><tr><th>Nombre</th><th>Rol</th><th>Cursos a Cargo</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
-        <tbody id="tablaDocentes"><tr><td colspan="5">Cargando...</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- TAB 2: ALUMNOS -->
-  <div id="tab-alumnos" class="tab-content">
-    <div class="card">
-      <div class="card-title">
-        <span>Gestión Global de Estudiantes</span>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-action btn-soft" onclick="abrirModalTrasladoMasivo()">🔄 Trasladar Curso</button>
-          <button class="btn-action btn-green" onclick="abrirModalAlumno()">＋ Matricular Alumno</button>
-        </div>
-      </div>
-      <div class="toolbar-inline">
-        <input type="text" id="filtroAlumnoTexto" placeholder="Buscar por nombre o RUT..." oninput="renderAlumnos()" style="flex:1;min-width:200px">
-        <select id="filtroAlumnoCurso" onchange="renderAlumnos()"><option value="">Todos los cursos</option></select>
-        <select id="filtroAlumnoEstado" onchange="renderAlumnos()">
-          <option value="1">Solo Activos</option>
-          <option value="all">Todos (incl. inactivos)</option>
-          <option value="0">Solo Inactivos</option>
-        </select>
-      </div>
-      <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleTodosChecks(this)"></th><th>RUT</th><th>Nombre</th><th>Curso</th><th>Prom.</th><th>Asist.</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
-        <tbody id="tablaAlumnos"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- TAB 3: CURSOS Y ASIGNATURAS -->
-  <div id="tab-cursos" class="tab-content">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px">
-      <div class="card">
-        <div class="card-title">
-          <span>Cursos de la Institución</span>
-          <button class="btn-action btn-green" onclick="abrirModalCurso()">＋ Nuevo Curso</button>
-        </div>
-        <table>
-          <thead><tr><th>Orden</th><th>Curso</th><th>Matriculados</th><th style="text-align:right">Acción</th></tr></thead>
-          <tbody id="tablaCursos"></tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title">
-          <span>Asignaturas del Plan</span>
-          <button class="btn-action btn-green" onclick="abrirModalAsignatura()">＋ Nueva Asignatura</button>
-        </div>
-        <table>
-          <thead><tr><th>Asignatura</th><th style="text-align:right">Acción</th></tr></thead>
-          <tbody id="tablaAsignaturas"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 4: ALERTAS TEMPRANAS -->
-  <div id="tab-riesgo" class="tab-content">
-    <div class="card">
-      <div class="card-title"><span>⚠️ Estudiantes que Requieren Atención Directiva</span></div>
-      <p style="font-size:.84rem;color:var(--muted);margin-bottom:14px">Detección automática de alumnos con promedio &lt; 4,0, asistencia &lt; 85% o 3 o más anotaciones negativas.</p>
-      <table>
-        <thead><tr><th>RUT</th><th>Estudiante</th><th>Curso</th><th>Promedio</th><th>Asistencia</th><th>Anot. Neg.</th><th>Motivo Alerta</th></tr></thead>
-        <tbody id="tablaRiesgo"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- TAB 5: CARGA MASIVA / EXPORTAR -->
-  <div id="tab-masivo" class="tab-content">
-    <div class="card">
-      <div class="card-title"><span>📥 Importación Masiva de Matrícula (CSV / Excel)</span></div>
-      <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px">Pega líneas con formato: <strong>RUT, NOMBRE COMPLETO, CURSO</strong> (una por línea). Ejemplo:<br><code>24567890-1, SOFIA MARTINEZ PEREZ, 1° Básico</code></p>
-      <textarea id="csvImportInput" rows="7" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:monospace;font-size:.85rem" placeholder="24567890-1, SOFIA MARTINEZ PEREZ, 1° Básico"></textarea>
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-action btn-green" onclick="procesarImportacionCSV()">⬆️ Importar Alumnos</button>
-        <button class="btn-action btn-blue" onclick="exportarSabanaCSV()">⬇️ Exportar Sábana General (CSV Excel)</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 6: AUDITORÍA -->
-  <div id="tab-auditoria" class="tab-content">
-    <div class="card">
-      <div class="card-title"><span>🛡️ Bitácora de Seguridad y Cambios Críticos</span></div>
-      <table>
-        <thead><tr><th>Fecha / Hora (Chile)</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead>
-        <tbody id="tablaLogs"></tbody>
-      </table>
-    </div>
-  </div>
-</main>
-
-<!-- MODAL DOCENTE -->
-<div id="modalDocente" class="modal-overlay">
-  <div class="modal">
-    <h3 id="tituloModalDoc" style="color:var(--primary-dark)">Crear Perfil Docente</h3>
-    <input type="hidden" id="editDocId">
-    <label>Nombre Completo</label>
-    <input type="text" id="docNombre" placeholder="Ej: Carlos Muñoz">
-    <label>Contraseña <span id="hintPassDoc" style="font-weight:400;color:var(--muted)"></span></label>
-    <input type="password" id="docPass" placeholder="••••••••">
-    <label>Tipo de Perfil (Rol)</label>
-    <select id="docRol" onchange="toggleCursosChecks()">
-      <option value="docente">Docente Regular (solo cursos asignados)</option>
-      <option value="maestro">Maestro / Directivo (acceso total a la escuela)</option>
-    </select>
-    <div id="boxCursosDoc">
-      <label>Cursos Asignados</label>
-      <div id="checksCursosDoc" class="checks-grid"></div>
-    </div>
-    <label>Estado de Cuenta</label>
-    <select id="docActivo">
-      <option value="1">Activo</option>
-      <option value="0">Suspendido</option>
-    </select>
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalDocente')">Cancelar</button>
-      <button class="btn-action btn-green" onclick="guardarDocente()">Guardar Perfil</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ALUMNO -->
-<div id="modalAlumno" class="modal-overlay">
-  <div class="modal">
-    <h3 id="tituloModalAl" style="color:var(--primary-dark)">Matricular Estudiante</h3>
-    <input type="hidden" id="modoAlumno" value="crear">
-    <label>RUT Chileno (Módulo 11)</label>
-    <input type="text" id="alRut" placeholder="Ej: 25123456-7">
-    <label>Nombre Completo</label>
-    <input type="text" id="alNombre" placeholder="Ej: Benjamín Soto Rojas">
-    <label>Curso</label>
-    <select id="alCurso"></select>
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalAlumno')">Cancelar</button>
-      <button class="btn-action btn-green" onclick="guardarAlumno()">Guardar Estudiante</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL TRASLADO MASIVO -->
-<div id="modalTraslado" class="modal-overlay">
-  <div class="modal">
-    <h3 style="color:var(--primary-dark)">🔄 Trasladar Alumnos Seleccionados</h3>
-    <p id="txtCantTraslado" style="font-size:.85rem;color:var(--muted);margin-top:6px"></p>
-    <label>Nuevo Curso Destino</label>
-    <select id="selectCursoTraslado"></select>
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalTraslado')">Cancelar</button>
-      <button class="btn-action btn-blue" onclick="ejecutarTrasladoMasivo()">Confirmar Traslado</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CURSO -->
-<div id="modalCurso" class="modal-overlay">
-  <div class="modal">
-    <h3 style="color:var(--primary-dark)">Crear Nuevo Curso</h3>
-    <label>Nombre del Curso</label>
-    <input type="text" id="nuevoCursoNombre" placeholder="Ej: Kínder o 1° Básico B">
-    <label>Orden de Promoción (1, 2, 3...)</label>
-    <input type="number" id="nuevoCursoOrden" value="9" min="0" max="50">
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalCurso')">Cancelar</button>
-      <button class="btn-action btn-green" onclick="guardarCurso()">Crear Curso</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ASIGNATURA -->
-<div id="modalAsignatura" class="modal-overlay">
-  <div class="modal">
-    <h3 style="color:var(--primary-dark)">Agregar Asignatura</h3>
-    <label>Nombre de la Asignatura</label>
-    <input type="text" id="nuevaAsigNombre" placeholder="Ej: Taller de Robótica">
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalAsignatura')">Cancelar</button>
-      <button class="btn-action btn-green" onclick="guardarAsignatura()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ANUNCIO GLOBAL -->
-<div id="modalAnuncioGlobal" class="modal-overlay">
-  <div class="modal">
-    <h3 style="color:var(--primary-dark)">📢 Publicar Comunicado Institucional</h3>
-    <label>Destinatarios</label>
-    <select id="destAnuncioGlobal"></select>
-    <label>Mensaje Oficial</label>
-    <textarea id="txtAnuncioGlobal" rows="4" placeholder="Escribe el comunicado oficial de Dirección..."></textarea>
-    <div class="modal-footer">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalAnuncioGlobal')">Cancelar</button>
-      <button class="btn-action btn-blue" onclick="enviarAnuncioGlobal()">Publicar Comunicado</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CERTIFICADO ALUMNO REGULAR -->
-<div id="modalCertificado" class="modal-overlay">
-  <div class="modal" style="max-width:650px">
-    <div id="certificadoArea" style="border:2px solid #1e3a8a;padding:30px;border-radius:10px">
-      <div style="text-align:center;border-bottom:2px solid #1e3a8a;padding-bottom:14px;margin-bottom:20px">
-        <h2 style="color:#1e3a8a;font-size:1.3rem">ESCUELA CANDELARIA PÉREZ</h2>
-        <p style="font-size:.85rem;color:#475569">San Javier · Región del Maule · Ministerio de Educación</p>
-      </div>
-      <h3 style="text-align:center;letter-spacing:1px;margin-bottom:22px;text-decoration:underline">CERTIFICADO DE ALUMNO REGULAR</h3>
-      <p id="textoCertificado" style="line-height:1.8;font-size:.98rem;text-align:justify;margin-bottom:35px"></p>
-      <div style="margin-top:50px;text-align:center">
-        <div style="width:240px;border-top:1px solid #0f172a;margin:0 auto;padding-top:6px;font-weight:700;font-size:.9rem">PAULINA TOLEDO</div>
-        <div style="font-size:.8rem;color:#475569">Directora · Escuela Candelaria Pérez</div>
-      </div>
-      <p id="fechaCertificado" style="margin-top:28px;font-size:.8rem;color:#64748b"></p>
-    </div>
-    <div class="modal-footer no-print">
-      <button class="btn-action" style="background:#e2e8f0" onclick="cerrarModal('modalCertificado')">Cerrar</button>
-      <button class="btn-action btn-blue" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-    </div>
-  </div>
-</div>
-
-<footer>Escuela Candelaria Pérez · San Javier · Centro de Mando Directivo v8.0</footer>
-
-<script>
-const API_URL = "/api";
-let sesionMaestro = null;
-let dataGlobal = { alumnos: [], notas: [], observaciones: [], asistencias: [], docentes: [], cursos: [], asignaturas: [], logs: [] };
-
-(function init(){
-  try{
-    sesionMaestro = JSON.parse(sessionStorage.getItem('maestro_session') || 'null');
-    if(!sesionMaestro || sesionMaestro.rol !== 'maestro' || Date.now() > sesionMaestro.exp){
-      sessionStorage.removeItem('maestro_session');
-      window.location.href = "index.html";
-      return;
+    if (!currentUser || (currentUser.rol || "").toLowerCase().trim() !== "maestro") {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
     }
-    document.getElementById('saludoMaestro').textContent = 'Bienvenida, Directora ' + formatearNombre(sesionMaestro.nombre);
-    cargarResumenGlobal();
-  }catch(e){ window.location.href = "index.html"; }
-})();
+  </script>
 
-function formatearNombre(n){ return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' '); }
-function authH(json=true){
-  const h = { "Authorization": `Bearer ${sesionMaestro.token}` };
-  if(json) h["Content-Type"] = "application/json";
-  return h;
-}
-function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
+  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Centro de Mando Directivo v8.0</span>
+      <h1 id="directora-nombre" class="text-xl font-bold text-white">Directora: Paulina Toledo</h1>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="ejecutarPromocion()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold rounded-lg">
+        Promoción Anual
+      </button>
+      <button onclick="cerrarSesion()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg">
+        Cerrar Sesión
+      </button>
+    </div>
+  </header>
 
-function irPanelDocenteGlobal(){
-  const todos = dataGlobal.cursos.map(c => c.nombre);
-  sessionStorage.setItem('docente_session', JSON.stringify({
-    rol: 'docente',
-    nombre: sesionMaestro.nombre,
-    cursos: todos.length ? todos : ["1° Básico","2° Básico","3° Básico","4° Básico","5° Básico","6° Básico","7° Básico","8° Básico"],
-    token: sesionMaestro.token,
-    exp: sesionMaestro.exp
-  }));
-}
+  <main class="max-w-7xl mx-auto p-6 space-y-6">
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Total Estudiantes</p>
+        <p id="kpi-estudiantes" class="text-2xl font-bold text-blue-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Total Docentes</p>
+        <p id="kpi-docentes" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Cursos Activos</p>
+        <p id="kpi-cursos" class="text-2xl font-bold text-indigo-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Promedio General Escuela</p>
+        <p id="kpi-promedio" class="text-2xl font-bold text-amber-400 mt-1">0.0</p>
+      </div>
+    </div>
 
-function cambiarTab(tab, btn){
-  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-'+tab).classList.add('active');
-}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Crear Usuario -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Registrar Docente o Estudiante</h2>
+        <form id="form-usuario" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input id="u-nombre" type="text" required placeholder="Nombre completo" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="u-rut" type="text" required placeholder="RUT (ej: 12345678-9)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <select id="u-rol" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
+            <option value="docente">Docente</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="maestro">Dirección (Maestro)</option>
+          </select>
+          <input id="u-curso" type="text" placeholder="Curso (ej: 8° Básico A)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="u-asignatura" type="text" placeholder="Asignatura (solo docentes)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="u-password" type="text" required placeholder="Contraseña inicial" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <button type="submit" class="sm:col-span-2 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold text-sm">
+            Guardar Usuario
+          </button>
+        </form>
+      </div>
 
-function calcPromedio(notas){
-  const byAsig = {};
-  notas.forEach(n=>{
-    const v = parseFloat(n.nota);
-    if(isNaN(v)) return;
-    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
-    byAsig[n.asignatura].push(v);
-  });
-  const avgs = Object.values(byAsig).map(a=>a.reduce((x,y)=>x+y,0)/a.length);
-  return avgs.length ? avgs.reduce((x,y)=>x+y,0)/avgs.length : null;
-}
+      <!-- Crear Alerta / Comunicado -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Publicar Alerta o Comunicado Institucional</h2>
+        <form id="form-alerta" class="space-y-3">
+          <input id="a-titulo" type="text" required placeholder="Título del comunicado" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <textarea id="a-detalle" rows="2" required placeholder="Detalle del mensaje para la comunidad escolar..." class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm"></textarea>
+          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm">
+            Publicar Alerta
+          </button>
+        </form>
+      </div>
+    </div>
 
-function calcAsistenciaPct(rut){
-  const regs = dataGlobal.asistencias.filter(a => a.rut === rut);
-  if(!regs.length) return null;
-  const presentes = regs.filter(r => r.estado === 'P' || r.estado === 'T' || r.estado === 'J').length;
-  return Math.round((presentes / regs.length) * 100);
-}
+    <!-- Listado de Usuarios -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
+      <h2 class="text-lg font-bold text-white mb-3">Nómina de Usuarios Registrados</h2>
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-700 text-slate-400">
+          <tr>
+            <th class="py-2">Nombre</th>
+            <th class="py-2">RUT</th>
+            <th class="py-2">Rol</th>
+            <th class="py-2">Curso</th>
+            <th class="py-2">Asignatura</th>
+            <th class="py-2 text-right">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-usuarios" class="divide-y divide-slate-700/60"></tbody>
+      </table>
+    </div>
+  </main>
 
-async function cargarResumenGlobal(){
-  try {
-    const res = await fetch(`${API_URL}/maestro/resumen`, { headers: authH(false) });
-    if(res.status === 401 || res.status === 403){ window.location.href = "index.html"; return; }
-    if(!res.ok) throw new Error();
-    dataGlobal = await res.json();
-    actualizarSelectoresCursos();
-    renderDocentes();
-    renderAlumnos();
-    renderCursosYAsignaturas();
-    renderAlertasYKPIs();
-    renderLogs();
-  } catch(e){ alert('Error cargando datos del servidor.'); }
-}
-
-function actualizarSelectoresCursos(){
-  const opts = dataGlobal.cursos.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
-  document.getElementById('filtroAlumnoCurso').innerHTML = '<option value="">Todos los cursos</option>' + opts;
-  document.getElementById('alCurso').innerHTML = opts;
-  document.getElementById('selectCursoTraslado').innerHTML = opts;
-  document.getElementById('destAnuncioGlobal').innerHTML = '<option value="TODOS">📢 TODA LA ESCUELA</option>' + opts;
-}
-
-function renderAlertasYKPIs(){
-  const activos = dataGlobal.alumnos.filter(a => a.activo === 1);
-  document.getElementById('kpiAlumnos').textContent = activos.length;
-  document.getElementById('kpiDocentes').textContent = dataGlobal.docentes.length;
-  document.getElementById('kpiCursos').textContent = dataGlobal.cursos.length;
-
-  let sumaProms = 0, cantProms = 0;
-  const riesgos = [];
-
-  activos.forEach(al => {
-    const notasAl = dataGlobal.notas.filter(n => n.rut === al.rut);
-    const prom = calcPromedio(notasAl);
-    if(prom !== null){ sumaProms += prom; cantProms++; }
-    const asist = calcAsistenciaPct(al.rut);
-    const negs = dataGlobal.observaciones.filter(o => o.rut === al.rut && o.tipo === 'neg').length;
-
-    const motivos = [];
-    if(prom !== null && prom < 4.0) motivos.push(`Promedio rojo (${prom.toFixed(1).replace('.',',')})`);
-    if(asist !== null && asist < 85) motivos.push(`Baja asistencia (${asist}%)`);
-    if(negs >= 3) motivos.push(`${negs} anotaciones negativas`);
-
-    if(motivos.length){
-      riesgos.push({ al, prom, asist, negs, motivos });
+  <script>
+    if (currentUser) {
+      document.getElementById("directora-nombre").textContent = "Directora: " + currentUser.nombre;
     }
-  });
 
-  document.getElementById('kpiPromEscuela').textContent = cantProms ? (sumaProms/cantProms).toFixed(1).replace('.',',') : '—';
-  document.getElementById('kpiRiesgo').textContent = riesgos.length;
-
-  const tbRiesgo = document.getElementById('tablaRiesgo');
-  if(!riesgos.length){
-    tbRiesgo.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#059669;font-weight:600">✓ Sin estudiantes en situación de riesgo actualmente.</td></tr>';
-  } else {
-    tbRiesgo.innerHTML = riesgos.map(r => `
-      <tr>
-        <td style="font-family:monospace">${r.al.rut}</td>
-        <td><strong>${r.al.nombre}</strong></td>
-        <td>${r.al.curso}</td>
-        <td><span class="badge-pill ${r.prom!==null && r.prom<4.0 ? 'bad':'ok'}">${r.prom!==null ? r.prom.toFixed(1).replace('.',',') : '—'}</span></td>
-        <td><span class="badge-pill ${r.asist!==null && r.asist<85 ? 'bad':'ok'}">${r.asist!==null ? r.asist+'%' : '—'}</span></td>
-        <td>${r.negs}</td>
-        <td style="color:#dc2626;font-weight:600">${r.motivos.join(' · ')}</td>
-      </tr>
-    `).join('');
-  }
-}
-
-function renderDocentes(){
-  const tbody = document.getElementById('tablaDocentes');
-  tbody.innerHTML = dataGlobal.docentes.map(d => `
-    <tr>
-      <td><strong>${d.nombre}</strong></td>
-      <td><span class="badge-pill ${d.rol==='maestro'?'ok':'na'}">${d.rol==='maestro'?'👑 MAESTRO / DIRECTIVO':'Docente'}</span></td>
-      <td>${d.cursos === '*' ? '<em>Todos los cursos</em>' : d.cursos}</td>
-      <td>${d.activo===1 ? '<span style="color:#059669;font-weight:600">Activo</span>' : '<span style="color:#dc2626">Suspendido</span>'}</td>
-      <td style="text-align:right;white-space:nowrap">
-        <button class="btn-action btn-soft" onclick='abrirEditarDocente(${JSON.stringify(d)})'>✏️ Editar</button>
-        <button class="btn-action btn-danger" onclick="eliminarDocente(${d.id}, '${d.nombre}')">🗑️</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function renderAlumnos(){
-  const q = document.getElementById('filtroAlumnoTexto').value.trim().toLowerCase().replace(/\./g,'');
-  const cursoF = document.getElementById('filtroAlumnoCurso').value;
-  const estF = document.getElementById('filtroAlumnoEstado').value;
-
-  const filtrados = dataGlobal.alumnos.filter(a => {
-    if(estF !== 'all' && String(a.activo) !== estF) return false;
-    if(cursoF && a.curso !== cursoF) return false;
-    if(q && !a.nombre.toLowerCase().includes(q) && !a.rut.toLowerCase().includes(q)) return false;
-    return true;
-  });
-
-  const tbody = document.getElementById('tablaAlumnos');
-  if(!filtrados.length){
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#64748b">No se encontraron estudiantes con esos filtros.</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtrados.map(a => {
-    const prom = calcPromedio(dataGlobal.notas.filter(n => n.rut === a.rut));
-    const asist = calcAsistenciaPct(a.rut);
-    const clsP = prom===null ? 'na' : (prom>=5.5 ? 'ok' : (prom>=4.0 ? 'mid' : 'bad'));
-    const clsA = asist===null ? 'na' : (asist>=85 ? 'ok' : 'bad');
-    return `
-      <tr>
-        <td><input type="checkbox" class="chk-alumno" value="${a.rut}"></td>
-        <td style="font-family:monospace">${a.rut}</td>
-        <td><strong>${a.nombre}</strong></td>
-        <td>${a.curso}</td>
-        <td><span class="badge-pill ${clsP}">${prom!==null ? prom.toFixed(1).replace('.',',') : '—'}</span></td>
-        <td><span class="badge-pill ${clsA}">${asist!==null ? asist+'%' : '—'}</span></td>
-        <td>${a.activo===1 ? '<span style="color:#059669;font-weight:600">Activo</span>' : '<span style="color:#dc2626">Inactivo</span>'}</td>
-        <td style="text-align:right;white-space:nowrap">
-          <button class="btn-action btn-soft" onclick="emitirCertificado('${a.rut}','${a.nombre.replace(/'/g,"\'")}','${a.curso}')">📄 Cert.</button>
-          <button class="btn-action btn-warn" onclick="abrirEditarAlumno('${a.rut}','${a.nombre.replace(/'/g,"\'")}','${a.curso}')">✏️</button>
-          <button class="btn-action btn-danger" onclick="eliminarAlumno(${JSON.stringify(a.rut)}, ${JSON.stringify(a.nombre)})">🗑️</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-function renderCursosYAsignaturas(){
-  document.getElementById('tablaCursos').innerHTML = dataGlobal.cursos.map(c => {
-    const count = dataGlobal.alumnos.filter(a => a.curso === c.nombre && a.activo === 1).length;
-    return `<tr>
-      <td>${c.orden}</td>
-      <td><strong>${c.nombre}</strong></td>
-      <td>${count} alumnos</td>
-      <td style="text-align:right"><button class="btn-action btn-danger" onclick="eliminarCurso(${c.id}, '${c.nombre}')">Eliminar</button></td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('tablaAsignaturas').innerHTML = dataGlobal.asignaturas.map(a => `
-    <tr>
-      <td><strong>${a.nombre}</strong></td>
-      <td style="text-align:right"><button class="btn-action btn-danger" onclick="eliminarAsignatura(${a.id})">Eliminar</button></td>
-    </tr>
-  `).join('');
-}
-
-function renderLogs(){
-  document.getElementById('tablaLogs').innerHTML = dataGlobal.logs.map(l => `
-    <tr>
-      <td style="font-family:monospace;font-size:.78rem">${l.fecha}</td>
-      <td><strong>${l.usuario}</strong></td>
-      <td><span class="badge-pill na">${l.accion}</span></td>
-      <td>${l.detalle}</td>
-    </tr>
-  `).join('');
-}
-
-// --- MODALES Y ACCIONES ---
-function poblarChecksCursos(seleccionados = []){
-  const cont = document.getElementById('checksCursosDoc');
-  cont.innerHTML = dataGlobal.cursos.map(c => `
-    <label><input type="checkbox" class="chk-curso-doc" value="${c.nombre}" ${seleccionados.includes(c.nombre)?'checked':''}> ${c.nombre}</label>
-  `).join('');
-}
-
-function toggleCursosChecks(){
-  const rol = document.getElementById('docRol').value;
-  document.getElementById('boxCursosDoc').style.display = rol === 'maestro' ? 'none' : 'block';
-}
-
-function abrirModalDocente(){
-  document.getElementById('editDocId').value = '';
-  document.getElementById('docNombre').value = '';
-  document.getElementById('docPass').value = '';
-  document.getElementById('hintPassDoc').textContent = '(obligatoria)';
-  document.getElementById('docRol').value = 'docente';
-  document.getElementById('docActivo').value = '1';
-  document.getElementById('tituloModalDoc').textContent = 'Crear Nuevo Docente o Directivo';
-  poblarChecksCursos([]);
-  toggleCursosChecks();
-  document.getElementById('modalDocente').classList.add('show');
-}
-
-function abrirEditarDocente(d){
-  document.getElementById('editDocId').value = d.id;
-  document.getElementById('docNombre').value = d.nombre;
-  document.getElementById('docPass').value = '';
-  document.getElementById('hintPassDoc').textContent = '(dejar vacío para mantener la actual)';
-  document.getElementById('docRol').value = d.rol || 'docente';
-  document.getElementById('docActivo').value = String(d.activo ?? 1);
-  document.getElementById('tituloModalDoc').textContent = 'Editar Perfil: ' + d.nombre;
-  const lista = d.cursos.split(',').map(x => x.trim());
-  poblarChecksCursos(lista);
-  toggleCursosChecks();
-  document.getElementById('modalDocente').classList.add('show');
-}
-
-async function guardarDocente(){
-  const id = document.getElementById('editDocId').value;
-  const nombre = document.getElementById('docNombre').value.trim();
-  const password = document.getElementById('docPass').value;
-  const rol = document.getElementById('docRol').value;
-  const activo = parseInt(document.getElementById('docActivo').value, 10);
-  const cursosSel = Array.from(document.querySelectorAll('.chk-curso-doc:checked')).map(c => c.value);
-
-  if(!nombre || (!id && !password)){ alert('Completa nombre y contraseña.'); return; }
-  if(rol === 'docente' && !cursosSel.length){ alert('Selecciona al menos un curso para el docente.'); return; }
-
-  const url = id ? `${API_URL}/maestro/docentes/${id}` : `${API_URL}/maestro/docentes`;
-  const method = id ? 'PUT' : 'POST';
-  const body = { nombre, password: password || undefined, cursos: rol === 'maestro' ? '*' : cursosSel.join(', '), rol, activo };
-
-  const res = await fetch(url, { method, headers: authH(true), body: JSON.stringify(body) });
-  if(!res.ok){ const e = await res.json(); alert(e.detail || 'Error al guardar'); return; }
-  cerrarModal('modalDocente');
-  cargarResumenGlobal();
-}
-
-async function eliminarDocente(id, nombre){
-  if(!confirm(`¿Eliminar permanentemente el perfil de ${nombre}?`)) return;
-  const res = await fetch(`${API_URL}/maestro/docentes/${id}`, { method: 'DELETE', headers: authH(false) });
-  if(!res.ok){ const e = await res.json(); alert(e.detail || 'No se pudo eliminar'); return; }
-  cargarResumenGlobal();
-}
-
-function abrirModalAlumno(){
-  document.getElementById('modoAlumno').value = 'crear';
-  document.getElementById('alRut').value = '';
-  document.getElementById('alRut').disabled = false;
-  document.getElementById('alNombre').value = '';
-  document.getElementById('tituloModalAl').textContent = 'Matricular Nuevo Estudiante';
-  document.getElementById('modalAlumno').classList.add('show');
-}
-
-function abrirEditarAlumno(rut, nombre, curso){
-  document.getElementById('modoAlumno').value = 'editar';
-  document.getElementById('alRut').value = rut;
-  document.getElementById('alRut').disabled = true;
-  document.getElementById('alNombre').value = nombre;
-  document.getElementById('alCurso').value = curso;
-  document.getElementById('tituloModalAl').textContent = 'Editar Estudiante';
-  document.getElementById('modalAlumno').classList.add('show');
-}
-
-async function guardarAlumno(){
-  const modo = document.getElementById('modoAlumno').value;
-  const rut = document.getElementById('alRut').value.trim();
-  const nombre = document.getElementById('alNombre').value.trim();
-  const curso = document.getElementById('alCurso').value;
-  if(!rut || !nombre){ alert('RUT y nombre son obligatorios.'); return; }
-
-  const url = modo === 'crear' ? `${API_URL}/alumnos` : `${API_URL}/alumnos/${rut}`;
-  const method = modo === 'crear' ? 'POST' : 'PUT';
-  const res = await fetch(url, { method, headers: authH(true), body: JSON.stringify({ rut, nombre, curso }) });
-  const data = await res.json();
-  if(!res.ok){ alert(data.detail || 'Error al guardar alumno'); return; }
-  cerrarModal('modalAlumno');
-  cargarResumenGlobal();
-}
-
-async function eliminarAlumno(rut, nombre){
-  if(!confirm(`⚠️ ¿Eliminar definitivamente a ${nombre} (${rut}) y todo su historial?`)) return;
-  const res = await fetch(`${API_URL}/alumnos/${rut}`, { method: 'DELETE', headers: authH(false) });
-  if(res.ok) cargarResumenGlobal();
-}
-
-function toggleTodosChecks(master){
-  document.querySelectorAll('.chk-alumno').forEach(c => c.checked = master.checked);
-}
-
-function abrirModalTrasladoMasivo(){
-  const ruts = Array.from(document.querySelectorAll('.chk-alumno:checked')).map(c => c.value);
-  if(!ruts.length){ alert('Selecciona al menos un estudiante en la tabla usando las casillas.'); return; }
-  document.getElementById('txtCantTraslado').textContent = `Has seleccionado ${ruts.length} estudiante(s) para cambiar de curso.`;
-  document.getElementById('modalTraslado').classList.add('show');
-}
-
-async function ejecutarTrasladoMasivo(){
-  const ruts = Array.from(document.querySelectorAll('.chk-alumno:checked')).map(c => c.value);
-  const nuevo_curso = document.getElementById('selectCursoTraslado').value;
-  const res = await fetch(`${API_URL}/maestro/alumnos/reasignar`, {
-    method: 'POST', headers: authH(true), body: JSON.stringify({ ruts, nuevo_curso })
-  });
-  if(res.ok){ cerrarModal('modalTraslado'); cargarResumenGlobal(); }
-}
-
-function abrirModalCurso(){ document.getElementById('nuevoCursoNombre').value=''; document.getElementById('modalCurso').classList.add('show'); }
-async function guardarCurso(){
-  const nombre = document.getElementById('nuevoCursoNombre').value.trim();
-  const orden = parseInt(document.getElementById('nuevoCursoOrden').value, 10) || 10;
-  if(!nombre) return;
-  const res = await fetch(`${API_URL}/maestro/cursos`, { method: 'POST', headers: authH(true), body: JSON.stringify({ nombre, orden }) });
-  if(!res.ok){ const e = await res.json(); alert(e.detail || 'Error'); return; }
-  cerrarModal('modalCurso');
-  cargarResumenGlobal();
-}
-
-async function eliminarCurso(id, nombre){
-  if(!confirm(`¿Eliminar el curso "${nombre}"?`)) return;
-  const res = await fetch(`${API_URL}/maestro/cursos/${id}`, { method: 'DELETE', headers: authH(false) });
-  if(!res.ok){ const e = await res.json(); alert(e.detail || 'Error'); return; }
-  cargarResumenGlobal();
-}
-
-function abrirModalAsignatura(){ document.getElementById('nuevaAsigNombre').value=''; document.getElementById('modalAsignatura').classList.add('show'); }
-async function guardarAsignatura(){
-  const nombre = document.getElementById('nuevaAsigNombre').value.trim();
-  if(!nombre) return;
-  const res = await fetch(`${API_URL}/maestro/asignaturas`, { method: 'POST', headers: authH(true), body: JSON.stringify({ nombre }) });
-  if(res.ok){ cerrarModal('modalAsignatura'); cargarResumenGlobal(); }
-}
-
-async function eliminarAsignatura(id){
-  if(!confirm('¿Eliminar esta asignatura del listado?')) return;
-  const res = await fetch(`${API_URL}/maestro/asignaturas/${id}`, { method: 'DELETE', headers: authH(false) });
-  if(res.ok) cargarResumenGlobal();
-}
-
-function abrirModalAnuncioGlobal(){ document.getElementById('txtAnuncioGlobal').value=''; document.getElementById('modalAnuncioGlobal').classList.add('show'); }
-async function enviarAnuncioGlobal(){
-  const curso = document.getElementById('destAnuncioGlobal').value;
-  const texto = document.getElementById('txtAnuncioGlobal').value.trim();
-  if(!texto) return;
-  const res = await fetch(`${API_URL}/anuncios`, {
-    method: 'POST', headers: authH(true), body: JSON.stringify({ curso, texto, docente: `DIRECCIÓN (${sesionMaestro.nombre})` })
-  });
-  if(res.ok){ alert('✓ Comunicado publicado'); cerrarModal('modalAnuncioGlobal'); }
-}
-
-function emitirCertificado(rut, nombre, curso){
-  const hoy = new Date().toLocaleDateString('es-CL', { day:'numeric', month:'long', year:'numeric' });
-  document.getElementById('textoCertificado').innerHTML = `La Dirección de la <strong>Escuela Candelaria Pérez</strong> de San Javier certifica que el/la estudiante <strong>${nombre}</strong>, Cédula de Identidad / RUT <strong>${rut}</strong>, es alumno(a) regular de este establecimiento educacional, cursando actualmente <strong>${curso}</strong> de Enseñanza General Básica durante el presente año lectivo.<br><br>Se extiende el presente certificado a petición del interesado(a) para los fines que estime conveniente.`;
-  document.getElementById('fechaCertificado').textContent = `San Javier, ${hoy}.`;
-  document.getElementById('modalCertificado').classList.add('show');
-}
-
-async function procesarImportacionCSV(){
-  const raw = document.getElementById('csvImportInput').value.trim();
-  if(!raw){ alert('Pega los datos en formato RUT, NOMBRE, CURSO.'); return; }
-  const lineas = raw.split(/?
-/).filter(l => l.trim());
-  const alumnos = [];
-  for(const l of lineas){
-    const partes = l.split(/[,;]/).map(p => p.trim());
-    if(partes.length >= 3){
-      alumnos.push({ rut: partes[0], nombre: partes[1], curso: partes[2] });
+    function cerrarSesion() {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
     }
-  }
-  if(!alumnos.length){ alert('No se detectaron líneas válidas.'); return; }
-  const res = await fetch(`${API_URL}/maestro/alumnos/importar`, {
-    method: 'POST', headers: authH(true), body: JSON.stringify({ alumnos })
-  });
-  const data = await res.json();
-  if(!res.ok){ alert(data.detail || 'Error al importar'); return; }
-  let msg = `✓ Se procesaron ${data.creados} estudiantes correctamente.`;
-  if(data.errores && data.errores.length) msg += `
 
-Advertencias:
-` + data.errores.join('
-');
-  alert(msg);
-  document.getElementById('csvImportInput').value = '';
-  cargarResumenGlobal();
-}
+    async function cargarDashboard() {
+      try {
+        const res = await fetch(`${API_URL}/api/dashboard/maestro`);
+        const data = await res.json();
+        const usuarios = data.usuarios || [];
+        document.getElementById("kpi-estudiantes").textContent = usuarios.filter(u => u.rol === "estudiante").length;
+        document.getElementById("kpi-docentes").textContent = usuarios.filter(u => u.rol === "docente").length;
+        document.getElementById("kpi-cursos").textContent = (data.cursos || []).length;
+        document.getElementById("kpi-promedio").textContent = (data.promedio_general || 0).toFixed(1);
 
-function exportarSabanaCSV(){
-  const filas = [["RUT","NOMBRE","CURSO","ESTADO","PROMEDIO_GENERAL","ASISTENCIA_PCT"]];
-  dataGlobal.alumnos.forEach(a => {
-    const prom = calcPromedio(dataGlobal.notas.filter(n => n.rut === a.rut));
-    const asist = calcAsistenciaPct(a.rut);
-    filas.push([
-      a.rut,
-      `"${a.nombre}"`,
-      `"${a.curso}"`,
-      a.activo === 1 ? "ACTIVO" : "INACTIVO",
-      prom !== null ? prom.toFixed(1).replace('.',',') : "",
-      asist !== null ? `${asist}%` : ""
-    ]);
-  });
-  const csv = "﻿" + filas.map(f => f.join(";")).join("
-");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `Sabana_Escuela_Candelaria_Perez_${new Date().toISOString().slice(0,10)}.csv`;
-  link.click();
-}
-</script>
+        const tbody = document.getElementById("tabla-usuarios");
+        tbody.innerHTML = usuarios.map(u => `
+          <tr>
+            <td class="py-2 font-medium">${u.nombre}</td>
+            <td class="py-2 text-slate-300">${u.rut || "-"}</td>
+            <td class="py-2 uppercase text-xs font-bold text-indigo-400">${u.rol}</td>
+            <td class="py-2">${u.curso || "-"}</td>
+            <td class="py-2">${u.asignatura || "-"}</td>
+            <td class="py-2 text-right">
+              ${u.nombre.toLowerCase() !== "paulina toledo"
+                ? `<button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>`
+                : `<span class="text-xs text-slate-500">Protegido</span>`}
+            </td>
+          </tr>
+        `).join("");
+      } catch (e) {
+        console.error("Error cargando dashboard:", e);
+      }
+    }
+
+    document.getElementById("form-usuario").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        nombre: document.getElementById("u-nombre").value,
+        rut: document.getElementById("u-rut").value,
+        rol: document.getElementById("u-rol").value,
+        curso: document.getElementById("u-curso").value,
+        asignatura: document.getElementById("u-asignatura").value,
+        password: document.getElementById("u-password").value
+      };
+      const res = await fetch(`${API_URL}/api/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        e.target.reset();
+        cargarDashboard();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Error al guardar usuario");
+      }
+    });
+
+    document.getElementById("form-alerta").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        titulo: document.getElementById("a-titulo").value,
+        detalle: document.getElementById("a-detalle").value,
+        nivel: "info"
+      };
+      const res = await fetch(`${API_URL}/api/alertas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        e.target.reset();
+        alert("Alerta publicada correctamente.");
+      }
+    });
+
+    async function eliminarUsuario(id) {
+      if (!confirm("¿Eliminar este usuario?")) return;
+      await fetch(`${API_URL}/api/usuarios/${id}`, { method: "DELETE" });
+      cargarDashboard();
+    }
+
+    async function ejecutarPromocion() {
+      if (!confirm("¿Ejecutar promoción anual de cursos y reinicio de notas?")) return;
+      const res = await fetch(`${API_URL}/api/admin/promocion-anual`, { method: "POST" });
+      if (res.ok) {
+        alert("Promoción anual completada.");
+        cargarDashboard();
+      }
+    }
+
+    cargarDashboard();
+  </script>
 </body>
 </html>

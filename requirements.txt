@@ -1,8 +1,5 @@
-fastapi
-uvicorn
-passlib[bcrypt]
-bcrypt==4.0.1
-python-dotenv
-pydantic
-psycopg2-binary
-tzdata
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+psycopg2-binary==2.9.9
+pydantic==2.9.2
+python-multipart==0.0.12

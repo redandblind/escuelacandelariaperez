@@ -1,29 +1,14 @@
 import os
-import hmac
 import hashlib
-import base64
-import json
-import time
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-from typing import Optional, List
+from datetime import datetime
+from typing import Optional
 import psycopg2
-from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from passlib.context import CryptContext
-from dotenv import load_dotenv
 
-load_dotenv()
-
-DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
-SECRET_KEY = (os.getenv("SECRET_KEY") or "ecp-sanjavier-secret-2026-clave-interna").strip()
-CHILE_TZ = ZoneInfo("America/Santiago")
-
-app = FastAPI(title="API Portal Escolar v8.0 - Escuela Candelaria Pérez")
+app = FastAPI(title="Portal Escuela Candelaria Pérez v8.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,1097 +18,354 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-db_pool: Optional[pool.SimpleConnectionPool] = None
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-CURSOS_INICIALES = [
-    ("1° Básico", 1),
-    ("2° Básico", 2),
-    ("3° Básico", 3),
-    ("4° Básico", 4),
-    ("5° Básico", 5),
-    ("6° Básico", 6),
-    ("7° Básico", 7),
-    ("8° Básico", 8),
-]
-
-ASIGNATURAS_INICIALES = [
-    "Lenguaje y Comunicación",
-    "Matemática",
-    "Historia, Geografía y Ciencias Sociales",
-    "Ciencias Naturales",
-    "Artes Visuales",
-    "Educación Física y Salud",
-    "Tecnología",
-    "Música",
-    "Inglés",
-    "Religión",
-    "Orientación"
-]
-
-def ahora_chile() -> datetime:
-    return datetime.now(CHILE_TZ)
-
-def normalizar_rut(rut: str) -> str:
-    limpio = rut.strip().upper().replace(".", "").replace(" ", "")
-    if "-" not in limpio and len(limpio) >= 2:
-        limpio = f"{limpio[:-1]}-{limpio[-1]}"
-    return limpio
-
-def validar_rut_modulo11(rut: str) -> bool:
-    rut_norm = normalizar_rut(rut)
-    if "-" not in rut_norm:
-        return False
-    cuerpo, dv = rut_norm.split("-", 1)
-    if not cuerpo.isdigit() or not (7 <= len(cuerpo) <= 8) or dv not in "0123456789K":
-        return False
-    suma = 0
-    multiplo = 2
-    for c in reversed(cuerpo):
-        suma += int(c) * multiplo
-        multiplo = 2 if multiplo == 7 else multiplo + 1
-    resto = 11 - (suma % 11)
-    dv_esperado = "0" if resto == 11 else ("K" if resto == 10 else str(resto))
-    return dv == dv_esperado
-
-def crear_token_usuario(nombre: str, rol: str, cursos: list) -> str:
-    payload = {
-        "rol": rol,
-        "nombre": nombre,
-        "cursos": cursos,
-        "exp": int((ahora_chile() + timedelta(hours=12)).timestamp())
-    }
-    raw = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
-    sig = hmac.new(SECRET_KEY.encode(), raw.encode(), hashlib.sha256).hexdigest()
-    return f"{raw}.{sig}"
-
-def verificar_auth(authorization: Optional[str] = Header(None), roles_permitidos: list = ["docente", "maestro"]) -> dict:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Sesión requerida")
-    token = authorization.split(" ", 1)[1].strip()
-    if "." not in token:
-        raise HTTPException(status_code=401, detail="Token inválido")
-    raw, sig = token.split(".", 1)
-    expected = hmac.new(SECRET_KEY.encode(), raw.encode(), hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(sig, expected):
-        raise HTTPException(status_code=401, detail="Firma de token inválida")
-    try:
-        payload = json.loads(base64.urlsafe_b64decode(raw.encode()).decode())
-    except Exception:
-        raise HTTPException(status_code=401, detail="Token corrupto")
-    rol = payload.get("rol")
-    if rol not in roles_permitidos or payload.get("exp", 0) < int(ahora_chile().timestamp()):
-        raise HTTPException(status_code=403, detail="No tienes permisos suficientes o la sesión expiró")
-    return payload
-
-def get_pool():
-    global db_pool
+def get_db():
     if not DATABASE_URL:
-        raise HTTPException(status_code=500, detail="Falta configurar DATABASE_URL en Render (Environment)")
-    if db_pool is None:
-        for intento in range(3):
-            try:
-                db_pool = pool.SimpleConnectionPool(
-                    1, 10, DATABASE_URL, cursor_factory=RealDictCursor
-                )
-                break
-            except Exception as e:
-                if intento == 2:
-                    raise HTTPException(status_code=503, detail=f"Base de datos despertando, intenta nuevamente: {str(e)}")
-                time.sleep(1.5)
-    return db_pool
+        raise HTTPException(status_code=500, detail="DATABASE_URL no configurada en el servidor.")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return conn
 
-class DBConnection:
-    def __init__(self):
-        self.pool = get_pool()
-        self.conn = self.pool.getconn()
-        try:
-            with self.conn.cursor() as cur:
-                cur.execute("SELECT 1")
-        except Exception:
-            try:
-                self.pool.putconn(self.conn, close=True)
-            except Exception:
-                pass
-            self.conn = self.pool.getconn()
-
-    def cursor(self):
-        return self.conn.cursor()
-
-    def commit(self):
-        self.conn.commit()
-
-    def rollback(self):
-        self.conn.rollback()
-
-    def close(self):
-        if self.conn:
-            try:
-                self.pool.putconn(self.conn)
-            except Exception:
-                pass
-            self.conn = None
-
-def registrar_log(cursor, usuario: str, accion: str, detalle: str):
-    try:
-        cursor.execute(
-            "INSERT INTO auditoria_logs (fecha, usuario, accion, detalle) VALUES (%s, %s, %s, %s)",
-            (ahora_chile().strftime("%Y-%m-%d %H:%M:%S"), usuario, accion, detalle)
-        )
-    except Exception:
-        pass
-
-def siguiente_curso_db(cursor, curso_actual: str) -> str:
-    cursor.execute("SELECT nombre, orden FROM cursos ORDER BY orden ASC, id ASC")
-    lista = [dict(r) for r in cursor.fetchall()]
-    nombres = [c["nombre"] for c in lista]
-    if curso_actual in nombres:
-        idx = nombres.index(curso_actual)
-        if idx + 1 < len(nombres):
-            return nombres[idx + 1]
-        return "EGRESADO"
-    return curso_actual
-
-def calcular_promedio_alumno(notas_alumno: list) -> Optional[float]:
-    by_asig = {}
-    for n in notas_alumno:
-        try:
-            val = float(n["nota"])
-            if 1.0 <= val <= 7.0:
-                by_asig.setdefault(n["asignatura"], []).append(val)
-        except Exception:
-            continue
-    if not by_asig:
-        return None
-    promedios_asig = [sum(vals) / len(vals) for vals in by_asig.values()]
-    return round(sum(promedios_asig) / len(promedios_asig), 1)
-
-def ejecutar_promocion_anual(cursor, anio: int, ejecutor: str = "SISTEMA AUTOMÁTICO"):
-    cursor.execute("SELECT * FROM alumnos WHERE activo = 1")
-    alumnos = [dict(r) for r in cursor.fetchall()]
-
-    for al in alumnos:
-        rut = al["rut"]
-        curso_actual = al["curso"]
-        cursor.execute("SELECT asignatura, nota FROM notas WHERE rut = %s", (rut,))
-        notas = [dict(r) for r in cursor.fetchall()]
-        prom = calcular_promedio_alumno(notas)
-
-        aprueba = (prom is None) or (prom >= 4.0)
-        nuevo_curso = siguiente_curso_db(cursor, curso_actual) if aprueba else curso_actual
-        estado_final = "PROMOVIDO" if aprueba else "REPITE"
-
-        if nuevo_curso == "EGRESADO":
-            estado_final = "EGRESADO"
-            cursor.execute("UPDATE alumnos SET activo = 0 WHERE rut = %s", (rut,))
-        else:
-            cursor.execute("UPDATE alumnos SET curso = %s WHERE rut = %s", (nuevo_curso, rut))
-
-        cursor.execute(
-            """
-            INSERT INTO historial_anual (anio, rut, nombre, curso_anterior, curso_nuevo, promedio_final, estado)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """,
-            (anio, rut, al["nombre"], curso_actual, nuevo_curso, prom, estado_final)
-        )
-
-    cursor.execute(
-        "UPDATE configuracion_calendario SET ultimo_anio_promocion = %s WHERE id = 1",
-        (anio,)
-    )
-    registrar_log(cursor, ejecutor, "CIERRE_ANUAL", f"Promoción anual {anio} ejecutada para {len(alumnos)} alumnos.")
-
-def ejecutar_limpieza_enero(cursor, anio_nuevo: int):
-    cursor.execute("DELETE FROM notas")
-    cursor.execute("DELETE FROM anuncios")
-    cursor.execute("DELETE FROM justificaciones")
-    cursor.execute("DELETE FROM asistencia")
-    cursor.execute(
-        "UPDATE configuracion_calendario SET ultimo_anio_limpieza = %s WHERE id = 1",
-        (anio_nuevo,)
-    )
-    registrar_log(cursor, "SISTEMA AUTOMÁTICO", "LIMPIEZA_ENERO", f"Limpieza anual 1 de enero {anio_nuevo}.")
-
-def verificar_automatizacion_calendario():
-    if not DATABASE_URL:
-        return
-    ahora = ahora_chile()
-    anio = ahora.year
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM configuracion_calendario WHERE id = 1")
-        cfg = cursor.fetchone()
-        if not cfg:
-            return
-        mes_cierre = cfg["mes_cierre"]
-        dia_cierre = cfg["dia_cierre"]
-        ultimo_prom = cfg["ultimo_anio_promocion"]
-        ultimo_limp = cfg["ultimo_anio_limpieza"]
-
-        if (ahora.month == 1 and ahora.day >= 1) and ultimo_limp < anio:
-            if ultimo_prom < (anio - 1):
-                ejecutar_promocion_anual(cursor, anio - 1)
-            ejecutar_limpieza_enero(cursor, anio)
-            conn.commit()
-
-        if (ahora.month > mes_cierre or (ahora.month == mes_cierre and ahora.day >= dia_cierre)) and ultimo_prom < anio:
-            ejecutar_promocion_anual(cursor, anio)
-            conn.commit()
-    except Exception as e:
-        conn.rollback()
-        print("Advertencia calendario:", e)
-    finally:
-        cursor.close()
-        conn.close()
+def hash_pwd(pwd: str) -> str:
+    return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
 
 def init_db():
     if not DATABASE_URL:
         return
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        sentencias = [
-            """CREATE TABLE IF NOT EXISTS cursos (
-                id SERIAL PRIMARY KEY,
-                nombre TEXT UNIQUE NOT NULL,
-                orden INTEGER DEFAULT 10
-            )""",
-            """CREATE TABLE IF NOT EXISTS asignaturas (
-                id SERIAL PRIMARY KEY,
-                nombre TEXT UNIQUE NOT NULL,
-                activa INTEGER DEFAULT 1
-            )""",
-            """CREATE TABLE IF NOT EXISTS alumnos (
-                rut TEXT PRIMARY KEY,
-                nombre TEXT NOT NULL,
-                curso TEXT NOT NULL,
-                activo INTEGER DEFAULT 1
-            )""",
-            """CREATE TABLE IF NOT EXISTS docentes (
-                id SERIAL PRIMARY KEY,
-                nombre TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                cursos TEXT NOT NULL,
-                rol TEXT DEFAULT 'docente',
-                activo INTEGER DEFAULT 1
-            )""",
-            "ALTER TABLE docentes ADD COLUMN IF NOT EXISTS rol TEXT DEFAULT 'docente'",
-            "ALTER TABLE docentes ADD COLUMN IF NOT EXISTS activo INTEGER DEFAULT 1",
-            """CREATE TABLE IF NOT EXISTS notas (
-                id SERIAL PRIMARY KEY,
-                rut TEXT NOT NULL,
-                asignatura TEXT NOT NULL,
-                nota REAL NOT NULL,
-                semestre INTEGER NOT NULL,
-                fecha TEXT NOT NULL,
-                docente TEXT NOT NULL
-            )""",
-            """CREATE TABLE IF NOT EXISTS asistencia (
-                id SERIAL PRIMARY KEY,
-                rut TEXT NOT NULL,
-                curso TEXT NOT NULL,
-                fecha TEXT NOT NULL,
-                estado TEXT NOT NULL,
-                docente TEXT NOT NULL,
-                UNIQUE(rut, fecha)
-            )""",
-            """CREATE TABLE IF NOT EXISTS observaciones (
-                id SERIAL PRIMARY KEY,
-                rut TEXT NOT NULL,
-                tipo TEXT NOT NULL,
-                texto TEXT NOT NULL,
-                docente TEXT NOT NULL,
-                fecha TEXT NOT NULL
-            )""",
-            """CREATE TABLE IF NOT EXISTS justificaciones (
-                id SERIAL PRIMARY KEY,
-                rut TEXT NOT NULL,
-                curso TEXT NOT NULL,
-                mensaje TEXT NOT NULL,
-                fecha TEXT NOT NULL,
-                leida INTEGER DEFAULT 0
-            )""",
-            "ALTER TABLE justificaciones ADD COLUMN IF NOT EXISTS leida INTEGER DEFAULT 0",
-            """CREATE TABLE IF NOT EXISTS anuncios (
-                id SERIAL PRIMARY KEY,
-                curso TEXT NOT NULL,
-                texto TEXT NOT NULL,
-                docente TEXT NOT NULL,
-                fecha TEXT NOT NULL
-            )""",
-            """CREATE TABLE IF NOT EXISTS auditoria_logs (
-                id SERIAL PRIMARY KEY,
-                fecha TEXT NOT NULL,
-                usuario TEXT NOT NULL,
-                accion TEXT NOT NULL,
-                detalle TEXT NOT NULL
-            )""",
-            """CREATE TABLE IF NOT EXISTS configuracion_calendario (
-                id INTEGER PRIMARY KEY,
-                mes_cierre INTEGER DEFAULT 12,
-                dia_cierre INTEGER DEFAULT 20,
-                ultimo_anio_promocion INTEGER DEFAULT 2025,
-                ultimo_anio_limpieza INTEGER DEFAULT 2026
-            )""",
-            """CREATE TABLE IF NOT EXISTS historial_anual (
-                id SERIAL PRIMARY KEY,
-                anio INTEGER NOT NULL,
-                rut TEXT NOT NULL,
-                nombre TEXT NOT NULL,
-                curso_anterior TEXT NOT NULL,
-                curso_nuevo TEXT NOT NULL,
-                promedio_final REAL,
-                estado TEXT NOT NULL
-            )"""
-        ]
-        for sql in sentencias:
-            cursor.execute(sql)
-
-        # Poblar cursos iniciales si está vacío
-        cursor.execute("SELECT COUNT(*) AS total FROM cursos")
-        if cursor.fetchone()["total"] == 0:
-            for c_nom, c_ord in CURSOS_INICIALES:
-                cursor.execute("INSERT INTO cursos (nombre, orden) VALUES (%s, %s) ON CONFLICT DO NOTHING", (c_nom, c_ord))
-
-        # Poblar asignaturas iniciales si está vacío
-        cursor.execute("SELECT COUNT(*) AS total FROM asignaturas")
-        if cursor.fetchone()["total"] == 0:
-            for a_nom in ASIGNATURAS_INICIALES:
-                cursor.execute("INSERT INTO asignaturas (nombre, activa) VALUES (%s, 1) ON CONFLICT DO NOTHING", (a_nom,))
-
-        # Crear perfil maestro oficial de la Directora: Paulina Toledo / escuela16
-        cursor.execute("SELECT id FROM docentes WHERE UPPER(nombre) = 'PAULINA TOLEDO'")
-        if not cursor.fetchone():
-            pwd_hash = pwd_context.hash("escuela16")
-            cursor.execute(
-                "INSERT INTO docentes (nombre, password_hash, cursos, rol, activo) VALUES (%s, %s, %s, 'maestro', 1)",
-                ("PAULINA TOLEDO", pwd_hash, "*")
-            )
-
-        anio_actual = ahora_chile().year
-        cursor.execute(
-            """
-            INSERT INTO configuracion_calendario (id, mes_cierre, dia_cierre, ultimo_anio_promocion, ultimo_anio_limpieza)
-            VALUES (1, 12, 20, %s, %s)
-            ON CONFLICT (id) DO NOTHING
-            """,
-            (anio_actual - 1, anio_actual)
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(150) NOT NULL,
+            rut VARCHAR(30) UNIQUE,
+            email VARCHAR(150),
+            rol VARCHAR(30) NOT NULL,
+            curso VARCHAR(50),
+            asignatura VARCHAR(100),
+            password_hash VARCHAR(255) NOT NULL,
+            activo BOOLEAN DEFAULT TRUE,
+            creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS cursos (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(80) UNIQUE NOT NULL,
+            profesor_jefe VARCHAR(150)
+        );
+        CREATE TABLE IF NOT EXISTS asignaturas (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
+            curso VARCHAR(80) NOT NULL,
+            docente_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL
+        );
+        CREATE TABLE IF NOT EXISTS calificaciones (
+            id SERIAL PRIMARY KEY,
+            estudiante_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+            asignatura VARCHAR(100) NOT NULL,
+            evaluacion VARCHAR(100) NOT NULL,
+            nota NUMERIC(3,1) NOT NULL,
+            fecha DATE DEFAULT CURRENT_DATE
+        );
+        CREATE TABLE IF NOT EXISTS asistencia (
+            id SERIAL PRIMARY KEY,
+            estudiante_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+            curso VARCHAR(80) NOT NULL,
+            fecha DATE DEFAULT CURRENT_DATE,
+            estado VARCHAR(20) NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS alertas (
+            id SERIAL PRIMARY KEY,
+            titulo VARCHAR(150) NOT NULL,
+            detalle TEXT NOT NULL,
+            nivel VARCHAR(30) DEFAULT 'info',
+            creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
+    # Crear Directora Maestra por defecto si no existe
+    cur.execute("SELECT id FROM usuarios WHERE LOWER(nombre) = LOWER(%s) AND rol = 'maestro'", ("Paulina Toledo",))
+    if not cur.fetchone():
+        cur.execute(
+            "INSERT INTO usuarios (nombre, rut, email, rol, password_hash) VALUES (%s, %s, %s, %s, %s)",
+            ("Paulina Toledo", "directora", "direccion@escuelacandelariaperez.cl", "maestro", hash_pwd("escuela16"))
         )
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        print("Advertencia init_db:", e)
-    finally:
-        cursor.close()
-        conn.close()
-    verificar_automatizacion_calendario()
+    # Datos demo iniciales si no hay docentes ni estudiantes
+    cur.execute("SELECT COUNT(*) AS total FROM usuarios WHERE rol = 'docente'")
+    if cur.fetchone()["total"] == 0:
+        cur.execute(
+            "INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, password_hash) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            ("Profesor Demo", "11111111-1", "docente@escuelacandelariaperez.cl", "docente", "8° Básico A", "Matemática", hash_pwd("docente123"))
+        )
+    cur.execute("SELECT COUNT(*) AS total FROM usuarios WHERE rol = 'estudiante'")
+    if cur.fetchone()["total"] == 0:
+        cur.execute(
+            "INSERT INTO usuarios (nombre, rut, email, rol, curso, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
+            ("Estudiante Demo", "22222222-2", "estudiante@escuelacandelariaperez.cl", "estudiante", "8° Básico A", hash_pwd("alumno123"))
+        )
+    cur.execute("SELECT COUNT(*) AS total FROM cursos")
+    if cur.fetchone()["total"] == 0:
+        for c in ["1° Básico A", "2° Básico A", "3° Básico A", "4° Básico A", "5° Básico A", "6° Básico A", "7° Básico A", "8° Básico A"]:
+            cur.execute("INSERT INTO cursos (nombre) VALUES (%s) ON CONFLICT DO NOTHING", (c,))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 @app.on_event("startup")
 def startup_event():
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        print("Error inicializando BD:", e)
 
-# --- MODELOS PYDANTIC ---
 class LoginRequest(BaseModel):
-    rol: str
     identificador: str
-    password: Optional[str] = None
+    password: str
+    tipo_portal: str  # 'staff' (docentes/maestro) o 'estudiante'
+
+class UsuarioCreate(BaseModel):
+    nombre: str
+    rut: str
+    email: Optional[str] = ""
+    rol: str
+    curso: Optional[str] = ""
+    asignatura: Optional[str] = ""
+    password: str
+
+class NotaCreate(BaseModel):
+    estudiante_id: int
+    asignatura: str
+    evaluacion: str
+    nota: float
+
+class AsistenciaCreate(BaseModel):
+    estudiante_id: int
+    curso: str
+    estado: str
 
 class CursoCreate(BaseModel):
     nombre: str
-    orden: int = 10
+    profesor_jefe: Optional[str] = ""
 
-class AsignaturaCreate(BaseModel):
-    nombre: str
+class AlertaCreate(BaseModel):
+    titulo: str
+    detalle: str
+    nivel: str = "info"
 
-class AlumnoCreate(BaseModel):
-    rut: str
-    nombre: str
-    curso: str
-
-class AlumnoUpdate(BaseModel):
-    nombre: str
-    curso: str
-
-class AlumnoBulkItem(BaseModel):
-    rut: str
-    nombre: str
-    curso: str
-
-class AlumnoBulkImport(BaseModel):
-    alumnos: List[AlumnoBulkItem]
-
-class ReasignarMasivo(BaseModel):
-    ruts: List[str]
-    nuevo_curso: str
-
-class DocenteCreate(BaseModel):
-    nombre: str
-    password: str
-    cursos: str
-    rol: Optional[str] = "docente"
-
-class DocenteUpdate(BaseModel):
-    nombre: str
-    cursos: str
-    password: Optional[str] = None
-    rol: Optional[str] = "docente"
-    activo: Optional[int] = 1
-
-class NotaCreate(BaseModel):
-    rut: str
-    asignatura: str
-    nota: float
-    semestre: int
-    docente: str
-
-class AsistenciaItem(BaseModel):
-    rut: str
-    estado: str # P, A, T, J
-
-class AsistenciaBatch(BaseModel):
-    curso: str
-    fecha: str
-    docente: str
-    registros: List[AsistenciaItem]
-
-class ObservacionCreate(BaseModel):
-    rut: str
-    tipo: str
-    texto: str
-    docente: str
-
-class JustificacionCreate(BaseModel):
-    rut: str
-    curso: str
-    mensaje: str
-
-class AnuncioCreate(BaseModel):
-    curso: str # o "TODOS"
-    texto: str
-    docente: str
-
-class CalendarioConfigUpdate(BaseModel):
-    mes_cierre: int
-    dia_cierre: int
-
-# --- ENDPOINTS GENERALES ---
-@app.get("/api/health")
+@app.get("/")
 def health_check():
-    return {"status": "ok", "version": "8.0", "hora_chile": ahora_chile().strftime("%Y-%m-%d %H:%M:%S")}
-
-@app.get("/api/catalogos")
-def obtener_catalogos():
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT id, nombre, orden FROM cursos ORDER BY orden ASC, id ASC")
-        cursos = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT id, nombre, activa FROM asignaturas WHERE activa = 1 ORDER BY id ASC")
-        asignaturas = [dict(r) for r in cursor.fetchall()]
-        return {"cursos": cursos, "asignaturas": asignaturas}
-    finally:
-        cursor.close()
-        conn.close()
+    return {"status": "ok", "version": "8.0", "app": "Escuela Candelaria Pérez"}
 
 @app.post("/api/login")
 def login(data: LoginRequest):
-    verificar_automatizacion_calendario()
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        if data.rol in ["docente", "maestro"]:
-            nombre_norm = data.identificador.strip().upper()
-            cursor.execute("SELECT * FROM docentes WHERE UPPER(nombre) = %s AND activo = 1", (nombre_norm,))
-            docente = cursor.fetchone()
-            if not docente or not data.password or not pwd_context.verify(data.password, docente["password_hash"]):
-                raise HTTPException(status_code=401, detail="Nombre o contraseña incorrectos")
+    conn = get_db()
+    cur = conn.cursor()
+    ident = data.identificador.strip()
+    pwd_h = hash_pwd(data.password)
 
-            rol_asignado = docente.get("rol") or "docente"
-            if docente["cursos"].strip() == "*" or rol_asignado == "maestro":
-                cursor.execute("SELECT nombre FROM cursos ORDER BY orden ASC, id ASC")
-                cursos_lista = [r["nombre"] for r in cursor.fetchall()]
-            else:
-                cursos_lista = [c.strip() for c in docente["cursos"].split(",") if c.strip()]
-
-            token = crear_token_usuario(docente["nombre"], rol_asignado, cursos_lista)
-            registrar_log(cursor, docente["nombre"], "LOGIN", f"Inicio de sesión ({rol_asignado})")
-            conn.commit()
-            return {
-                "rol": rol_asignado,
-                "nombre": docente["nombre"],
-                "cursos": cursos_lista,
-                "token": token
-            }
-
-        elif data.rol == "estudiante":
-            rut_limpio = normalizar_rut(data.identificador)
-            cursor.execute("SELECT * FROM alumnos WHERE UPPER(REPLACE(rut, '.', '')) = %s AND activo = 1", (rut_limpio,))
-            alumno = cursor.fetchone()
-            if not alumno:
-                raise HTTPException(status_code=404, detail="Estudiante no encontrado o inactivo")
-            return {
-                "rol": "estudiante",
-                "rut": alumno["rut"],
-                "nombre": alumno["nombre"],
-                "curso": alumno["curso"]
-            }
-
-        raise HTTPException(status_code=400, detail="Rol no válido")
-    finally:
-        cursor.close()
-        conn.close()
-
-# --- APIS MAESTRO (DIRECCIÓN) ---
-@app.get("/api/maestro/resumen")
-def resumen_maestro(user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM alumnos ORDER BY curso, nombre")
-        alumnos = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM notas")
-        notas = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM observaciones")
-        observaciones = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM asistencia")
-        asistencias = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT id, nombre, cursos, rol, activo FROM docentes ORDER BY rol DESC, nombre ASC")
-        docentes = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT id, nombre, orden FROM cursos ORDER BY orden ASC, id ASC")
-        cursos = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT id, nombre, activa FROM asignaturas ORDER BY id ASC")
-        asignaturas = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM auditoria_logs ORDER BY id DESC LIMIT 80")
-        logs = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM justificaciones ORDER BY leida ASC, fecha DESC")
-        justificaciones = [dict(r) for r in cursor.fetchall()]
-
-        return {
-            "alumnos": alumnos,
-            "notas": notas,
-            "observaciones": observaciones,
-            "asistencias": asistencias,
-            "docentes": docentes,
-            "cursos": cursos,
-            "asignaturas": asignaturas,
-            "logs": logs,
-            "justificaciones": justificaciones,
-            "fecha_chile": ahora_chile().strftime("%Y-%m-%d")
-        }
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/maestro/cursos")
-def crear_curso_maestro(datos: CursoCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    nombre = datos.nombre.strip()
-    if not nombre:
-        raise HTTPException(status_code=400, detail="Nombre de curso requerido")
-    try:
-        cursor.execute("INSERT INTO cursos (nombre, orden) VALUES (%s, %s)", (nombre, datos.orden))
-        registrar_log(cursor, user["nombre"], "CREAR_CURSO", f"Creó curso: {nombre}")
-        conn.commit()
-        return {"mensaje": "Curso creado"}
-    except Exception:
-        conn.rollback()
-        raise HTTPException(status_code=400, detail="Ese curso ya existe")
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.delete("/api/maestro/cursos/{curso_id}")
-def eliminar_curso_maestro(curso_id: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT nombre FROM cursos WHERE id = %s", (curso_id,))
-        c = cursor.fetchone()
-        if not c:
-            raise HTTPException(status_code=404, detail="Curso no encontrado")
-        cursor.execute("SELECT COUNT(*) AS total FROM alumnos WHERE curso = %s AND activo = 1", (c["nombre"],))
-        if cursor.fetchone()["total"] > 0:
-            raise HTTPException(status_code=400, detail="No puedes eliminar un curso que tiene alumnos activos. Trasládalos primero.")
-        cursor.execute("DELETE FROM cursos WHERE id = %s", (curso_id,))
-        registrar_log(cursor, user["nombre"], "ELIMINAR_CURSO", f"Eliminó curso: {c['nombre']}")
-        conn.commit()
-        return {"mensaje": "Curso eliminado"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/maestro/asignaturas")
-def crear_asignatura_maestro(datos: AsignaturaCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    nombre = datos.nombre.strip()
-    if not nombre:
-        raise HTTPException(status_code=400, detail="Nombre requerido")
-    try:
-        cursor.execute("INSERT INTO asignaturas (nombre, activa) VALUES (%s, 1) ON CONFLICT (nombre) DO UPDATE SET activa = 1", (nombre,))
-        registrar_log(cursor, user["nombre"], "CREAR_ASIGNATURA", f"Activó/creó asignatura: {nombre}")
-        conn.commit()
-        return {"mensaje": "Asignatura guardada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.delete("/api/maestro/asignaturas/{asig_id}")
-def eliminar_asignatura_maestro(asig_id: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("DELETE FROM asignaturas WHERE id = %s", (asig_id,))
-        registrar_log(cursor, user["nombre"], "ELIMINAR_ASIGNATURA", f"Eliminó asignatura ID {asig_id}")
-        conn.commit()
-        return {"mensaje": "Asignatura eliminada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/maestro/docentes")
-def crear_docente_maestro(datos: DocenteCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        pwd_hash = pwd_context.hash(datos.password)
-        nombre_norm = datos.nombre.strip().upper()
-        rol_val = datos.rol if datos.rol in ["docente", "maestro"] else "docente"
-        cursos_val = "*" if rol_val == "maestro" else datos.cursos.strip()
-        cursor.execute(
-            "INSERT INTO docentes (nombre, password_hash, cursos, rol, activo) VALUES (%s, %s, %s, %s, 1)",
-            (nombre_norm, pwd_hash, cursos_val, rol_val)
+    if data.tipo_portal == "staff":
+        cur.execute(
+            '''SELECT id, nombre, rut, email, rol, curso, asignatura 
+               FROM usuarios 
+               WHERE (LOWER(nombre) = LOWER(%s) OR LOWER(rut) = LOWER(%s) OR LOWER(email) = LOWER(%s))
+               AND rol IN ('maestro', 'docente') AND password_hash = %s AND activo = TRUE''',
+            (ident, ident, ident, pwd_h)
         )
-        registrar_log(cursor, user["nombre"], "CREAR_DOCENTE", f"Creó usuario {nombre_norm} ({rol_val})")
+    else:
+        cur.execute(
+            '''SELECT id, nombre, rut, email, rol, curso, asignatura 
+               FROM usuarios 
+               WHERE (LOWER(rut) = LOWER(%s) OR LOWER(nombre) = LOWER(%s))
+               AND rol = 'estudiante' AND password_hash = %s AND activo = TRUE''',
+            (ident, ident, pwd_h)
+        )
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas o usuario no autorizado para este portal.")
+
+    rol_normalizado = str(user["rol"]).strip().lower()
+    return {
+        "ok": True,
+        "usuario": {
+            "id": user["id"],
+            "nombre": user["nombre"],
+            "rut": user["rut"],
+            "email": user["email"],
+            "rol": rol_normalizado,
+            "curso": user["curso"] or "",
+            "asignatura": user["asignatura"] or ""
+        }
+    }
+
+@app.get("/api/dashboard/maestro")
+def dashboard_maestro():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT id, nombre, rut, email, rol, curso, asignatura FROM usuarios ORDER BY rol, nombre")
+    usuarios = cur.fetchall()
+    cur.execute("SELECT * FROM cursos ORDER BY nombre")
+    cursos = cur.fetchall()
+    cur.execute("SELECT * FROM alertas ORDER BY creado_en DESC LIMIT 20")
+    alertas = cur.fetchall()
+    cur.execute("SELECT ROUND(AVG(nota), 1) AS promedio FROM calificaciones")
+    prom = cur.fetchone()["promedio"] or 0.0
+    cur.close()
+    conn.close()
+    return {
+        "usuarios": usuarios,
+        "cursos": cursos,
+        "alertas": alertas,
+        "promedio_general": float(prom)
+    }
+
+@app.post("/api/usuarios")
+def crear_usuario(u: UsuarioCreate):
+    conn = get_db()
+    cur = conn.cursor()
+    rol_clean = u.rol.strip().lower()
+    if rol_clean not in ("maestro", "docente", "estudiante"):
+        raise HTTPException(status_code=400, detail="Rol inválido.")
+    try:
+        cur.execute(
+            '''INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, password_hash)
+               VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
+            (u.nombre.strip(), u.rut.strip(), u.email.strip(), rol_clean, u.curso.strip(), u.asignatura.strip(), hash_pwd(u.password))
+        )
+        new_id = cur.fetchone()["id"]
         conn.commit()
-        return {"mensaje": "Perfil creado correctamente"}
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail=f"Error al crear usuario (posible nombre duplicado): {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error al crear usuario (¿RUT duplicado?): {str(e)}")
     finally:
-        cursor.close()
+        cur.close()
         conn.close()
+    return {"ok": True, "id": new_id}
 
-@app.put("/api/maestro/docentes/{docente_id}")
-def actualizar_docente_maestro(docente_id: int, datos: DocenteUpdate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        nombre_norm = datos.nombre.strip().upper()
-        rol_val = datos.rol if datos.rol in ["docente", "maestro"] else "docente"
-        cursos_val = "*" if rol_val == "maestro" else datos.cursos.strip()
-        if datos.password:
-            pwd_hash = pwd_context.hash(datos.password)
-            cursor.execute(
-                "UPDATE docentes SET nombre = %s, password_hash = %s, cursos = %s, rol = %s, activo = %s WHERE id = %s",
-                (nombre_norm, pwd_hash, cursos_val, rol_val, datos.activo if datos.activo is not None else 1, docente_id)
-            )
-        else:
-            cursor.execute(
-                "UPDATE docentes SET nombre = %s, cursos = %s, rol = %s, activo = %s WHERE id = %s",
-                (nombre_norm, cursos_val, rol_val, datos.activo if datos.activo is not None else 1, docente_id)
-            )
-        registrar_log(cursor, user["nombre"], "EDITAR_DOCENTE", f"Editó usuario ID {docente_id} ({nombre_norm})")
-        conn.commit()
-        return {"mensaje": "Perfil actualizado correctamente"}
-    finally:
-        cursor.close()
-        conn.close()
+@app.delete("/api/usuarios/{user_id}")
+def eliminar_usuario(user_id: int):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM usuarios WHERE id = %s AND LOWER(nombre) != 'paulina toledo'", (user_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"ok": True}
 
-@app.delete("/api/maestro/docentes/{docente_id}")
-def eliminar_docente_maestro(docente_id: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
+@app.post("/api/cursos")
+def crear_curso(c: CursoCreate):
+    conn = get_db()
+    cur = conn.cursor()
     try:
-        cursor.execute("SELECT nombre FROM docentes WHERE id = %s", (docente_id,))
-        doc = cursor.fetchone()
-        if doc and doc["nombre"].upper() == user["nombre"].upper():
-            raise HTTPException(status_code=400, detail="No puedes eliminar tu propia cuenta activa")
-        cursor.execute("DELETE FROM docentes WHERE id = %s", (docente_id,))
-        registrar_log(cursor, user["nombre"], "ELIMINAR_DOCENTE", f"Eliminó docente {doc['nombre'] if doc else docente_id}")
+        cur.execute("INSERT INTO cursos (nombre, profesor_jefe) VALUES (%s, %s)", (c.nombre.strip(), c.profesor_jefe.strip()))
         conn.commit()
-        return {"mensaje": "Usuario eliminado"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/maestro/alumnos/importar")
-def importar_alumnos_masivo(datos: AlumnoBulkImport, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    creados = 0
-    errores = []
-    try:
-        for item in datos.alumnos:
-            rut_norm = normalizar_rut(item.rut)
-            if not validar_rut_modulo11(rut_norm):
-                errores.append(f"{item.rut}: RUT inválido")
-                continue
-            cursor.execute(
-                """
-                INSERT INTO alumnos (rut, nombre, curso, activo)
-                VALUES (%s, %s, %s, 1)
-                ON CONFLICT (rut) DO UPDATE SET nombre = EXCLUDED.nombre, curso = EXCLUDED.curso, activo = 1
-                """,
-                (rut_norm, item.nombre.strip().upper(), item.curso.strip())
-            )
-            creados += 1
-        registrar_log(cursor, user["nombre"], "IMPORTACION_MASIVA", f"Importó/actualizó {creados} alumnos vía CSV.")
-        conn.commit()
-        return {"creados": creados, "errores": errores}
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="El curso ya existe o datos inválidos.")
     finally:
-        cursor.close()
+        cur.close()
         conn.close()
+    return {"ok": True}
 
-@app.post("/api/maestro/alumnos/reasignar")
-def reasignar_alumnos_curso(datos: ReasignarMasivo, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        ruts_norm = [normalizar_rut(r) for r in datos.ruts]
-        cursor.execute("UPDATE alumnos SET curso = %s WHERE rut = ANY(%s)", (datos.nuevo_curso.strip(), ruts_norm))
-        registrar_log(cursor, user["nombre"], "TRASLADO_CURSO", f"Trasladó {len(ruts_norm)} alumnos a {datos.nuevo_curso}")
-        conn.commit()
-        return {"mensaje": f"{len(ruts_norm)} alumnos trasladados a {datos.nuevo_curso}"}
-    finally:
-        cursor.close()
+@app.post("/api/alertas")
+def crear_alerta(a: AlertaCreate):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO alertas (titulo, detalle, nivel) VALUES (%s, %s, %s)", (a.titulo.strip(), a.detalle.strip(), a.nivel))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"ok": True}
+
+@app.get("/api/docente/datos")
+def datos_docente(curso: Optional[str] = ""):
+    conn = get_db()
+    cur = conn.cursor()
+    if curso:
+        cur.execute("SELECT id, nombre, rut, curso FROM usuarios WHERE rol = 'estudiante' AND curso = %s ORDER BY nombre", (curso,))
+    else:
+        cur.execute("SELECT id, nombre, rut, curso FROM usuarios WHERE rol = 'estudiante' ORDER BY curso, nombre")
+    estudiantes = cur.fetchall()
+    cur.execute("SELECT * FROM cursos ORDER BY nombre")
+    cursos = cur.fetchall()
+    cur.execute('''
+        SELECT c.id, u.nombre AS estudiante, u.curso, c.asignatura, c.evaluacion, c.nota, c.fecha
+        FROM calificaciones c
+        JOIN usuarios u ON c.estudiante_id = u.id
+        ORDER BY c.id DESC LIMIT 50
+    ''')
+    notas = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"estudiantes": estudiantes, "cursos": cursos, "notas": notas}
+
+@app.post("/api/docente/notas")
+def registrar_nota(n: NotaCreate):
+    if n.nota < 1.0 or n.nota > 7.0:
+        raise HTTPException(status_code=400, detail="La nota debe estar entre 1.0 y 7.0")
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO calificaciones (estudiante_id, asignatura, evaluacion, nota) VALUES (%s, %s, %s, %s)",
+        (n.estudiante_id, n.asignatura.strip(), n.evaluacion.strip(), round(n.nota, 1))
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"ok": True}
+
+@app.post("/api/docente/asistencia")
+def registrar_asistencia(a: AsistenciaCreate):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO asistencia (estudiante_id, curso, estado) VALUES (%s, %s, %s)",
+        (a.estudiante_id, a.curso.strip(), a.estado.strip())
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"ok": True}
+
+@app.get("/api/estudiante/{estudiante_id}")
+def datos_estudiante(estudiante_id: int):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT id, nombre, rut, email, curso FROM usuarios WHERE id = %s AND rol = 'estudiante'", (estudiante_id,))
+    est = cur.fetchone()
+    if not est:
+        cur.close()
         conn.close()
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+    cur.execute("SELECT asignatura, evaluacion, nota, fecha FROM calificaciones WHERE estudiante_id = %s ORDER BY asignatura, fecha DESC", (estudiante_id,))
+    notas = cur.fetchall()
+    cur.execute("SELECT fecha, estado FROM asistencia WHERE estudiante_id = %s ORDER BY fecha DESC LIMIT 30", (estudiante_id,))
+    asistencia = cur.fetchall()
+    cur.execute("SELECT titulo, detalle, nivel, creado_en FROM alertas ORDER BY creado_en DESC LIMIT 10")
+    alertas = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"estudiante": est, "notas": notas, "asistencia": asistencia, "alertas": alertas}
 
-# --- APIS ASISTENCIA ---
-@app.get("/api/asistencia")
-def obtener_asistencia(curso: str, fecha: str, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM asistencia WHERE curso = %s AND fecha = %s", (curso, fecha))
-        return [dict(r) for r in cursor.fetchall()]
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/asistencia")
-def guardar_asistencia(datos: AsistenciaBatch, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        for reg in datos.registros:
-            rut_norm = normalizar_rut(reg.rut)
-            cursor.execute(
-                """
-                INSERT INTO asistencia (rut, curso, fecha, estado, docente)
-                VALUES (%s, %s, %s, %s, %s)
-                ON CONFLICT (rut, fecha) DO UPDATE SET estado = EXCLUDED.estado, docente = EXCLUDED.docente, curso = EXCLUDED.curso
-                """,
-                (rut_norm, datos.curso, datos.fecha, reg.estado, datos.docente)
-            )
-        registrar_log(cursor, datos.docente, "ASISTENCIA", f"Pasó asistencia {datos.curso} ({datos.fecha})")
-        conn.commit()
-        return {"mensaje": "Asistencia guardada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-# --- APIS COMPARTIDAS (DOCENTE Y MAESTRO) ---
-@app.get("/api/calendario")
-def obtener_calendario(user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    verificar_automatizacion_calendario()
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM configuracion_calendario WHERE id = 1")
-        cfg = dict(cursor.fetchone())
-        cursor.execute("SELECT * FROM historial_anual ORDER BY anio DESC, curso_anterior, nombre LIMIT 200")
-        historial = [dict(r) for r in cursor.fetchall()]
-        return {"config": cfg, "fecha_servidor": ahora_chile().strftime("%Y-%m-%d %H:%M"), "historial": historial}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.put("/api/calendario")
-def actualizar_calendario(datos: CalendarioConfigUpdate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("UPDATE configuracion_calendario SET mes_cierre = %s, dia_cierre = %s WHERE id = 1", (datos.mes_cierre, datos.dia_cierre))
-        registrar_log(cursor, user["nombre"], "CONFIG_CALENDARIO", f"Cierre escolar fijado: {datos.dia_cierre}/{datos.mes_cierre}")
-        conn.commit()
-    finally:
-        cursor.close()
-        conn.close()
-    verificar_automatizacion_calendario()
-    return {"mensaje": "Calendario actualizado"}
-
-@app.post("/api/calendario/simular-cierre")
-def forzar_promocion_ahora(user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        anio = ahora_chile().year
-        ejecutar_promocion_anual(cursor, anio, user["nombre"])
-        conn.commit()
-        return {"mensaje": f"Promoción anual {anio} ejecutada correctamente."}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.get("/api/docente/panel")
-def panel_docente(cursos: str, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    verificar_automatizacion_calendario()
-    lista_cursos = [c.strip() for c in cursos.split(",") if c.strip()]
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        if "*" in lista_cursos or user.get("rol") == "maestro":
-            cursor.execute("SELECT * FROM alumnos ORDER BY curso, nombre")
-            alumnos = [dict(r) for r in cursor.fetchall()]
-            cursor.execute("SELECT * FROM notas")
-            notas = [dict(r) for r in cursor.fetchall()]
-            cursor.execute("SELECT * FROM asistencia")
-            asistencias = [dict(r) for r in cursor.fetchall()]
-            cursor.execute("SELECT * FROM justificaciones ORDER BY leida ASC, fecha DESC")
-            justificaciones = [dict(r) for r in cursor.fetchall()]
-        else:
-            cursor.execute("SELECT * FROM alumnos WHERE curso = ANY(%s) ORDER BY curso, nombre", (lista_cursos,))
-            alumnos = [dict(r) for r in cursor.fetchall()]
-            ruts = [a["rut"] for a in alumnos]
-            notas = []
-            asistencias = []
-            if ruts:
-                cursor.execute("SELECT * FROM notas WHERE rut = ANY(%s)", (ruts,))
-                notas = [dict(r) for r in cursor.fetchall()]
-                cursor.execute("SELECT * FROM asistencia WHERE rut = ANY(%s)", (ruts,))
-                asistencias = [dict(r) for r in cursor.fetchall()]
-            cursor.execute("SELECT * FROM justificaciones WHERE curso = ANY(%s) ORDER BY leida ASC, fecha DESC", (lista_cursos,))
-            justificaciones = [dict(r) for r in cursor.fetchall()]
-
-        cursor.execute("SELECT id, nombre FROM asignaturas WHERE activa = 1 ORDER BY id ASC")
-        asignaturas = [dict(r) for r in cursor.fetchall()]
-        return {
-            "alumnos": alumnos,
-            "notas": notas,
-            "asistencias": asistencias,
-            "justificaciones": justificaciones,
-            "asignaturas": asignaturas,
-            "hoy_chile": ahora_chile().strftime("%Y-%m-%d")
-        }
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.get("/api/alumnos")
-def listar_alumnos(incluir_inactivos: bool = False):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        if incluir_inactivos:
-            cursor.execute("SELECT * FROM alumnos ORDER BY curso, nombre")
-        else:
-            cursor.execute("SELECT * FROM alumnos WHERE activo = 1 ORDER BY curso, nombre")
-        return [dict(row) for row in cursor.fetchall()]
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/alumnos")
-def crear_alumno(alumno: AlumnoCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    rut_norm = normalizar_rut(alumno.rut)
-    if not validar_rut_modulo11(rut_norm):
-        raise HTTPException(status_code=400, detail="RUT inválido (dígito verificador no corresponde)")
-
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT activo FROM alumnos WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        existente = cursor.fetchone()
-        if existente:
-            if existente["activo"] == 0:
-                cursor.execute("UPDATE alumnos SET nombre = %s, curso = %s, activo = 1 WHERE UPPER(REPLACE(rut, '.', '')) = %s", (alumno.nombre.strip().upper(), alumno.curso.strip(), rut_norm))
-                registrar_log(cursor, user["nombre"], "REACTIVAR_ALUMNO", f"Reactivó alumno {rut_norm}")
-                conn.commit()
-                return {"mensaje": "Alumno reactivado", "rut": rut_norm}
-            else:
-                raise HTTPException(status_code=400, detail="Ese RUT ya está registrado y activo")
-
-        cursor.execute("INSERT INTO alumnos (rut, nombre, curso, activo) VALUES (%s, %s, %s, 1)", (rut_norm, alumno.nombre.strip().upper(), alumno.curso.strip()))
-        registrar_log(cursor, user["nombre"], "CREAR_ALUMNO", f"Matriculó a {alumno.nombre.strip().upper()} ({rut_norm}) en {alumno.curso}")
-        conn.commit()
-        return {"mensaje": "Alumno creado correctamente", "rut": rut_norm}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.put("/api/alumnos/{rut}")
-def editar_alumno(rut: str, datos: AlumnoUpdate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(rut)
-    try:
-        cursor.execute("UPDATE alumnos SET nombre = %s, curso = %s WHERE UPPER(REPLACE(rut, '.', '')) = %s", (datos.nombre.strip().upper(), datos.curso.strip(), rut_norm))
-        registrar_log(cursor, user["nombre"], "EDITAR_ALUMNO", f"Editó alumno {rut_norm} -> {datos.nombre.strip().upper()} ({datos.curso})")
-        conn.commit()
-        return {"mensaje": "Datos actualizados"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.patch("/api/alumnos/{rut}/estado")
-def cambiar_estado_alumno(rut: str, activo: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(rut)
-    try:
-        cursor.execute("UPDATE alumnos SET activo = %s WHERE UPPER(REPLACE(rut, '.', '')) = %s", (activo, rut_norm))
-        registrar_log(cursor, user["nombre"], "ESTADO_ALUMNO", f"Cambió activo={activo} para {rut_norm}")
-        conn.commit()
-        return {"mensaje": "Estado actualizado"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.delete("/api/alumnos/{rut}")
-def eliminar_alumno_definitivo(rut: str, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(rut)
-    try:
-        cursor.execute("DELETE FROM notas WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        cursor.execute("DELETE FROM observaciones WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        cursor.execute("DELETE FROM justificaciones WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        cursor.execute("DELETE FROM asistencia WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        cursor.execute("DELETE FROM alumnos WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        registrar_log(cursor, user["nombre"], "ELIMINAR_ALUMNO", f"Eliminó definitivamente alumno {rut_norm}")
-        conn.commit()
-        return {"mensaje": "Eliminado definitivamente"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/notas")
-def agregar_nota(nota: NotaCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    if not (1.0 <= nota.nota <= 7.0):
-        raise HTTPException(status_code=400, detail="Nota debe estar entre 1.0 y 7.0")
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(nota.rut)
-    try:
-        fecha = ahora_chile().strftime("%Y-%m-%d %H:%M")
-        cursor.execute("INSERT INTO notas (rut, asignatura, nota, semestre, fecha, docente) VALUES (%s, %s, %s, %s, %s, %s)", (rut_norm, nota.asignatura, round(nota.nota, 1), nota.semestre, fecha, nota.docente))
-        registrar_log(cursor, nota.docente, "NUEVA_NOTA", f"Nota {round(nota.nota, 1)} en {nota.asignatura} para {rut_norm}")
-        conn.commit()
-        return {"mensaje": "Nota registrada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.delete("/api/notas/{nota_id}")
-def eliminar_nota(nota_id: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM notas WHERE id = %s", (nota_id,))
-        n = cursor.fetchone()
-        cursor.execute("DELETE FROM notas WHERE id = %s", (nota_id,))
-        if n:
-            registrar_log(cursor, user["nombre"], "ELIMINAR_NOTA", f"Borró nota {n['nota']} ({n['asignatura']}) de {n['rut']}")
-        conn.commit()
-        return {"mensaje": "Nota eliminada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.get("/api/portal/{rut}")
-def datos_estudiante(rut: str):
-    verificar_automatizacion_calendario()
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(rut)
-    try:
-        cursor.execute("SELECT * FROM alumnos WHERE UPPER(REPLACE(rut, '.', '')) = %s", (rut_norm,))
-        alumno = cursor.fetchone()
-        if not alumno:
-            raise HTTPException(status_code=404, detail="Alumno no encontrado")
-        curso = alumno["curso"]
-        rut_real = alumno["rut"]
-        cursor.execute("SELECT * FROM notas WHERE rut = %s", (rut_real,))
-        notas = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM observaciones WHERE rut = %s ORDER BY fecha DESC", (rut_real,))
-        observaciones = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM justificaciones WHERE rut = %s ORDER BY fecha DESC", (rut_real,))
-        justificaciones = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM anuncios WHERE curso = %s OR curso = 'TODOS' ORDER BY fecha DESC", (curso,))
-        anuncios = [dict(r) for r in cursor.fetchall()]
-        cursor.execute("SELECT * FROM asistencia WHERE rut = %s ORDER BY fecha DESC", (rut_real,))
-        asistencia = [dict(r) for r in cursor.fetchall()]
-        return {
-            "alumno": dict(alumno),
-            "notas": notas,
-            "observaciones": observaciones,
-            "justificaciones": justificaciones,
-            "anuncios": anuncios,
-            "asistencia": asistencia,
-            "fecha_emision": ahora_chile().strftime("%d/%m/%Y")
-        }
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/observaciones")
-def crear_observacion(obs: ObservacionCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    rut_norm = normalizar_rut(obs.rut)
-    try:
-        fecha = ahora_chile().strftime("%Y-%m-%d %H:%M")
-        cursor.execute("INSERT INTO observaciones (rut, tipo, texto, docente, fecha) VALUES (%s, %s, %s, %s, %s)", (rut_norm, obs.tipo, obs.texto, obs.docente, fecha))
-        registrar_log(cursor, obs.docente, "OBSERVACION", f"Observación ({obs.tipo}) para {rut_norm}")
-        conn.commit()
-        return {"mensaje": "Observación guardada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/justificaciones")
-def crear_justificacion(just: JustificacionCreate):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        fecha = ahora_chile().strftime("%Y-%m-%d %H:%M")
-        cursor.execute("INSERT INTO justificaciones (rut, curso, mensaje, fecha, leida) VALUES (%s, %s, %s, %s, 0)", (normalizar_rut(just.rut), just.curso, just.mensaje, fecha))
-        conn.commit()
-        return {"mensaje": "Justificación enviada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.patch("/api/justificaciones/{just_id}/leer")
-def marcar_justificacion_leida(just_id: int, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute("UPDATE justificaciones SET leida = 1 WHERE id = %s", (just_id,))
-        conn.commit()
-        return {"mensaje": "Archivada"}
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.post("/api/anuncios")
-def crear_anuncio(anuncio: AnuncioCreate, user: dict = Depends(lambda h=Header(None): verificar_auth(h, ["docente", "maestro"]))):
-    conn = DBConnection()
-    cursor = conn.cursor()
-    try:
-        fecha = ahora_chile().strftime("%Y-%m-%d %H:%M")
-        cursor.execute("INSERT INTO anuncios (curso, texto, docente, fecha) VALUES (%s, %s, %s, %s)", (anuncio.curso, anuncio.texto, anuncio.docente, fecha))
-        registrar_log(cursor, anuncio.docente, "ANUNCIO", f"Publicó anuncio para {anuncio.curso}")
-        conn.commit()
-        return {"mensaje": "Anuncio publicado"}
-    finally:
-        cursor.close()
-        conn.close()
-
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+@app.post("/api/admin/promocion-anual")
+def promocion_anual():
+    mapa = {
+        "1° Básico A": "2° Básico A",
+        "2° Básico A": "3° Básico A",
+        "3° Básico A": "4° Básico A",
+        "4° Básico A": "5° Básico A",
+        "5° Básico A": "6° Básico A",
+        "6° Básico A": "7° Básico A",
+        "7° Básico A": "8° Básico A",
+        "8° Básico A": "Egresado"
+    }
+    conn = get_db()
+    cur = conn.cursor()
+    for actual, siguiente in mapa.items():
+        cur.execute("UPDATE usuarios SET curso = %s WHERE rol = 'estudiante' AND curso = %s", (siguiente, actual))
+    cur.execute("DELETE FROM calificaciones")
+    cur.execute("DELETE FROM asistencia")
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"ok": True, "mensaje": "Promoción de curso y reinicio anual ejecutados correctamente."}

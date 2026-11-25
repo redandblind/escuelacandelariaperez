@@ -1,315 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Estudiante · Escuela Candelaria Pérez</title>
-<style>
-:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--success:#059669;--danger:#dc2626;--radius:14px;--shadow:0 4px 20px rgba(15,23,42,.05)}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:40;flex-wrap:wrap;gap:8px}
-.header-left h1{font-size:1.1rem;color:var(--primary-dark);font-weight:700}
-.header-left p{font-size:.78rem;color:var(--primary-light);margin-top:1px}
-.header-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn-print{background:#eff6ff;color:var(--primary-dark);border:1px solid #bfdbfe;padding:9px 14px;border-radius:9px;font-size:.83rem;font-weight:600;cursor:pointer}
-.btn-print:hover{background:#dbeafe}
-.btn-logout{background:#f1f5f9;color:#475569;border:1px solid var(--border);padding:9px 14px;border-radius:9px;font-size:.83rem;font-weight:600;cursor:pointer;text-decoration:none}
-main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:24px 16px 40px}
-.student-banner{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:24px;border-radius:var(--radius);margin-bottom:20px;box-shadow:0 10px 28px rgba(30,64,175,.25)}
-.student-banner h2{font-size:1.3rem;font-weight:700;margin-bottom:8px}
-.student-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.85rem}
-.meta-pill{background:rgba(255,255,255,.16);padding:5px 12px;border-radius:999px}
-.avg-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.avg-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;box-shadow:var(--shadow)}
-.avg-card .val{font-size:1.5rem;font-weight:700}
-.avg-card .lbl{font-size:.75rem;color:var(--muted);margin-top:3px}
-.val-ok{color:#059669}.val-mid{color:#d97706}.val-bad{color:#dc2626}.val-na{color:#94a3b8}
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px;margin-bottom:18px}
-.card-title{font-size:1.02rem;font-weight:700;color:var(--primary-dark);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.sem-tabs{display:flex;gap:6px}
-.sem-tab{padding:6px 12px;border:1.5px solid var(--border);background:#f8fafc;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted)}
-.sem-tab.active{background:#eff6ff;border-color:#93c5fd;color:var(--primary-dark)}
-.asig-block{border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafbfc}
-.asig-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.asig-name{font-weight:700;font-size:.9rem;color:#1e293b}
-.asig-avg{font-weight:700;font-size:.88rem;padding:3px 9px;border-radius:6px}
-.notas-chips{display:flex;flex-wrap:wrap;gap:6px}
-.nota-chip{padding:4px 9px;border-radius:6px;font-weight:600;font-size:.82rem;background:#fff;border:1px solid var(--border)}
-.nota-chip span{font-size:.68rem;color:var(--muted);margin-left:3px}
-.chip-ok{background:#d1fae5;color:#065f46;border-color:#a7f3d0}
-.chip-mid{background:#fef3c7;color:#92400e;border-color:#fde68a}
-.chip-bad{background:#fee2e2;color:#991b1b;border-color:#fecaca}
-.obs-item{background:#f8fafc;border-left:3px solid var(--primary-light);padding:11px 14px;margin-bottom:10px;border-radius:0 9px 9px 0;font-size:.88rem}
-.obs-item.neg{border-left-color:var(--danger)}
-.obs-item .obs-meta{font-size:.74rem;color:var(--muted);margin-top:4px}
-.anuncio-item{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:.88rem}
-.anuncio-item .an-meta{font-size:.74rem;color:var(--primary);margin-top:5px;font-weight:500}
-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;font-family:inherit;background:#fafbfc;resize:vertical}
-.btn-primary{margin-top:12px;background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer}
-.hist-item{padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;margin-top:8px;font-size:.84rem}
-.hist-item .meta{font-size:.73rem;color:var(--muted);margin-top:3px}
-.empty{color:var(--muted);font-size:.88rem;padding:12px 0;text-align:center}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:16px;width:100%;max-width:650px;padding:24px}
-footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
-@media(max-width:600px){.avg-strip{grid-template-columns:repeat(2,1fr)}}
-@media print{
-  body.printing-cert *{visibility:hidden}
-  body.printing-cert #certificadoEst,body.printing-cert #certificadoEst *{visibility:visible}
-  body.printing-cert #certificadoEst{position:fixed;inset:0;background:#fff;padding:40px;border:none}
-  body:not(.printing-cert) .header-btns,body:not(.printing-cert) .sem-tabs,body:not(.printing-cert) #cardJustificar,body:not(.printing-cert) #cardAnuncios{display:none!important}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Estudiante | Escuela Candelaria Pérez</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<header>
-  <div class="header-left">
-    <h1>Escuela Candelaria Pérez</h1>
-    <p>Informe Académico del Estudiante · San Javier</p>
-  </div>
-  <div class="header-btns">
-    <button class="btn-print" onclick="abrirCertificadoEst()">📄 Certificado Alumno Regular</button>
-    <button class="btn-print" onclick="imprimirInforme()">🖨️ Informe Notas</button>
-    <a href="index.html" class="btn-logout" onclick="sessionStorage.removeItem('estudiante_session')">Cerrar sesión</a>
-  </div>
-</header>
-<main>
-  <div class="student-banner">
-    <h2 id="nombreAlumno">Cargando...</h2>
-    <div class="student-meta">
-      <span class="meta-pill" id="rutAlumno">RUT: —</span>
-      <span class="meta-pill" id="cursoAlumno">Curso: —</span>
-    </div>
-  </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <script>
+    const SESSION_KEY = "ecp_v8_session";
+    const API_URL = (localStorage.getItem("ecp_v8_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch (e) { currentUser = null; }
 
-  <div class="avg-strip">
-    <div class="avg-card"><div class="val val-na" id="estS1">—</div><div class="lbl">1° Semestre</div></div>
-    <div class="avg-card"><div class="val val-na" id="estS2">—</div><div class="lbl">2° Semestre</div></div>
-    <div class="avg-card"><div class="val val-na" id="estGen">—</div><div class="lbl">Promedio General</div></div>
-    <div class="avg-card"><div class="val val-na" id="estAsist">—</div><div class="lbl">Asistencia</div></div>
-  </div>
-
-  <div class="card" id="cardAnuncios" style="display:none">
-    <div class="card-title">📢 Comunicados y Anuncios</div>
-    <div id="listaAnuncios"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">
-      <span>📊 Calificaciones por asignatura</span>
-      <div class="sem-tabs">
-        <button class="sem-tab active" data-sem="all" onclick="cambiarSemEst(this)">Todas</button>
-        <button class="sem-tab" data-sem="1" onclick="cambiarSemEst(this)">1° Sem</button>
-        <button class="sem-tab" data-sem="2" onclick="cambiarSemEst(this)">2° Sem</button>
-      </div>
-    </div>
-    <div id="contenedorAsignaturas"><div class="empty">Cargando calificaciones...</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">📝 Hoja de vida · Observaciones</div>
-    <div id="contenedorObs"><div class="empty">Cargando observaciones...</div></div>
-  </div>
-
-  <div class="card" id="cardJustificar">
-    <div class="card-title">✉️ Justificar inasistencia</div>
-    <textarea id="mensajeJustif" rows="3" placeholder="Escribe el motivo de tu inasistencia para enviarlo a tus docentes..."></textarea>
-    <button id="btnEnviarJustif" class="btn-primary" onclick="enviarJustificacion()">Enviar justificación</button>
-    <div id="historialJustif" style="margin-top:16px"></div>
-  </div>
-</main>
-
-<div id="modalCertEst" class="modal-overlay">
-  <div class="modal">
-    <div id="certificadoEst" style="border:2px solid #1e3a8a;padding:28px;border-radius:10px">
-      <div style="text-align:center;border-bottom:2px solid #1e3a8a;padding-bottom:12px;margin-bottom:20px">
-        <h2 style="color:#1e3a8a;font-size:1.25rem">ESCUELA CANDELARIA PÉREZ</h2>
-        <p style="font-size:.82rem;color:#475569">San Javier · Región del Maule · Ministerio de Educación</p>
-      </div>
-      <h3 style="text-align:center;margin-bottom:20px;text-decoration:underline">CERTIFICADO DE ALUMNO REGULAR</h3>
-      <p id="textoCertEst" style="line-height:1.8;font-size:.96rem;text-align:justify;margin-bottom:34px"></p>
-      <div style="margin-top:44px;text-align:center">
-        <div style="width:230px;border-top:1px solid #0f172a;margin:0 auto;padding-top:6px;font-weight:700;font-size:.88rem">PAULINA TOLEDO</div>
-        <div style="font-size:.78rem;color:#475569">Directora · Escuela Candelaria Pérez</div>
-      </div>
-      <p id="fechaCertEst" style="margin-top:24px;font-size:.78rem;color:#64748b"></p>
-    </div>
-    <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn-logout" onclick="document.getElementById('modalCertEst').classList.remove('show')">Cerrar</button>
-      <button class="btn-print" onclick="imprimirCertificado()">🖨️ Imprimir / Guardar PDF</button>
-    </div>
-  </div>
-</div>
-
-<footer>Escuela Candelaria Pérez · San Javier · Portal Estudiante v8.0</footer>
-
-<script>
-const API_URL = "/api";
-let alumno = null;
-let semActual = 'all';
-let notasAlumnoCache = [];
-let fechaEmisionServidor = "";
-
-(function init(){
-  try{
-    const s = JSON.parse(sessionStorage.getItem('estudiante_session') || 'null');
-    if(!s || s.rol!=='estudiante' || Date.now()>s.exp){
-      sessionStorage.removeItem('estudiante_session');
-      window.location.href = "index.html";
-      return;
+    if (!currentUser || (currentUser.rol || "").toLowerCase().trim() !== "estudiante") {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
     }
-    alumno = s;
-    document.getElementById('nombreAlumno').textContent = formatearNombre(alumno.nombre);
-    document.getElementById('rutAlumno').textContent = 'RUT: ' + alumno.rut;
-    document.getElementById('cursoAlumno').textContent = 'Curso: ' + alumno.curso;
-    cargarDatosPortal();
-  }catch(e){ window.location.href = "index.html"; }
-})();
+  </script>
 
-function formatearNombre(n){ return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' '); }
-function parseNota(str){ if(str==null) return NaN; const n=parseFloat(String(str).replace(',','.')); return (n>=1&&n<=7)?n:NaN; }
-function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toFixed(1).replace('.',','); }
-function claseVal(n){ if(n==null||isNaN(n)) return 'val-na'; if(n>=5.5) return 'val-ok'; if(n>=4.0) return 'val-mid'; return 'val-bad'; }
-function claseChip(n){ if(n>=5.5) return 'chip-ok'; if(n>=4.0) return 'chip-mid'; return 'chip-bad'; }
+  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Portal del Estudiante v8.0</span>
+      <h1 id="est-nombre" class="text-xl font-bold text-white">Estudiante</h1>
+      <p id="est-curso" class="text-xs text-slate-400"></p>
+    </div>
+    <button onclick="cerrarSesion()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg">
+      Cerrar Sesión
+    </button>
+  </header>
 
-function calcPromedio(notas, semestre){
-  let list = notas;
-  if(semestre) list = notas.filter(x=>String(x.semestre||'1')===String(semestre));
-  const byAsig = {};
-  list.forEach(n=>{
-    const v = parseNota(n.nota);
-    if(isNaN(v)) return;
-    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
-    byAsig[n.asignatura].push(v);
-  });
-  const avgs = Object.values(byAsig).map(a=>a.reduce((x,y)=>x+y,0)/a.length);
-  return avgs.length ? avgs.reduce((x,y)=>x+y,0)/avgs.length : null;
-}
+  <main class="max-w-5xl mx-auto p-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Promedio General</p>
+        <p id="est-promedio" class="text-3xl font-bold text-emerald-400 mt-1">--</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Registros de Asistencia</p>
+        <p id="est-asistencia-resumen" class="text-lg font-semibold text-blue-300 mt-2">--</p>
+      </div>
+    </div>
 
-async function cargarDatosPortal(){
-  try {
-    const res = await fetch(`${API_URL}/portal/${alumno.rut}`);
-    if(!res.ok) throw new Error();
-    const data = await res.json();
-    fechaEmisionServidor = data.fecha_emision || new Date().toLocaleDateString('es-CL');
+    <!-- Calificaciones -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
+      <h2 class="text-lg font-bold text-white mb-3">Mis Calificaciones</h2>
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-700 text-slate-400">
+          <tr>
+            <th class="py-2">Asignatura</th>
+            <th class="py-2">Evaluación</th>
+            <th class="py-2">Fecha</th>
+            <th class="py-2">Nota</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-mis-notas" class="divide-y divide-slate-700/60"></tbody>
+      </table>
+    </div>
 
-    if(data.alumno && data.alumno.curso){
-      alumno.curso = data.alumno.curso;
-      alumno.nombre = data.alumno.nombre;
-      document.getElementById('nombreAlumno').textContent = formatearNombre(alumno.nombre);
-      document.getElementById('cursoAlumno').textContent = 'Curso: ' + alumno.curso;
+    <!-- Comunicados -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+      <h2 class="text-lg font-bold text-white mb-3">Comunicados de Dirección</h2>
+      <div id="lista-alertas" class="space-y-2 text-sm text-slate-300"></div>
+    </div>
+  </main>
+
+  <script>
+    if (currentUser) {
+      document.getElementById("est-nombre").textContent = currentUser.nombre;
+      document.getElementById("est-curso").textContent = "Curso: " + (currentUser.curso || "No asignado");
     }
 
-    notasAlumnoCache = data.notas || [];
-    renderPromedios(data.asistencia || []);
-    renderAsignaturas();
-    renderObservaciones(data.observaciones || []);
-    renderAnuncios(data.anuncios || []);
-    renderHistorialJustif(data.justificaciones || []);
-  } catch (e) {
-    document.getElementById('contenedorAsignaturas').innerHTML = '<div class="empty" style="color:#dc2626">Error al conectar con el servidor.</div>';
-  }
-}
+    function cerrarSesion() {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
+    }
 
-function renderPromedios(asistList){
-  const p1 = calcPromedio(notasAlumnoCache,'1');
-  const p2 = calcPromedio(notasAlumnoCache,'2');
-  const pg = calcPromedio(notasAlumnoCache);
-  const e1=document.getElementById('estS1'), e2=document.getElementById('estS2'), eg=document.getElementById('estGen'), ea=document.getElementById('estAsist');
-  e1.textContent=fmtNota(p1); e1.className='val '+claseVal(p1);
-  e2.textContent=fmtNota(p2); e2.className='val '+claseVal(p2);
-  eg.textContent=fmtNota(pg); eg.className='val '+claseVal(pg);
+    async function cargarEstudiante() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch(`${API_URL}/api/estudiante/${currentUser.id}`);
+        const data = await res.json();
+        const notas = data.notas || [];
 
-  if(asistList.length){
-    const ok = asistList.filter(r => r.estado==='P'||r.estado==='T'||r.estado==='J').length;
-    const pct = Math.round((ok/asistList.length)*100);
-    ea.textContent = pct + '%';
-    ea.className = 'val ' + (pct >= 85 ? 'val-ok' : 'val-bad');
-  }
-}
+        if (notas.length > 0) {
+          const suma = notas.reduce((acc, n) => acc + Number(n.nota), 0);
+          document.getElementById("est-promedio").textContent = (suma / notas.length).toFixed(1);
+        }
 
-function cambiarSemEst(btn){
-  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  semActual = btn.dataset.sem;
-  renderAsignaturas();
-}
+        document.getElementById("tabla-mis-notas").innerHTML = notas.length
+          ? notas.map(n => `
+              <tr>
+                <td class="py-2 font-medium">${n.asignatura}</td>
+                <td class="py-2">${n.evaluacion}</td>
+                <td class="py-2 text-slate-400">${n.fecha}</td>
+                <td class="py-2 font-bold ${Number(n.nota) >= 4.0 ? "text-emerald-400" : "text-red-400"}">${Number(n.nota).toFixed(1)}</td>
+              </tr>
+            `).join("")
+          : `<tr><td colspan="4" class="py-3 text-slate-400">Aún no tienes calificaciones registradas.</td></tr>`;
 
-function renderAsignaturas(){
-  let notas = notasAlumnoCache;
-  if(semActual!=='all') notas = notas.filter(n=>String(n.semestre||'1')===semActual);
-  const cont = document.getElementById('contenedorAsignaturas');
-  if(!notas.length){ cont.innerHTML='<div class="empty">No hay calificaciones registradas.</div>'; return; }
+        const asist = data.asistencia || [];
+        const presentes = asist.filter(a => a.estado === "Presente").length;
+        document.getElementById("est-asistencia-resumen").textContent =
+          asist.length ? `${presentes} presentes de ${asist.length} registros` : "Sin registros aún";
 
-  const byAsig = {};
-  notas.forEach(n=>{
-    const v = parseNota(n.nota);
-    if(isNaN(v)) return;
-    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
-    byAsig[n.asignatura].push({val:v, sem:n.semestre||'1', fecha:n.fecha||''});
-  });
+        const alertas = data.alertas || [];
+        document.getElementById("lista-alertas").innerHTML = alertas.length
+          ? alertas.map(a => `
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-700">
+                <p class="font-semibold text-blue-300">${a.titulo}</p>
+                <p class="text-slate-400 text-xs mt-1">${a.detalle}</p>
+              </div>
+            `).join("")
+          : `<p class="text-slate-400">No hay comunicados nuevos.</p>`;
+      } catch (e) {
+        console.error("Error cargando datos estudiante:", e);
+      }
+    }
 
-  cont.innerHTML = Object.entries(byAsig).map(([asig, items])=>{
-    const avg = items.reduce((a,b)=>a+b.val,0)/items.length;
-    const chips = items.map(it=>`<span class="nota-chip ${claseChip(it.val)}" title="${it.fecha}">${fmtNota(it.val)}<span>S${it.sem}</span></span>`).join('');
-    return `<div class="asig-block">
-      <div class="asig-head"><span class="asig-name">${asig}</span><span class="asig-avg ${claseChip(avg)}">Prom: ${fmtNota(avg)}</span></div>
-      <div class="notas-chips">${chips}</div></div>`;
-  }).join('');
-}
-
-function renderObservaciones(obs){
-  const cont = document.getElementById('contenedorObs');
-  if(!obs.length){ cont.innerHTML='<div class="empty">Sin observaciones registradas.</div>'; return; }
-  cont.innerHTML = obs.map(o=>`<div class="obs-item ${o.tipo==='neg'?'neg':''}">${o.texto}<div class="obs-meta">${o.fecha||''} · ${o.docente||''}</div></div>`).join('');
-}
-
-function renderAnuncios(anuncios){
-  const card = document.getElementById('cardAnuncios');
-  if(!anuncios.length){ card.style.display='none'; return; }
-  card.style.display='block';
-  document.getElementById('listaAnuncios').innerHTML = anuncios.map(a=>`<div class="anuncio-item">${a.texto}<div class="an-meta">${a.fecha||''} · ${a.docente||''}</div></div>`).join('');
-}
-
-async function enviarJustificacion(){
-  const msg = document.getElementById('mensajeJustif').value.trim();
-  const btn = document.getElementById('btnEnviarJustif');
-  if(!msg){ alert('Escribe el motivo.'); return; }
-  btn.disabled = true;
-  try {
-    const res = await fetch(`${API_URL}/justificaciones`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rut: alumno.rut, curso: alumno.curso, mensaje: msg })
-    });
-    if(res.ok){ document.getElementById('mensajeJustif').value = ''; alert('✓ Justificación enviada.'); cargarDatosPortal(); }
-  } finally { btn.disabled = false; }
-}
-
-function renderHistorialJustif(list){
-  const cont = document.getElementById('historialJustif');
-  if(!list.length){ cont.innerHTML=''; return; }
-  cont.innerHTML = '<div style="font-size:.82rem;font-weight:600;color:#64748b;margin-bottom:4px">Tus justificaciones enviadas</div>' +
-    list.map(j=>`<div class="hist-item">"${j.mensaje}"<div class="meta">${j.fecha}</div></div>`).join('');
-}
-
-function abrirCertificadoEst(){
-  document.getElementById('textoCertEst').innerHTML = `La Dirección de la <strong>Escuela Candelaria Pérez</strong> de San Javier certifica que el/la estudiante <strong>${alumno.nombre}</strong>, Cédula de Identidad / RUT <strong>${alumno.rut}</strong>, es alumno(a) regular de este establecimiento educacional, cursando actualmente <strong>${alumno.curso}</strong> de Enseñanza General Básica durante el presente año lectivo.<br><br>Se extiende el presente certificado a petición del interesado(a) para los fines que estime conveniente.`;
-  document.getElementById('fechaCertEst').textContent = `San Javier, ${fechaEmisionServidor}.`;
-  document.getElementById('modalCertEst').classList.add('show');
-}
-
-function imprimirInforme(){
-  document.body.classList.remove('printing-cert');
-  window.print();
-}
-
-function imprimirCertificado(){
-  document.body.classList.add('printing-cert');
-  window.print();
-  document.body.classList.remove('printing-cert');
-}
-</script>
+    cargarEstudiante();
+  </script>
 </body>
 </html>

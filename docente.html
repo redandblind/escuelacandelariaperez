@@ -1,772 +1,179 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Docente · Escuela Candelaria Pérez</title>
-<style>
-:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--success:#059669;--danger:#dc2626;--warn:#d97706;--radius:14px;--shadow:0 4px 20px rgba(15,23,42,.05)}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:40}
-.header-left h1{font-size:1.1rem;color:var(--primary-dark);font-weight:700}
-.header-left p{font-size:.78rem;color:var(--primary-light);margin-top:1px}
-.header-actions{display:flex;align-items:center;gap:10px}
-.icon-btn{position:relative;background:#f8fafc;border:1px solid var(--border);width:42px;height:42px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
-.icon-btn:hover{background:#f1f5f9}
-.badge{position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:none;align-items:center;justify-content:center;padding:0 4px}
-.btn-logout{background:#f1f5f9;color:#475569;border:1px solid var(--border);padding:9px 14px;border-radius:9px;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none}
-.btn-logout:hover{background:#e2e8f0}
-main{flex:1;max-width:980px;width:100%;margin:0 auto;padding:24px 16px 40px}
-.welcome-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:22px}
-.welcome-card{flex:1;min-width:260px;background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:22px 24px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(30,64,175,.25)}
-.welcome-card h2{font-size:1.25rem;font-weight:700;margin-bottom:4px}
-.welcome-card p{font-size:.88rem;opacity:.9}
-.stats-grid{display:flex;gap:12px;flex-wrap:wrap}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;min-width:100px;text-align:center;box-shadow:var(--shadow)}
-.stat-card .num{font-size:1.5rem;font-weight:700;color:var(--primary-dark)}
-.stat-card .label{font-size:.75rem;color:var(--muted);margin-top:2px}
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center}
-.search-box{flex:1;min-width:200px;position:relative}
-.search-box input{width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;background:#fff}
-.search-box input:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
-.search-box::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.6}
-.btn-action{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;border:none}
-.btn-create{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
-.btn-secondary{background:#fff;color:var(--primary-dark);border:1.5px solid var(--border)}
-.curso-section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px;overflow:visible}
-.curso-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;flex-wrap:wrap;gap:8px}
-.curso-header h3{font-size:1rem;color:var(--primary-dark);font-weight:700}
-.curso-count{font-size:.78rem;background:#eff6ff;color:var(--primary);padding:4px 10px;border-radius:999px;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:.88rem}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid #f1f5f9}
-th{color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;background:#fafbfc}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f8fafc}
-.acciones{text-align:right;position:relative}
-.menu-dots{background:none;border:none;font-size:1.25rem;cursor:pointer;color:#64748b;padding:4px 10px;border-radius:6px;line-height:1}
-.menu-dots:hover{background:#f1f5f9;color:var(--primary-dark)}
-.dropdown-menu{display:none;position:absolute;right:12px;top:40px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:30;width:215px;overflow:hidden}
-.dropdown-menu button{width:100%;padding:10px 14px;background:none;border:none;font-size:.84rem;color:#334155;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px}
-.dropdown-menu button:hover{background:#f8fafc;color:var(--primary-dark)}
-.dropdown-menu button.warn{color:var(--warn)}
-.dropdown-menu button.warn:hover{background:#fffbeb}
-.dropdown-menu button.danger{color:var(--danger);border-top:1px solid #f1f5f9}
-.dropdown-menu button.danger:hover{background:#fef2f2}
-.prom-chip{display:inline-block;padding:3px 9px;border-radius:6px;font-weight:700;font-size:.85rem}
-.prom-ok{background:#d1fae5;color:#065f46}
-.prom-mid{background:#fef3c7;color:#92400e}
-.prom-bad{background:#fee2e2;color:#991b1b}
-.prom-na{background:#f1f5f9;color:#94a3b8}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.15);overflow:hidden;animation:modalIn .25s ease;max-height:90vh;display:flex;flex-direction:column}
-.modal.wide{max-width:600px}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.modal-header h3{font-size:1.05rem;color:var(--primary-dark);font-weight:700}
-.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#94a3b8;line-height:1}
-.modal-body{padding:20px 22px;overflow-y:auto}
-.modal-body label{display:block;font-size:.82rem;font-weight:600;color:#334155;margin-bottom:6px;margin-top:14px}
-.modal-body label:first-child{margin-top:0}
-.modal-body input,.modal-body select,.modal-body textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.92rem;outline:none;background:#fafbfc;font-family:inherit}
-.modal-body input:focus,.modal-body select:focus,.modal-body textarea:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.12);background:#fff}
-.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
-.btn-modal{padding:10px 18px;border-radius:9px;font-weight:600;font-size:.88rem;cursor:pointer;border:none}
-.btn-cancel{background:#f1f5f9;color:#475569}
-.btn-save{background:var(--primary-light);color:#fff}
-.btn-save:hover{background:#2563eb}
-.btn-warn{background:#f59e0b;color:#fff}
-.btn-warn:hover{background:#d97706}
-.justificacion-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;font-size:.85rem}
-.justificacion-card.leida{opacity:.65;background:#f1f5f9}
-.justificacion-card strong{color:var(--primary-dark)}
-.justificacion-card .meta{font-size:.75rem;color:var(--muted);margin-top:3px}
-.justificacion-card p{margin-top:8px;color:#334155;line-height:1.4}
-.btn-leer{margin-top:8px;background:#e0f2fe;color:#0369a1;border:none;padding:5px 10px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer}
-.empty-state{text-align:center;padding:28px 16px;color:var(--muted);font-size:.9rem}
-.sem-tabs{display:flex;gap:6px;margin-bottom:14px}
-.sem-tab{flex:1;padding:9px;border:1.5px solid var(--border);background:#f8fafc;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);text-align:center}
-.sem-tab.active{background:#eff6ff;border-color:#93c5fd;color:var(--primary-dark)}
-.nota-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
-.nota-row:last-child{border-bottom:none}
-.btn-del-nota{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;margin-left:8px;padding:2px 6px;border-radius:4px}
-.avg-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-around;text-align:center;gap:8px}
-.avg-box .avg-val{font-size:1.4rem;font-weight:700}
-.avg-box .avg-lbl{font-size:.72rem;color:var(--muted);margin-top:2px}
-.obs-item{background:#f8fafc;border-left:3px solid var(--primary-light);padding:10px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;font-size:.85rem}
-.obs-item.neg{border-left-color:var(--danger)}
-.obs-item .obs-meta{font-size:.72rem;color:var(--muted);margin-top:4px}
-.inactivo-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;font-size:.85rem}
-.btn-reactivar{background:#d1fae5;color:#065f46;border:none;padding:6px 11px;border-radius:7px;font-weight:600;font-size:.78rem;cursor:pointer}
-.asist-row{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-bottom:1px solid #f1f5f9;font-size:.86rem}
-.asist-row select{width:auto;padding:6px 10px;font-size:.84rem}
-.cal-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;font-size:.84rem;color:#1e3a8a;line-height:1.5;margin-bottom:14px}
-.cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
-@media print{body *{visibility:hidden}#modalVerNotas,#modalVerNotas *{visibility:visible}#modalVerNotas{position:fixed;inset:0;background:#fff;padding:0}.modal-footer,.modal-close,.btn-del-nota,.sem-tabs{display:none!important}.modal{box-shadow:none;max-width:100%;max-height:none}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Docente | Escuela Candelaria Pérez</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<header>
-  <div class="header-left">
-    <h1>Escuela Candelaria Pérez</h1>
-    <p>Panel Académico Docente · San Javier</p>
-  </div>
-  <div class="header-actions">
-    <a id="btnVolverMaestro" href="maestro.html" class="btn-logout" style="display:none;background:#eff6ff;color:#1e40af;border-color:#bfdbfe">👑 Volver a Dirección</a>
-    <button class="icon-btn" onclick="abrirModalCalendario()" title="Calendario Escolar">📅</button>
-    <button class="icon-btn" onclick="abrirBuzonJustificaciones()" title="Justificaciones">💬<span id="contadorJustificaciones" class="badge">0</span></button>
-    <a href="index.html" class="btn-logout" onclick="sessionStorage.clear()">Cerrar sesión</a>
-  </div>
-</header>
-<main>
-  <div class="welcome-row">
-    <div class="welcome-card">
-      <h2 id="saludoProfe">Hola...</h2>
-      <p>Gestiona calificaciones, asistencia diaria, observaciones, anuncios y matrículas de tus cursos.</p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="num" id="statAlumnos">0</div><div class="label">Activos</div></div>
-      <div class="stat-card"><div class="num" id="statCursos">0</div><div class="label">Cursos</div></div>
-      <div class="stat-card"><div class="num" id="statJustif">0</div><div class="label">Sin leer</div></div>
-    </div>
-  </div>
-  <div class="toolbar">
-    <div class="search-box"><input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()"></div>
-    <button class="btn-action btn-secondary" onclick="abrirModalAsistencia()">📋 Asistencia</button>
-    <button class="btn-action btn-secondary" onclick="abrirModalCalendario()">📅 Calendario</button>
-    <button class="btn-action btn-secondary" onclick="abrirModalAnuncio()">📢 Anuncio</button>
-    <button class="btn-action btn-secondary" onclick="abrirModalInactivos()">⏸️ Inactivos (<span id="countInactivos">0</span>)</button>
-    <button class="btn-action btn-create" onclick="abrirModalCrearAlumno()">＋ Nuevo alumno</button>
-  </div>
-  <div id="contenedorCursos"><div class="empty-state">Cargando datos desde la base de datos...</div></div>
-</main>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <script>
+    const SESSION_KEY = "ecp_v8_session";
+    const API_URL = (localStorage.getItem("ecp_v8_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch (e) { currentUser = null; }
 
-<!-- MODAL ASISTENCIA -->
-<div id="modalAsistencia" class="modal-overlay">
-  <div class="modal wide">
-    <div class="modal-header"><h3>📋 Pasar Lista · Asistencia Diaria</h3><button class="modal-close" onclick="cerrarModal('modalAsistencia')">×</button></div>
-    <div class="modal-body">
-      <div class="cal-grid">
-        <div>
-          <label>Curso</label>
-          <select id="asistCurso" onchange="cargarListaAsistencia()"></select>
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input type="date" id="asistFecha" onchange="cargarListaAsistencia()">
-        </div>
-      </div>
-      <div id="listaAsistenciaAlumnos" style="margin-top:16px"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalAsistencia')">Cerrar</button>
-      <button class="btn-modal btn-save" onclick="guardarAsistencia()">Guardar Asistencia</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CALENDARIO -->
-<div id="modalCalendario" class="modal-overlay">
-  <div class="modal wide">
-    <div class="modal-header"><h3>📅 Calendario Escolar y Promoción</h3><button class="modal-close" onclick="cerrarModal('modalCalendario')">×</button></div>
-    <div class="modal-body">
-      <div class="cal-info">
-        <strong>Automatización anual (Hora Chile):</strong><br>
-        • Alumnos con promedio <strong>≥ 4,0</strong> pasan al siguiente curso en la fecha de cierre escolar.<br>
-        • El <strong>1 de enero</strong> se limpia automáticamente la bandeja de notas, asistencia y avisos tras respaldar el historial.
-      </div>
-      <div class="cal-grid">
-        <div>
-          <label>Mes de cierre escolar</label>
-          <select id="calMes"><option value="11">Noviembre</option><option value="12">Diciembre</option></select>
-        </div>
-        <div>
-          <label>Día de cierre escolar</label>
-          <input type="number" id="calDia" min="1" max="31" value="20">
-        </div>
-      </div>
-      <div id="resumenPromocionActual" style="margin-top:16px;font-size:.84rem;color:#334155"></div>
-    </div>
-    <div class="modal-footer" style="justify-content:space-between;flex-wrap:wrap">
-      <button class="btn-modal btn-warn" onclick="ejecutarPromocionManual()">⚡ Ejecutar promoción ahora</button>
-      <div style="display:flex;gap:8px">
-        <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCalendario')">Cerrar</button>
-        <button class="btn-modal btn-save" onclick="guardarConfigCalendario()">Guardar fecha</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL NOTA -->
-<div id="modalNota" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3 id="modalTituloNota">Agregar calificación</h3><button class="modal-close" onclick="cerrarModal('modalNota')">×</button></div>
-    <div class="modal-body">
-      <label>Semestre</label>
-      <select id="selectSemestre"><option value="1">1° Semestre</option><option value="2">2° Semestre</option></select>
-      <label>Asignatura</label>
-      <select id="selectAsignatura"></select>
-      <label>Nota (1,0 a 7,0)</label>
-      <input type="text" id="inputNota" placeholder="Ej: 6,5 o 5.0" inputmode="decimal">
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalNota')">Cancelar</button>
-      <button class="btn-modal btn-save" onclick="guardarNota()">Guardar nota</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL VER NOTAS -->
-<div id="modalVerNotas" class="modal-overlay">
-  <div class="modal wide">
-    <div class="modal-header"><h3 id="tituloVerNotas">Calificaciones</h3><button class="modal-close" onclick="cerrarModal('modalVerNotas')">×</button></div>
-    <div class="modal-body">
-      <div class="avg-box">
-        <div><div class="avg-val" id="avgS1">—</div><div class="avg-lbl">1° Semestre</div></div>
-        <div><div class="avg-val" id="avgS2">—</div><div class="avg-lbl">2° Semestre</div></div>
-        <div><div class="avg-val" id="avgGen">—</div><div class="avg-lbl">Promedio general</div></div>
-      </div>
-      <div class="sem-tabs">
-        <button class="sem-tab active" data-sem="all" onclick="filtrarSemVer(this)">Todas</button>
-        <button class="sem-tab" data-sem="1" onclick="filtrarSemVer(this)">1° Sem</button>
-        <button class="sem-tab" data-sem="2" onclick="filtrarSemVer(this)">2° Sem</button>
-      </div>
-      <div id="listaNotasDocente"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-save" onclick="window.print()">🖨️ Imprimir / PDF</button>
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalVerNotas')">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL OBSERVACIÓN -->
-<div id="modalObs" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3 id="tituloObs">Observación</h3><button class="modal-close" onclick="cerrarModal('modalObs')">×</button></div>
-    <div class="modal-body">
-      <label>Tipo</label>
-      <select id="selectTipoObs"><option value="pos">Positiva</option><option value="neg">Negativa / Amonestación</option></select>
-      <label>Descripción</label>
-      <textarea id="textoObs" rows="3" placeholder="Describe la observación..."></textarea>
-      <div id="listaObsPrevias" style="margin-top:16px"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalObs')">Cancelar</button>
-      <button class="btn-modal btn-save" onclick="guardarObs()">Registrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ANUNCIO -->
-<div id="modalAnuncio" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>📢 Publicar anuncio al curso</h3><button class="modal-close" onclick="cerrarModal('modalAnuncio')">×</button></div>
-    <div class="modal-body">
-      <label>Curso destino</label>
-      <select id="cursoAnuncio"></select>
-      <label>Mensaje del anuncio</label>
-      <textarea id="textoAnuncio" rows="4" placeholder="Ej: Recordatorio prueba de Matemática el viernes..."></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalAnuncio')">Cancelar</button>
-      <button class="btn-modal btn-save" onclick="guardarAnuncio()">Publicar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CREAR ALUMNO -->
-<div id="modalCrearAlumno" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>Crear nuevo perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button></div>
-    <div class="modal-body">
-      <label>RUT chileno válido (Módulo 11)</label>
-      <input type="text" id="nuevoRut" placeholder="Ej: 12345678-5" maxlength="14">
-      <label>Nombre completo</label>
-      <input type="text" id="nuevoNombre" placeholder="Ej: Juan Pérez González">
-      <label>Curso</label>
-      <select id="nuevoCurso"></select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCrearAlumno')">Cancelar</button>
-      <button class="btn-modal btn-save" onclick="crearNuevoAlumno()">Crear perfil</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDITAR ALUMNO -->
-<div id="modalEditarAlumno" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>✏️ Editar perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalEditarAlumno')">×</button></div>
-    <div class="modal-body">
-      <label>RUT del estudiante</label>
-      <input type="text" id="editRut" disabled style="background:#f1f5f9;color:#64748b">
-      <label>Nombre completo</label>
-      <input type="text" id="editNombre">
-      <label>Curso asignado</label>
-      <select id="editCurso"></select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalEditarAlumno')">Cancelar</button>
-      <button class="btn-modal btn-save" onclick="guardarEdicionAlumno()">Guardar cambios</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL INACTIVOS -->
-<div id="modalInactivos" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>⏸️ Alumnos desactivados</h3><button class="modal-close" onclick="cerrarModal('modalInactivos')">×</button></div>
-    <div class="modal-body"><div id="listaInactivos"></div></div>
-    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="cerrarModal('modalInactivos')">Cerrar</button></div>
-  </div>
-</div>
-
-<!-- MODAL JUSTIFICACIONES -->
-<div id="modalJustificaciones" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>📥 Buzón de justificaciones</h3><button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button></div>
-    <div class="modal-body"><div id="listaJustificacionesBuzon"><div class="empty-state">No hay justificaciones recibidas.</div></div></div>
-    <div class="modal-footer"><button class="btn-modal btn-cancel" onclick="cerrarModal('modalJustificaciones')">Cerrar</button></div>
-  </div>
-</div>
-
-<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v8.0</footer>
-
-<script>
-const API_URL = "/api";
-let nombreProfe = "";
-let cursosDelProfe = [];
-let tokenDocente = "";
-let alumnoSeleccionadoRut = null;
-let alumnoVerNotasRut = null;
-let notasVerCache = [];
-
-let alumnosCache = [];
-let notasCache = [];
-let asistenciasCache = [];
-let justificacionesCache = [];
-let asignaturasCache = [];
-let hoyChile = "";
-
-function authHeaders(json = true){
-  const h = { "Authorization": `Bearer ${tokenDocente}` };
-  if(json) h["Content-Type"] = "application/json";
-  return h;
-}
-
-(function checkSession(){
-  try {
-    const s = JSON.parse(sessionStorage.getItem('docente_session') || 'null');
-    const m = JSON.parse(sessionStorage.getItem('maestro_session') || 'null');
-    if (m && m.rol === 'maestro') {
-      document.getElementById('btnVolverMaestro').style.display = 'inline-block';
+    // Guardia de sesión corregida: permite 'docente' y evita expulsiones falsas
+    const rolActual = currentUser && currentUser.rol ? String(currentUser.rol).toLowerCase().trim() : "";
+    if (!currentUser || rolActual !== "docente") {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
     }
-    if (!s || s.rol !== 'docente' || !s.token || Date.now() > s.exp) {
-      sessionStorage.removeItem('docente_session');
-      window.location.href = "index.html";
-      return;
+  </script>
+
+  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center">
+    <div>
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Portal Docente v8.0</span>
+      <h1 id="docente-titulo" class="text-xl font-bold text-white">Bienvenido/a</h1>
+    </div>
+    <button onclick="cerrarSesion()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg">
+      Cerrar Sesión
+    </button>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Registrar Calificación -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Ingresar Calificación</h2>
+        <form id="form-nota" class="space-y-3">
+          <select id="n-estudiante" required class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
+            <option value="">Cargando estudiantes...</option>
+          </select>
+          <input id="n-asignatura" type="text" required placeholder="Asignatura (ej: Matemática)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="n-evaluacion" type="text" required placeholder="Evaluación (ej: Prueba Unidad 1)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="n-nota" type="number" step="0.1" min="1.0" max="7.0" required placeholder="Nota (1.0 a 7.0)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
+            Registrar Nota
+          </button>
+        </form>
+      </div>
+
+      <!-- Registrar Asistencia -->
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Control de Asistencia</h2>
+        <form id="form-asistencia" class="space-y-3">
+          <select id="as-estudiante" required class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
+            <option value="">Cargando estudiantes...</option>
+          </select>
+          <select id="as-estado" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
+            <option value="Presente">Presente</option>
+            <option value="Ausente">Ausente</option>
+            <option value="Atrasado">Atrasado</option>
+          </select>
+          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm">
+            Guardar Asistencia
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Historial Reciente de Notas -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
+      <h2 class="text-lg font-bold text-white mb-3">Últimas Calificaciones Registradas</h2>
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-700 text-slate-400">
+          <tr>
+            <th class="py-2">Estudiante</th>
+            <th class="py-2">Curso</th>
+            <th class="py-2">Asignatura</th>
+            <th class="py-2">Evaluación</th>
+            <th class="py-2">Nota</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-notas" class="divide-y divide-slate-700/60"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    let listaEstudiantes = [];
+
+    if (currentUser) {
+      document.getElementById("docente-titulo").textContent =
+        `Docente: ${currentUser.nombre} ${currentUser.asignatura ? "(" + currentUser.asignatura + ")" : ""}`;
+      if (currentUser.asignatura) {
+        document.getElementById("n-asignatura").value = currentUser.asignatura;
+      }
     }
-    nombreProfe = s.nombre;
-    cursosDelProfe = s.cursos || [];
-    tokenDocente = s.token;
-    document.getElementById('saludoProfe').textContent = 'Hola, ' + formatearNombre(nombreProfe);
-    cargarTodoDesdeAPI();
-  } catch(e) { window.location.href = "index.html"; }
-})();
 
-function formatearNombre(n){ return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' '); }
-function limpiarRutFront(val){
-  let limpio = val.trim().toUpperCase().replace(/\./g, '').replace(/\s+/g, '');
-  if (limpio.length >= 2 && !limpio.includes('-')) limpio = limpio.slice(0, -1) + '-' + limpio.slice(-1);
-  return limpio;
-}
-function validarRutMod11(rut){
-  const norm = limpiarRutFront(rut);
-  if(!/^\d{7,8}-[\dK]$/.test(norm)) return false;
-  const [cuerpo, dv] = norm.split('-');
-  let suma = 0, mult = 2;
-  for(let i = cuerpo.length - 1; i >= 0; i--){ suma += parseInt(cuerpo[i], 10) * mult; mult = mult === 7 ? 2 : mult + 1; }
-  const resto = 11 - (suma % 11);
-  const esperado = resto === 11 ? '0' : (resto === 10 ? 'K' : String(resto));
-  return dv === esperado;
-}
-function parseNota(str){ if(str==null) return NaN; const n = parseFloat(String(str).replace(',','.')); return (n>=1 && n<=7) ? n : NaN; }
-function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toFixed(1).replace('.',','); }
-function claseProm(n){ if(n==null||isNaN(n)) return 'prom-na'; if(n>=5.5) return 'prom-ok'; if(n>=4.0) return 'prom-mid'; return 'prom-bad'; }
-function calcPromedio(notas, semestre){
-  let list = notas;
-  if(semestre) list = notas.filter(x => String(x.semestre||'1')===String(semestre));
-  const byAsig = {};
-  list.forEach(n=>{
-    const v = parseNota(n.nota);
-    if(isNaN(v)) return;
-    if(!byAsig[n.asignatura]) byAsig[n.asignatura]=[];
-    byAsig[n.asignatura].push(v);
-  });
-  const asigAvgs = Object.values(byAsig).map(arr => arr.reduce((a,b)=>a+b,0)/arr.length);
-  return asigAvgs.length ? asigAvgs.reduce((a,b)=>a+b,0)/asigAvgs.length : null;
-}
+    function cerrarSesion() {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.replace("index.html");
+    }
 
-function calcAsistenciaPct(rut){
-  const regs = asistenciasCache.filter(a => a.rut === rut);
-  if(!regs.length) return null;
-  const ok = regs.filter(r => r.estado === 'P' || r.estado === 'T' || r.estado === 'J').length;
-  return Math.round((ok / regs.length) * 100);
-}
+    async function cargarDatosDocente() {
+      try {
+        const res = await fetch(`${API_URL}/api/docente/datos`);
+        const data = await res.json();
+        listaEstudiantes = data.estudiantes || [];
 
-async function cargarTodoDesdeAPI(){
-  try {
-    const queryCursos = encodeURIComponent(cursosDelProfe.join(','));
-    const res = await fetch(`${API_URL}/docente/panel?cursos=${queryCursos}`, { headers: authHeaders(false) });
-    if (res.status === 401 || res.status === 403) { sessionStorage.removeItem('docente_session'); window.location.href = "index.html"; return; }
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    alumnosCache = data.alumnos || [];
-    notasCache = data.notas || [];
-    asistenciasCache = data.asistencias || [];
-    justificacionesCache = data.justificaciones || [];
-    asignaturasCache = data.asignaturas || [];
-    hoyChile = data.hoy_chile || new Date().toISOString().slice(0,10);
+        const opciones = listaEstudiantes.length
+          ? listaEstudiantes.map(e => `<option value="${e.id}">${e.nombre} (${e.curso || "Sin curso"})</option>`).join("")
+          : `<option value="">No hay estudiantes registrados</option>`;
 
-    document.getElementById('selectAsignatura').innerHTML = asignaturasCache.map(a => `<option>${a.nombre}</option>`).join('');
-    renderizarTodo();
-    actualizarNotificacionesJustificaciones();
-  } catch (err) {
-    document.getElementById('contenedorCursos').innerHTML = '<div class="empty-state" style="color:#dc2626">Error conectando con el servidor.</div>';
-  }
-}
+        document.getElementById("n-estudiante").innerHTML = opciones;
+        document.getElementById("as-estudiante").innerHTML = opciones;
 
-function renderizarTodo(){
-  const cont = document.getElementById('contenedorCursos');
-  cont.innerHTML = '';
-  let totalActivos = 0, totalInactivos = 0;
+        const notas = data.notas || [];
+        document.getElementById("tabla-notas").innerHTML = notas.map(n => `
+          <tr>
+            <td class="py-2 font-medium">${n.estudiante}</td>
+            <td class="py-2 text-slate-300">${n.curso || "-"}</td>
+            <td class="py-2">${n.asignatura}</td>
+            <td class="py-2">${n.evaluacion}</td>
+            <td class="py-2 font-bold ${Number(n.nota) >= 4.0 ? "text-emerald-400" : "text-red-400"}">${Number(n.nota).toFixed(1)}</td>
+          </tr>
+        `).join("");
+      } catch (e) {
+        console.error("Error cargando datos docente:", e);
+      }
+    }
 
-  cursosDelProfe.forEach(cursoNombre => {
-    const activos = alumnosCache.filter(a => a.curso === cursoNombre && a.activo === 1);
-    const inactivos = alumnosCache.filter(a => a.curso === cursoNombre && a.activo === 0);
-    totalActivos += activos.length;
-    totalInactivos += inactivos.length;
-    let filas = '';
-
-    activos.forEach(al => {
-      const rut = al.rut;
-      const nombre = al.nombre;
-      const prom = calcPromedio(notasCache.filter(n => n.rut === rut));
-      const asist = calcAsistenciaPct(rut);
-      const chipProm = `<span class="prom-chip ${claseProm(prom)}">${prom!=null?fmtNota(prom):'—'}</span>`;
-      const chipAsist = `<span class="prom-chip ${asist===null?'prom-na':(asist>=85?'prom-ok':'prom-bad')}">${asist!==null?asist+'%':'—'}</span>`;
-      const nombreEsc = nombre.replace(/'/g, "\'");
-      const cursoEsc = cursoNombre.replace(/'/g, "\'");
-
-      filas += `<tr data-nombre="${nombre.toLowerCase()}" data-rut="${rut.toLowerCase()}">
-        <td style="font-family:monospace;font-size:.84rem">${rut}</td>
-        <td>${nombre}</td>
-        <td style="text-align:center">${chipProm}</td>
-        <td style="text-align:center">${chipAsist}</td>
-        <td class="acciones">
-          <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
-          <div id="menu-${rut}" class="dropdown-menu">
-            <button onclick="abrirModalNota('${rut}','${nombreEsc}')">➕ Agregar nota</button>
-            <button onclick="abrirVerNotas('${rut}','${nombreEsc}')">📊 Ver notas / promedio</button>
-            <button onclick="abrirObs('${rut}','${nombreEsc}')">📝 Observación</button>
-            <button onclick="abrirEditarAlumno('${rut}','${nombreEsc}','${cursoEsc}')">✏️ Editar datos / curso</button>
-            <button class="warn" onclick="desactivarAlumno('${rut}','${nombreEsc}')">⏸️ Desactivar acceso</button>
-            <button class="danger" onclick="eliminarDefinitivo('${rut}','${nombreEsc}')">🗑️ Eliminar alumno</button>
-          </div></td></tr>`;
+    document.getElementById("form-nota").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        estudiante_id: Number(document.getElementById("n-estudiante").value),
+        asignatura: document.getElementById("n-asignatura").value,
+        evaluacion: document.getElementById("n-evaluacion").value,
+        nota: parseFloat(document.getElementById("n-nota").value)
+      };
+      const res = await fetch(`${API_URL}/api/docente/notas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        document.getElementById("n-evaluacion").value = "";
+        document.getElementById("n-nota").value = "";
+        cargarDatosDocente();
+      } else {
+        alert("Error al registrar la nota.");
+      }
     });
 
-    if(!activos.length) filas='<tr><td colspan="5" class="empty-state">No hay alumnos activos en este curso.</td></tr>';
-    cont.innerHTML += `<div class="curso-section">
-      <div class="curso-header"><h3>${cursoNombre}</h3><span class="curso-count">${activos.length} alumno${activos.length!==1?'s':''}</span></div>
-      <table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:center">Asist.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>${filas}</tbody></table></div>`;
-  });
+    document.getElementById("form-asistencia").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const estId = Number(document.getElementById("as-estudiante").value);
+      const estObj = listaEstudiantes.find(x => x.id === estId);
+      const payload = {
+        estudiante_id: estId,
+        curso: estObj ? estObj.curso : "",
+        estado: document.getElementById("as-estado").value
+      };
+      const res = await fetch(`${API_URL}/api/docente/asistencia`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert("Asistencia registrada correctamente.");
+      }
+    });
 
-  document.getElementById('statAlumnos').textContent = totalActivos;
-  document.getElementById('statCursos').textContent = cursosDelProfe.length;
-  document.getElementById('countInactivos').textContent = totalInactivos;
-  filtrarAlumnos();
-}
-
-function filtrarAlumnos(){
-  const q = document.getElementById('buscarAlumno').value.trim().toLowerCase().replace(/\./g, '');
-  document.querySelectorAll('#contenedorCursos tr[data-nombre]').forEach(tr=>{
-    tr.style.display = (!q || tr.dataset.nombre.includes(q) || tr.dataset.rut.includes(q)) ? '' : 'none';
-  });
-}
-
-function toggleMenu(rut){
-  document.querySelectorAll('.dropdown-menu').forEach(m=>{ if(m.id!=='menu-'+rut) m.style.display='none'; });
-  const menu = document.getElementById('menu-'+rut);
-  menu.style.display = menu.style.display==='block' ? 'none' : 'block';
-}
-window.addEventListener('click', e=>{
-  if(!e.target.closest('.menu-dots') && !e.target.closest('.dropdown-menu'))
-    document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-});
-function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
-
-// --- ASISTENCIA ---
-function abrirModalAsistencia(){
-  document.getElementById('asistCurso').innerHTML = cursosDelProfe.map(c => `<option value="${c}">${c}</option>`).join('');
-  document.getElementById('asistFecha').value = hoyChile;
-  document.getElementById('modalAsistencia').classList.add('show');
-  cargarListaAsistencia();
-}
-
-async function cargarListaAsistencia(){
-  const curso = document.getElementById('asistCurso').value;
-  const fecha = document.getElementById('asistFecha').value;
-  const cont = document.getElementById('listaAsistenciaAlumnos');
-  const alumnos = alumnosCache.filter(a => a.curso === curso && a.activo === 1);
-  if(!alumnos.length){ cont.innerHTML = '<div class="empty-state">No hay alumnos en este curso.</div>'; return; }
-
-  let mapaPrevio = {};
-  try {
-    const res = await fetch(`${API_URL}/asistencia?curso=${encodeURIComponent(curso)}&fecha=${fecha}`, { headers: authHeaders(false) });
-    if(res.ok){
-      const prev = await res.json();
-      prev.forEach(p => mapaPrevio[p.rut] = p.estado);
-    }
-  } catch(e){}
-
-  cont.innerHTML = alumnos.map(a => {
-    const est = mapaPrevio[a.rut] || 'P';
-    return `<div class="asist-row">
-      <div><strong>${a.nombre}</strong> <span style="font-size:.75rem;color:#64748b">(${a.rut})</span></div>
-      <select class="sel-asist" data-rut="${a.rut}">
-        <option value="P" ${est==='P'?'selected':''}>✅ Presente</option>
-        <option value="A" ${est==='A'?'selected':''}>❌ Ausente</option>
-        <option value="T" ${est==='T'?'selected':''}>⏰ Atrasado</option>
-        <option value="J" ${est==='J'?'selected':''}>📄 Justificado</option>
-      </select>
-    </div>`;
-  }).join('');
-}
-
-async function guardarAsistencia(){
-  const curso = document.getElementById('asistCurso').value;
-  const fecha = document.getElementById('asistFecha').value;
-  const registros = Array.from(document.querySelectorAll('.sel-asist')).map(s => ({ rut: s.dataset.rut, estado: s.value }));
-  if(!registros.length) return;
-  const res = await fetch(`${API_URL}/asistencia`, {
-    method: 'POST', headers: authHeaders(true), body: JSON.stringify({ curso, fecha, docente: nombreProfe, registros })
-  });
-  if(res.ok){
-    alert('✓ Asistencia guardada correctamente');
-    cerrarModal('modalAsistencia');
-    cargarTodoDesdeAPI();
-  }
-}
-
-// --- CALENDARIO ---
-async function abrirModalCalendario(){
-  document.getElementById('modalCalendario').classList.add('show');
-  const resEl = document.getElementById('resumenPromocionActual');
-  resEl.innerHTML = 'Consultando...';
-  const res = await fetch(`${API_URL}/calendario`, { headers: authHeaders(false) });
-  if(res.ok){
-    const data = await res.json();
-    document.getElementById('calMes').value = String(data.config.mes_cierre);
-    document.getElementById('calDia').value = data.config.dia_cierre;
-    resEl.innerHTML = `<div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:9px">
-      <div><strong>Hora Chile:</strong> ${data.fecha_servidor}</div>
-      <div><strong>Última promoción:</strong> Año ${data.config.ultimo_anio_promocion}</div>
-    </div>`;
-  }
-}
-
-async function guardarConfigCalendario(){
-  const mes_cierre = parseInt(document.getElementById('calMes').value, 10);
-  const dia_cierre = parseInt(document.getElementById('calDia').value, 10);
-  const res = await fetch(`${API_URL}/calendario`, { method: 'PUT', headers: authHeaders(true), body: JSON.stringify({ mes_cierre, dia_cierre }) });
-  if(res.ok){ alert('✓ Fecha guardada'); cerrarModal('modalCalendario'); }
-}
-
-async function ejecutarPromocionManual(){
-  if(!confirm('¿Ejecutar ahora el cierre de año escolar?')) return;
-  const res = await fetch(`${API_URL}/calendario/simular-cierre`, { method: 'POST', headers: authHeaders(false) });
-  if(res.ok){ const d = await res.json(); alert('✓ ' + d.mensaje); cerrarModal('modalCalendario'); cargarTodoDesdeAPI(); }
-}
-
-// --- NOTAS ---
-function abrirModalNota(rut, nombre){
-  alumnoSeleccionadoRut = rut;
-  document.getElementById('modalTituloNota').textContent = 'Nota · '+nombre;
-  document.getElementById('inputNota').value = '';
-  document.getElementById('modalNota').classList.add('show');
-  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-}
-
-async function guardarNota(){
-  const asignatura = document.getElementById('selectAsignatura').value;
-  const semestre = parseInt(document.getElementById('selectSemestre').value, 10);
-  const val = parseNota(document.getElementById('inputNota').value.trim());
-  if(isNaN(val)){ alert('Ingresa una nota válida entre 1,0 y 7,0'); return; }
-  const res = await fetch(`${API_URL}/notas`, {
-    method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut: alumnoSeleccionadoRut, asignatura, nota: val, semestre, docente: nombreProfe })
-  });
-  if(res.ok){ alert('✓ Nota registrada'); cerrarModal('modalNota'); cargarTodoDesdeAPI(); }
-}
-
-function abrirVerNotas(rut, nombre){
-  alumnoVerNotasRut = rut;
-  document.getElementById('tituloVerNotas').textContent = 'Informe de Notas · '+nombre;
-  notasVerCache = notasCache.filter(n => n.rut === rut);
-  actualizarVistaVerNotas();
-  renderListaNotasDocente('all');
-  document.getElementById('modalVerNotas').classList.add('show');
-  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-}
-
-function actualizarVistaVerNotas(){
-  const p1 = calcPromedio(notasVerCache,'1'), p2 = calcPromedio(notasVerCache,'2'), pg = calcPromedio(notasVerCache);
-  document.getElementById('avgS1').textContent = fmtNota(p1);
-  document.getElementById('avgS2').textContent = fmtNota(p2);
-  document.getElementById('avgGen').textContent = fmtNota(pg);
-}
-
-function filtrarSemVer(btn){
-  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  renderListaNotasDocente(btn.dataset.sem);
-}
-
-function renderListaNotasDocente(sem){
-  let list = notasVerCache.slice().reverse();
-  if(sem!=='all') list = list.filter(n=>String(n.semestre||'1')===sem);
-  const cont = document.getElementById('listaNotasDocente');
-  if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones.</div>'; return; }
-  cont.innerHTML = list.map(n=>{
-    const v = parseNota(n.nota);
-    return `<div class="nota-row">
-      <div><strong>${n.asignatura}</strong><div style="font-size:.75rem;color:#64748b">${n.fecha||''} · Sem ${n.semestre||'1'}</div></div>
-      <div><span class="prom-chip ${claseProm(v)}">${fmtNota(v)}</span>
-      <button class="btn-del-nota" onclick="borrarNota(${n.id})">✕</button></div></div>`;
-  }).join('');
-}
-
-async function borrarNota(id){
-  if(!confirm('¿Eliminar esta nota?')) return;
-  const res = await fetch(`${API_URL}/notas/${id}`, { method: 'DELETE', headers: authHeaders(false) });
-  if(res.ok){ await cargarTodoDesdeAPI(); notasVerCache = notasCache.filter(n => n.rut === alumnoVerNotasRut); actualizarVistaVerNotas(); renderListaNotasDocente('all'); }
-}
-
-// --- OBS, ANUNCIOS, ALUMNOS, JUSTIFICACIONES ---
-async function abrirObs(rut, nombre){
-  alumnoSeleccionadoRut = rut;
-  document.getElementById('tituloObs').textContent = 'Observación · '+nombre;
-  document.getElementById('textoObs').value = '';
-  document.getElementById('modalObs').classList.add('show');
-  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-  const res = await fetch(`${API_URL}/portal/${rut}`);
-  if(res.ok){
-    const data = await res.json();
-    document.getElementById('listaObsPrevias').innerHTML = (data.observaciones||[]).map(o=>`<div class="obs-item ${o.tipo==='neg'?'neg':''}">${o.texto}<div class="obs-meta">${o.fecha} · ${o.docente}</div></div>`).join('');
-  }
-}
-
-async function guardarObs(){
-  const texto = document.getElementById('textoObs').value.trim();
-  const tipo = document.getElementById('selectTipoObs').value;
-  if(!texto) return;
-  const res = await fetch(`${API_URL}/observaciones`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut: alumnoSeleccionadoRut, tipo, texto, docente: nombreProfe }) });
-  if(res.ok){ alert('✓ Observación registrada'); cerrarModal('modalObs'); }
-}
-
-function abrirModalAnuncio(){
-  document.getElementById('cursoAnuncio').innerHTML = cursosDelProfe.map(c=>`<option value="${c}">${c}</option>`).join('');
-  document.getElementById('textoAnuncio').value = '';
-  document.getElementById('modalAnuncio').classList.add('show');
-}
-
-async function guardarAnuncio(){
-  const curso = document.getElementById('cursoAnuncio').value;
-  const texto = document.getElementById('textoAnuncio').value.trim();
-  if(!texto) return;
-  const res = await fetch(`${API_URL}/anuncios`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ curso, texto, docente: nombreProfe }) });
-  if(res.ok){ alert('✓ Anuncio publicado'); cerrarModal('modalAnuncio'); }
-}
-
-function abrirModalCrearAlumno(){
-  document.getElementById('nuevoCurso').innerHTML = cursosDelProfe.map(c=>`<option value="${c}">${c}</option>`).join('');
-  document.getElementById('nuevoRut').value='';
-  document.getElementById('nuevoNombre').value='';
-  document.getElementById('modalCrearAlumno').classList.add('show');
-}
-
-async function crearNuevoAlumno(){
-  const rut = limpiarRutFront(document.getElementById('nuevoRut').value);
-  const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
-  const curso = document.getElementById('nuevoCurso').value;
-  if(!rut||!nombre || !validarRutMod11(rut)){ alert('Verifica que el RUT y nombre sean válidos.'); return; }
-  const res = await fetch(`${API_URL}/alumnos`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut, nombre, curso }) });
-  if(!res.ok){ const d = await res.json(); alert(d.detail || 'Error'); return; }
-  cerrarModal('modalCrearAlumno');
-  cargarTodoDesdeAPI();
-}
-
-function abrirEditarAlumno(rut, nombre, curso){
-  document.getElementById('editRut').value = rut;
-  document.getElementById('editNombre').value = nombre;
-  document.getElementById('editCurso').innerHTML = cursosDelProfe.map(c=>`<option value="${c}" ${c===curso?'selected':''}>${c}</option>`).join('');
-  document.getElementById('modalEditarAlumno').classList.add('show');
-  document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-}
-
-async function guardarEdicionAlumno(){
-  const rut = document.getElementById('editRut').value;
-  const nombre = document.getElementById('editNombre').value.trim().toUpperCase();
-  const curso = document.getElementById('editCurso').value;
-  const res = await fetch(`${API_URL}/alumnos/${rut}`, { method: 'PUT', headers: authHeaders(true), body: JSON.stringify({ nombre, curso }) });
-  if(res.ok){ cerrarModal('modalEditarAlumno'); cargarTodoDesdeAPI(); }
-}
-
-async function desactivarAlumno(rut, nombre){
-  if(!confirm(`¿Desactivar a ${nombre}?`)) return;
-  const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=0`, { method: 'PATCH', headers: authHeaders(false) });
-  if(res.ok) cargarTodoDesdeAPI();
-}
-
-async function reactivarAlumno(rut){
-  const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=1`, { method: 'PATCH', headers: authHeaders(false) });
-  if(res.ok){ await cargarTodoDesdeAPI(); abrirModalInactivos(); }
-}
-
-function abrirModalInactivos(){
-  const inactivos = alumnosCache.filter(a => a.activo === 0);
-  document.getElementById('listaInactivos').innerHTML = inactivos.length ? inactivos.map(a => `<div class="inactivo-row"><div><strong>${a.nombre}</strong> (${a.rut})</div><button class="btn-reactivar" onclick="reactivarAlumno('${a.rut}')">Reactivar</button></div>`).join('') : '<div class="empty-state">Sin alumnos desactivados.</div>';
-  document.getElementById('modalInactivos').classList.add('show');
-}
-
-async function eliminarDefinitivo(rut, nombre){
-  if(!confirm(`⚠️ ¿Borrar definitivamente a ${nombre}?`)) return;
-  const res = await fetch(`${API_URL}/alumnos/${rut}`, { method: 'DELETE', headers: authHeaders(false) });
-  if(res.ok) cargarTodoDesdeAPI();
-}
-
-function actualizarNotificacionesJustificaciones(){
-  const sinLeer = justificacionesCache.filter(j => !j.leida).length;
-  const badge = document.getElementById('contadorJustificaciones');
-  badge.textContent = sinLeer;
-  badge.style.display = sinLeer > 0 ? 'flex' : 'none';
-  document.getElementById('statJustif').textContent = sinLeer;
-}
-
-async function marcarJustificacionLeida(id){
-  const res = await fetch(`${API_URL}/justificaciones/${id}/leer`, { method: 'PATCH', headers: authHeaders(false) });
-  if(res.ok){ const item = justificacionesCache.find(j => j.id === id); if(item) item.leida = 1; actualizarNotificacionesJustificaciones(); abrirBuzonJustificaciones(); }
-}
-
-function abrirBuzonJustificaciones(){
-  document.getElementById('listaJustificacionesBuzon').innerHTML = justificacionesCache.length ? justificacionesCache.map(j=>{
-    const al = alumnosCache.find(a => a.rut === j.rut);
-    return `<div class="justificacion-card ${j.leida?'leida':''}"><strong>${al ? al.nombre : j.rut}</strong><div class="meta">${j.curso} · ${j.fecha}</div><p>"${j.mensaje}"</p>${!j.leida?`<button class="btn-leer" onclick="marcarJustificacionLeida(${j.id})">✓ Marcar leída</button>`:''}</div>`;
-  }).join('') : '<div class="empty-state">Buzón vacío.</div>';
-  document.getElementById('modalJustificaciones').classList.add('show');
-}
-</script>
+    cargarDatosDocente();
+  </script>
 </body>
 </html>

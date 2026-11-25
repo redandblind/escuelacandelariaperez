@@ -1,197 +1,143 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Escolar · Escuela Candelaria Pérez</title>
-<style>
-:root{--primary:#1e40af;--primary-light:#3b82f6;--primary-dark:#1e3a8a;--bg:#f8fafc;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--danger:#dc2626;--radius:16px;--shadow:0 20px 50px rgba(15,23,42,.08)}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(135deg,#f0f7ff 0%,#e0edff 50%,#f8fafc 100%);color:var(--text);padding:20px}
-.portal-card{width:100%;max-width:440px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:38px 32px;border:1px solid rgba(255,255,255,.8);animation:fadeUp .5s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.school-header{text-align:center;margin-bottom:28px}
-.school-badge{width:62px;height:62px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:1.4rem;letter-spacing:.5px;margin-bottom:14px;box-shadow:0 8px 20px rgba(37,99,235,.25)}
-.school-header h1{font-size:1.35rem;font-weight:700;color:var(--primary-dark);line-height:1.25}
-.school-header p{font-size:.82rem;color:var(--primary-light);font-weight:500;margin-top:4px;letter-spacing:.3px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:#f1f5f9;padding:4px;border-radius:12px;margin-bottom:24px;border:1px solid var(--border)}
-.tab-btn{border:none;background:transparent;padding:10px 8px;border-radius:9px;font-size:.9rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s ease}
-.tab-btn.active{background:#fff;color:var(--primary-dark);box-shadow:0 2px 8px rgba(15,23,42,.08)}
-.form-section{display:none}
-.form-section.active{display:block;animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.form-group{margin-bottom:18px}
-label{display:block;font-size:.82rem;font-weight:600;color:#334155;margin-bottom:6px}
-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.95rem;color:var(--text);transition:border-color .2s,box-shadow .2s;outline:none;background:#fafbfc}
-input:focus{border-color:var(--primary-light);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
-.btn-submit{width:100%;padding:13px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s;margin-top:6px;box-shadow:0 4px 14px rgba(37,99,235,.3)}
-.btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.4)}
-.btn-submit:disabled{opacity:.65;cursor:not-allowed;transform:none}
-.error-msg{display:none;background:#fef2f2;color:var(--danger);border:1px solid #fecaca;font-size:.83rem;padding:10px 12px;border-radius:9px;margin-bottom:16px;text-align:center}
-.error-msg.show{display:block}
-.hint-text{font-size:.78rem;color:var(--muted);text-align:center;margin-top:16px;line-height:1.4}
-footer{margin-top:26px;font-size:.75rem;color:#94a3b8;text-align:center}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Escuela Candelaria Pérez | v8.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="portal-card">
-  <div class="school-header">
-    <div class="school-badge">ECP</div>
-    <h1>Escuela Candelaria Pérez</h1>
-    <p>San Javier · Portal Educativo v8.0</p>
-  </div>
-  <div class="tabs">
-    <button type="button" class="tab-btn active" onclick="switchTab('estudiantes')">🎓 Estudiantes</button>
-    <button type="button" class="tab-btn" onclick="switchTab('docentes')">👨‍🏫 Docentes / Dirección</button>
-  </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-center">
+      <h1 class="text-2xl font-bold tracking-tight text-white">Escuela Candelaria Pérez</h1>
+      <p class="text-blue-200 text-sm mt-1">Sistema de Gestión Académica v8.0</p>
+    </div>
 
-  <div id="sec-estudiantes" class="form-section active">
-    <div id="err-est" class="error-msg">RUT no encontrado o alumno inactivo.</div>
-    <form onsubmit="loginEstudiante(event)">
-      <div class="form-group">
-        <label for="rutInput">RUT del Estudiante</label>
-        <input type="text" id="rutInput" placeholder="Ej: 25928875-4" autocomplete="off" maxlength="14" required>
+    <!-- Pestañas de selección -->
+    <div class="grid grid-cols-2 border-b border-slate-700 bg-slate-850">
+      <button id="tab-estudiante" onclick="cambiarTab('estudiante')"
+        class="py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition">
+        Estudiantes
+      </button>
+      <button id="tab-staff" onclick="cambiarTab('staff')"
+        class="py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        Docentes / Dirección
+      </button>
+    </div>
+
+    <form id="login-form" class="p-6 space-y-4">
+      <div>
+        <label id="lbl-identificador" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+          RUT o Nombre del Estudiante
+        </label>
+        <input id="identificador" type="text" required placeholder="Ej: 22222222-2"
+          class="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500" />
       </div>
-      <button type="submit" id="btnEst" class="btn-submit">Ingresar al Portal</button>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+          Contraseña
+        </label>
+        <input id="password" type="password" required placeholder="••••••••"
+          class="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500" />
+      </div>
+
+      <div id="error-box" class="hidden p-3 rounded-lg bg-red-900/50 border border-red-700 text-red-200 text-sm"></div>
+
+      <button type="submit" id="btn-submit"
+        class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow transition">
+        Ingresar al Portal
+      </button>
+
+      <div class="pt-2 border-t border-slate-700/70 text-xs text-slate-400 space-y-1">
+        <p class="font-semibold text-slate-300">Configuración API Backend:</p>
+        <input id="api-url" type="text"
+          class="w-full px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 text-xs"
+          value="https://escuelacandelariaperez.onrender.com" />
+      </div>
     </form>
-    <p class="hint-text">Ingresa tu RUT con o sin puntos para ver notas, promedio, asistencia, observaciones y certificados.</p>
   </div>
 
-  <div id="sec-docentes" class="form-section">
-    <div id="err-doc" class="error-msg">Nombre o contraseña incorrectos.</div>
-    <form onsubmit="loginDocente(event)">
-      <div class="form-group">
-        <label for="docNombre">Nombre completo</label>
-        <input type="text" id="docNombre" placeholder="Ej: Paulina Toledo" autocomplete="name" required>
-      </div>
-      <div class="form-group">
-        <label for="docPass">Contraseña</label>
-        <input type="password" id="docPass" placeholder="••••••••••••" required>
-      </div>
-      <button type="submit" id="btnDoc" class="btn-submit">Acceder al Panel</button>
-    </form>
-    <p class="hint-text">Acceso exclusivo para docentes y dirección de la institución.</p>
-  </div>
-</div>
-<footer>Escuela Candelaria Pérez · San Javier, Región del Maule</footer>
+  <script>
+    const SESSION_KEY = "ecp_v8_session";
+    let tipoPortal = "estudiante";
 
-<script>
-const API_URL = "/api";
+    // Limpiar sesión previa corrupta al entrar al login
+    const savedApi = localStorage.getItem("ecp_v8_api");
+    if (savedApi) {
+      document.getElementById("api-url").value = savedApi;
+    }
 
-function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',(tab==='estudiantes'&&i===0)||(tab==='docentes'&&i===1));
-  });
-  document.getElementById('sec-estudiantes').classList.toggle('active',tab==='estudiantes');
-  document.getElementById('sec-docentes').classList.toggle('active',tab==='docentes');
-  document.getElementById('err-est').classList.remove('show');
-  document.getElementById('err-doc').classList.remove('show');
-}
+    function cambiarTab(tipo) {
+      tipoPortal = tipo;
+      const tabEst = document.getElementById("tab-estudiante");
+      const tabStaff = document.getElementById("tab-staff");
+      const lbl = document.getElementById("lbl-identificador");
+      const inp = document.getElementById("identificador");
 
-function limpiarRutFront(val){
-  let limpio = val.trim().toUpperCase().replace(/\./g, '').replace(/\s+/g, '');
-  if (limpio.length >= 2 && !limpio.includes('-')) {
-    limpio = limpio.slice(0, -1) + '-' + limpio.slice(-1);
-  }
-  return limpio;
-}
+      if (tipo === "estudiante") {
+        tabEst.className = "py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition";
+        tabStaff.className = "py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+        lbl.textContent = "RUT o Nombre del Estudiante";
+        inp.placeholder = "Ej: 22222222-2";
+      } else {
+        tabStaff.className = "py-3 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 transition";
+        tabEst.className = "py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+        lbl.textContent = "Nombre Completo o RUT";
+        inp.placeholder = "Ej: Paulina Toledo o 11111111-1";
+      }
+      document.getElementById("error-box").classList.add("hidden");
+    }
 
-async function loginEstudiante(e){
-  e.preventDefault();
-  const btn = document.getElementById('btnEst');
-  const errEl = document.getElementById('err-est');
-  errEl.classList.remove('show');
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById("error-box");
+      const btn = document.getElementById("btn-submit");
+      errBox.classList.add("hidden");
 
-  const rutNormalizado = limpiarRutFront(document.getElementById('rutInput').value);
-  btn.disabled = true;
-  btn.textContent = "Conectando...";
+      const apiUrl = document.getElementById("api-url").value.trim().replace(/\/$/, "");
+      localStorage.setItem("ecp_v8_api", apiUrl);
 
-  try {
-    const res = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rol: "estudiante", identificador: rutNormalizado })
+      const identificador = document.getElementById("identificador").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
+
+      try {
+        const res = await fetch(`${apiUrl}/api/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identificador, password, tipo_portal: tipoPortal })
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          throw new Error(data.detail || "Credenciales inválidas.");
+        }
+
+        // Guardar sesión unificada y limpia
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.setItem(SESSION_KEY, JSON.stringify(data.usuario));
+
+        const rol = (data.usuario.rol || "").toLowerCase().trim();
+        if (rol === "maestro") {
+          window.location.href = "maestro.html";
+        } else if (rol === "docente") {
+          window.location.href = "docente.html";
+        } else if (rol === "estudiante") {
+          window.location.href = "estudiante.html";
+        } else {
+          throw new Error("Rol de usuario no reconocido: " + rol);
+        }
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Ingresar al Portal";
+      }
     });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      errEl.textContent = data.detail || "RUT no encontrado o alumno inactivo.";
-      errEl.classList.add('show');
-      return;
-    }
-
-    const alumno = await res.json();
-    sessionStorage.setItem('estudiante_session', JSON.stringify({
-      rol: 'estudiante',
-      rut: alumno.rut,
-      nombre: alumno.nombre,
-      curso: alumno.curso,
-      exp: Date.now() + 8*60*60*1000
-    }));
-    window.location.href = "estudiante.html";
-  } catch (err) {
-    errEl.textContent = "No se pudo conectar con el servidor.";
-    errEl.classList.add('show');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Ingresar al Portal";
-  }
-}
-
-async function loginDocente(e){
-  e.preventDefault();
-  const btn = document.getElementById('btnDoc');
-  const errEl = document.getElementById('err-doc');
-  errEl.classList.remove('show');
-
-  const nombre = document.getElementById('docNombre').value.trim();
-  const password = document.getElementById('docPass').value;
-
-  btn.disabled = true;
-  btn.textContent = "Verificando...";
-
-  try {
-    const res = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rol: "docente", identificador: nombre, password: password })
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      errEl.textContent = data.detail || "Nombre o contraseña incorrectos.";
-      errEl.classList.add('show');
-      return;
-    }
-
-    const usuario = await res.json();
-    if(usuario.rol === 'maestro'){
-      sessionStorage.setItem('maestro_session', JSON.stringify({
-        rol: 'maestro',
-        nombre: usuario.nombre,
-        cursos: usuario.cursos,
-        token: usuario.token,
-        exp: Date.now() + 11*60*60*1000
-      }));
-      window.location.href = "maestro.html";
-    } else {
-      sessionStorage.setItem('docente_session', JSON.stringify({
-        rol: 'docente',
-        nombre: usuario.nombre,
-        cursos: usuario.cursos,
-        token: usuario.token,
-        exp: Date.now() + 11*60*60*1000
-      }));
-      window.location.href = "docente.html";
-    }
-  } catch (err) {
-    errEl.textContent = "No se pudo conectar con el servidor.";
-    errEl.classList.add('show');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Acceder al Panel";
-  }
-}
-</script>
+  </script>
 </body>
 </html>
