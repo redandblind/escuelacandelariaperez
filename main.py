@@ -28,6 +28,9 @@ def get_db():
 def hash_pwd(pwd: str) -> str:
     return hashlib.sha256(pwd.strip().encode("utf-8")).hexdigest()
 
+def norm_rut(rut: str) -> str:
+    return rut.strip().upper().replace(".", "").replace(" ", "")
+
 def init_db():
     if not DATABASE_URL:
         return
@@ -104,7 +107,6 @@ def init_db():
             creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
-    # Asegurar columnas nuevas si la tabla usuarios ya existía de v8.0
     cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS pie BOOLEAN DEFAULT FALSE;")
     cur.execute("ALTER TABLE calificaciones ADD COLUMN IF NOT EXISTS ponderacion INTEGER DEFAULT 100;")
 
@@ -127,7 +129,7 @@ def startup_event():
 
 class LoginRequest(BaseModel):
     identificador: str
-    password: str
+    password: Optional[str] = ""
     tipo_portal: str
 
 class UsuarioCreate(BaseModel):
@@ -138,7 +140,7 @@ class UsuarioCreate(BaseModel):
     curso: Optional[str] = ""
     asignatura: Optional[str] = ""
     pie: Optional[bool] = False
-    password: str
+    password: Optional[str] = "escuela16"
 
 class NotaCreate(BaseModel):
     estudiante_id: int
@@ -186,36 +188,47 @@ class AlertaCreate(BaseModel):
 
 @app.get("/")
 def health_check():
-    return {"status": "ok", "version": "9.0", "app": "Escuela Candelaria Pérez - Decreto 67 & Convivencia"}
+    return {"status": "ok", "version": "9.0", "app": "Escuela Candelaria Pérez - RUT Directo Alumnos"}
 
 @app.post("/api/login")
 def login(data: LoginRequest):
     conn = get_db()
     cur = conn.cursor()
     ident = data.identificador.strip()
-    pwd_h = hash_pwd(data.password)
 
-    if data.tipo_portal == "staff":
+    if data.tipo_portal == "estudiante":
+        rut_limpio = norm_rut(ident)
+        if not rut_limpio:
+            raise HTTPException(status_code=400, detail="Debes ingresar tu RUT.")
         cur.execute(
             """SELECT id, nombre, rut, email, rol, curso, asignatura, pie
                FROM usuarios
-               WHERE (LOWER(nombre) = LOWER(%s) OR LOWER(rut) = LOWER(%s) OR LOWER(email) = LOWER(%s))
-               AND rol IN ('maestro', 'docente') AND password_hash = %s AND activo = TRUE""",
-            (ident, ident, ident, pwd_h)
+               WHERE REPLACE(UPPER(rut), '.', '') = %s
+               AND rol = 'estudiante' AND activo = TRUE""",
+            (rut_limpio,)
         )
+        user = cur.fetchone()
     else:
+        if not data.password or not data.password.strip():
+            cur.close()
+            conn.close()
+            raise HTTPException(status_code=400, detail="Debes ingresar tu contraseña.")
+        pwd_h = hash_pwd(data.password)
         cur.execute(
             """SELECT id, nombre, rut, email, rol, curso, asignatura, pie
                FROM usuarios
-               WHERE (LOWER(rut) = LOWER(%s) OR LOWER(nombre) = LOWER(%s))
-               AND rol = 'estudiante' AND password_hash = %s AND activo = TRUE""",
-            (ident, ident, pwd_h)
+               WHERE (LOWER(nombre) = LOWER(%s) OR REPLACE(UPPER(rut), '.', '') = %s OR LOWER(email) = LOWER(%s))
+               AND rol IN ('maestro', 'docente') AND password_hash = %s AND activo = TRUE""",
+            (ident, norm_rut(ident), ident, pwd_h)
         )
-    user = cur.fetchone()
+        user = cur.fetchone()
+
     cur.close()
     conn.close()
 
     if not user:
+        if data.tipo_portal == "estudiante":
+            raise HTTPException(status_code=401, detail="RUT no encontrado en la matrícula de estudiantes.")
         raise HTTPException(status_code=401, detail="Credenciales incorrectas o usuario no autorizado.")
 
     return {
@@ -232,7 +245,6 @@ def login(data: LoginRequest):
         }
     }
 
-# --- ENDPOINTS MAESTRO / DIRECCIÓN ---
 @app.get("/api/dashboard/maestro")
 def dashboard_maestro():
     conn = get_db()
@@ -264,11 +276,13 @@ def crear_usuario(u: UsuarioCreate):
     rol_clean = u.rol.strip().lower()
     if rol_clean not in ("maestro", "docente", "estudiante"):
         raise HTTPException(status_code=400, detail="Rol inválido.")
+    pwd_final = (u.password or "escuela16").strip() or "escuela16"
+    rut_final = norm_rut(u.rut) if rol_clean == "estudiante" else u.rut.strip()
     try:
         cur.execute(
             """INSERT INTO usuarios (nombre, rut, email, rol, curso, asignatura, pie, password_hash)
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id""",
-            (u.nombre.strip(), u.rut.strip(), u.email.strip(), rol_clean, u.curso.strip(), u.asignatura.strip(), bool(u.pie), hash_pwd(u.password))
+            (u.nombre.strip(), rut_final, u.email.strip(), rol_clean, u.curso.strip(), u.asignatura.strip(), bool(u.pie), hash_pwd(pwd_final))
         )
         new_id = cur.fetchone()["id"]
         conn.commit()
@@ -311,7 +325,6 @@ def crear_alerta(a: AlertaCreate):
     conn.close()
     return {"ok": True}
 
-# --- ENDPOINTS DOCENTE / PROFESOR JEFE ---
 @app.get("/api/docente/panel")
 def panel_docente(cursos_asignados: str = ""):
     conn = get_db()
@@ -342,9 +355,7 @@ def panel_docente(cursos_asignados: str = ""):
         """, (est_ids,))
         notas = cur.fetchall()
 
-        cur.execute("""
-            SELECT estudiante_id, estado FROM asistencia WHERE estudiante_id = ANY(%s)
-        """, (est_ids,))
+        cur.execute("SELECT estudiante_id, estado FROM asistencia WHERE estudiante_id = ANY(%s)", (est_ids,))
         asistencias = cur.fetchall()
 
         cur.execute("""
@@ -369,22 +380,17 @@ def panel_docente(cursos_asignados: str = ""):
         """, (est_ids,))
         entrevistas = cur.fetchall()
 
-    # Calcular resumen Decreto 67 (promedio + % asistencia + alertas de riesgo) por estudiante
     resumen_estudiantes = []
     for est in estudiantes:
         eid = est["id"]
         n_est = [x for x in notas if x["estudiante_id"] == eid]
-        # Promedio por asignatura
         por_asig = {}
         for x in n_est:
             por_asig.setdefault(x["asignatura"], []).append((float(x["nota"]), int(x["ponderacion"] or 100)))
         proms_asig = {}
         for asig, vals in por_asig.items():
             total_w = sum(w for _, w in vals)
-            if total_w > 0:
-                proms_asig[asig] = round(sum(n * w for n, w in vals) / total_w, 1)
-            else:
-                proms_asig[asig] = round(sum(n for n, _ in vals) / len(vals), 1)
+            proms_asig[asig] = round(sum(n * w for n, w in vals) / total_w, 1) if total_w > 0 else round(sum(n for n, _ in vals) / len(vals), 1)
 
         prom_gral = round(sum(proms_asig.values()) / len(proms_asig), 1) if proms_asig else None
         rojos = sum(1 for p in proms_asig.values() if p < 4.0)
@@ -520,7 +526,6 @@ def crear_entrevista(e: EntrevistaCreate):
     conn.close()
     return {"ok": True}
 
-# --- ENDPOINTS ESTUDIANTE ---
 @app.get("/api/estudiante/{estudiante_id}")
 def datos_estudiante(estudiante_id: int):
     conn = get_db()
@@ -535,7 +540,6 @@ def datos_estudiante(estudiante_id: int):
     cur.execute("SELECT asignatura, evaluacion, nota, ponderacion, fecha FROM calificaciones WHERE estudiante_id = %s ORDER BY asignatura, fecha DESC", (estudiante_id,))
     notas = cur.fetchall()
 
-    # Calcular promedios por asignatura y general (Decreto 67)
     por_asig = {}
     for x in notas:
         por_asig.setdefault(x["asignatura"], []).append((float(x["nota"]), int(x["ponderacion"] or 100)))

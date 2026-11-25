@@ -42,7 +42,6 @@
   </header>
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
-    <!-- KPIs Académicos y Asistencia -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
         <p class="text-xs text-slate-400 uppercase">Promedio General (Decreto 67)</p>
@@ -61,14 +60,12 @@
       </div>
     </div>
 
-    <!-- Promedios por Asignatura -->
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
       <h2 class="text-lg font-bold text-white mb-3">Resumen por Asignatura</h2>
       <div id="grid-asignaturas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Enviar Justificación de Asistencia al Profesor Jefe -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <div>
           <h2 class="text-lg font-bold text-white">Justificar Inasistencia</h2>
@@ -90,14 +87,12 @@
         </form>
       </div>
 
-      <!-- Historial de Justificaciones Enviadas -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
         <h2 class="text-lg font-bold text-white">Mis Justificaciones Enviadas</h2>
         <div id="lista-mis-justificaciones" class="space-y-2 max-h-72 overflow-y-auto"></div>
       </div>
     </div>
 
-    <!-- Detalle de Calificaciones -->
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto">
       <h2 class="text-lg font-bold text-white mb-3">Detalle de Evaluaciones</h2>
       <table class="w-full text-left text-sm">
@@ -114,7 +109,6 @@
       </table>
     </div>
 
-    <!-- Hoja de Vida y Comunicados -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
         <h2 class="text-lg font-bold text-white mb-3">Mi Hoja de Vida (Observaciones)</h2>
@@ -160,7 +154,6 @@
         ? "Cumples con el porcentaje mínimo de promoción (85%)."
         : "Atención: Tu asistencia está bajo el 85% exigido por Decreto 67.";
 
-      // Cards por asignatura
       const promsAsig = datosEst.promedios_asignatura || {};
       document.getElementById("grid-asignaturas").innerHTML = Object.keys(promsAsig).length
         ? Object.entries(promsAsig).map(([asig, p]) => `
@@ -171,7 +164,6 @@
           `).join("")
         : `<p class="text-xs text-slate-400 col-span-4">Aún no hay asignaturas evaluadas.</p>`;
 
-      // Tabla notas
       const notas = datosEst.notas || [];
       document.getElementById("tabla-mis-notas").innerHTML = notas.length
         ? notas.map(n => `
@@ -185,7 +177,6 @@
           `).join("")
         : `<tr><td colspan="5" class="py-3 text-slate-400">Sin calificaciones registradas.</td></tr>`;
 
-      // Justificaciones
       const justs = datosEst.justificaciones || [];
       document.getElementById("lista-mis-justificaciones").innerHTML = justs.length
         ? justs.map(j => `
@@ -199,7 +190,6 @@
           `).join("")
         : `<p class="text-xs text-slate-400">No has enviado justificaciones aún.</p>`;
 
-      // Anotaciones
       const anots = datosEst.anotaciones || [];
       document.getElementById("lista-mis-anotaciones").innerHTML = anots.length
         ? anots.map(a => `
@@ -211,7 +201,6 @@
           `).join("")
         : `<p class="text-xs text-slate-400">Sin observaciones en tu hoja de vida.</p>`;
 
-      // Alertas
       const alertas = datosEst.alertas || [];
       document.getElementById("lista-alertas").innerHTML = alertas.length
         ? alertas.map(a => `

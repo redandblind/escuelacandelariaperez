@@ -30,17 +30,18 @@
     <form id="login-form" class="p-6 space-y-4">
       <div>
         <label id="lbl-identificador" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-          RUT o Nombre del Estudiante
+          RUT del Estudiante (sin puntos y con guion)
         </label>
         <input id="identificador" type="text" required placeholder="Ej: 25201656-2"
           class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-blue-500" />
+        <p id="hint-rut" class="text-[11px] text-slate-400 mt-1">Acceso directo solo con RUT, sin contraseña.</p>
       </div>
 
-      <div>
+      <div id="grupo-password" class="hidden">
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
           Contraseña
         </label>
-        <input id="password" type="password" required placeholder="••••••••"
+        <input id="password" type="password" placeholder="••••••••"
           class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-blue-500" />
       </div>
 
@@ -48,7 +49,7 @@
 
       <button type="submit" id="btn-submit"
         class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-lg transition">
-        Ingresar al Portal
+        Ingresar con RUT
       </button>
 
       <div class="pt-3 border-t border-slate-800 text-xs text-slate-400 space-y-1">
@@ -73,17 +74,30 @@
       const tabStaff = document.getElementById("tab-staff");
       const lbl = document.getElementById("lbl-identificador");
       const inp = document.getElementById("identificador");
+      const grupoPwd = document.getElementById("grupo-password");
+      const inpPwd = document.getElementById("password");
+      const hint = document.getElementById("hint-rut");
+      const btn = document.getElementById("btn-submit");
 
       if (tipo === "estudiante") {
         tabEst.className = "py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition";
         tabStaff.className = "py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
-        lbl.textContent = "RUT o Nombre del Estudiante";
+        lbl.textContent = "RUT del Estudiante (sin puntos y con guion)";
         inp.placeholder = "Ej: 25201656-2";
+        grupoPwd.classList.add("hidden");
+        inpPwd.required = false;
+        inpPwd.value = "";
+        hint.classList.remove("hidden");
+        btn.textContent = "Ingresar con RUT";
       } else {
         tabStaff.className = "py-3 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 transition";
         tabEst.className = "py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
         lbl.textContent = "Nombre Completo o Usuario Docente";
         inp.placeholder = "Ej: Paulina Toledo o HÉCTOR GONZÁLEZ GAETE";
+        grupoPwd.classList.remove("hidden");
+        inpPwd.required = true;
+        hint.classList.add("hidden");
+        btn.textContent = "Ingresar al Panel";
       }
       document.getElementById("error-box").classList.add("hidden");
     }
@@ -112,7 +126,7 @@
         const data = await res.json();
 
         if (!res.ok || !data.ok) {
-          throw new Error(data.detail || "Credenciales inválidas.");
+          throw new Error(data.detail || "No se pudo iniciar sesión.");
         }
 
         localStorage.removeItem(SESSION_KEY);
@@ -128,7 +142,7 @@
         errBox.classList.remove("hidden");
       } finally {
         btn.disabled = false;
-        btn.textContent = "Ingresar al Portal";
+        btn.textContent = tipoPortal === "estudiante" ? "Ingresar con RUT" : "Ingresar al Panel";
       }
     });
   </script>

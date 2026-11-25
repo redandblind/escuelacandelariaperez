@@ -34,7 +34,6 @@
   </header>
 
   <main class="max-w-7xl mx-auto p-6 space-y-6">
-    <!-- KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
         <p class="text-xs text-slate-400 uppercase">Estudiantes</p>
@@ -59,19 +58,18 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Registrar Usuario -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Registrar Docente o Estudiante</h2>
         <form id="form-usuario" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input id="u-nombre" type="text" required placeholder="Nombre completo" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
-          <input id="u-rut" type="text" required placeholder="RUT o usuario" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
-          <select id="u-rol" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm">
-            <option value="estudiante">Estudiante</option>
+          <input id="u-rut" type="text" required placeholder="RUT (ej: 25201656-2)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <select id="u-rol" onchange="toggleCampoClaveMaestro()" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm">
+            <option value="estudiante">Estudiante (Solo RUT)</option>
             <option value="docente">Docente Jefe</option>
             <option value="maestro">Dirección (Maestro)</option>
           </select>
           <input id="u-curso" type="text" placeholder="Curso (ej: 5° Básico)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
-          <input id="u-password" type="text" required placeholder="Contraseña inicial" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <input id="u-password" type="text" value="escuela16" placeholder="Contraseña (Docentes/Dir)" class="hidden px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
           <label class="flex items-center gap-2 text-sm text-slate-300 px-2">
             <input id="u-pie" type="checkbox" class="rounded bg-slate-950 border-slate-700" />
             Programa PIE / NEE
@@ -82,7 +80,6 @@
         </form>
       </div>
 
-      <!-- Comunicado Institucional -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Publicar Comunicado Oficial</h2>
         <form id="form-alerta" class="space-y-3">
@@ -95,10 +92,14 @@
       </div>
     </div>
 
-    <!-- Nómina Completa -->
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto space-y-3">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto space-y-4">
       <div class="flex flex-wrap justify-between items-center gap-3">
-        <h2 class="text-lg font-bold text-white">Nómina General Escuela Candelaria Pérez</h2>
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 class="text-lg font-bold text-white mr-2">Nómina General</h2>
+          <button onclick="setFiltroRol('todos')" id="btn-rol-todos" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Todos</button>
+          <button onclick="setFiltroRol('docente')" id="btn-rol-docente" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300">Docentes Jefes</button>
+          <button onclick="setFiltroRol('estudiante')" id="btn-rol-estudiante" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300">Estudiantes</button>
+        </div>
         <input id="filtro-nomina" oninput="filtrarNomina()" type="text" placeholder="Buscar por nombre, RUT o curso..."
           class="px-3 py-1.5 rounded bg-slate-950 border border-slate-800 text-sm w-64" />
       </div>
@@ -108,7 +109,7 @@
             <th class="py-2">Nombre</th>
             <th class="py-2">RUT / Usuario</th>
             <th class="py-2">Rol</th>
-            <th class="py-2">Curso</th>
+            <th class="py-2">Curso(s) Asignado(s)</th>
             <th class="py-2">PIE</th>
             <th class="py-2 text-right">Acciones</th>
           </tr>
@@ -120,7 +121,26 @@
 
   <script>
     let todosUsuarios = [];
+    let rolFiltro = "todos";
     if (currentUser) document.getElementById("directora-nombre").textContent = "Directora: " + currentUser.nombre;
+
+    function toggleCampoClaveMaestro() {
+      const rol = document.getElementById("u-rol").value;
+      const inp = document.getElementById("u-password");
+      if (rol === "estudiante") inp.classList.add("hidden");
+      else inp.classList.remove("hidden");
+    }
+
+    function setFiltroRol(rol) {
+      rolFiltro = rol;
+      ["todos", "docente", "estudiante"].forEach(r => {
+        const b = document.getElementById("btn-rol-" + r);
+        b.className = r === rol
+          ? "px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white"
+          : "px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700";
+      });
+      filtrarNomina();
+    }
 
     function cerrarSesion() {
       localStorage.removeItem(SESSION_KEY);
@@ -137,16 +157,19 @@
       document.getElementById("kpi-pie").textContent = todosUsuarios.filter(u => u.rol === "estudiante" && u.pie).length;
       document.getElementById("kpi-just").textContent = data.justificaciones_pendientes || 0;
       document.getElementById("kpi-promedio").textContent = (data.promedio_general || 0).toFixed(1);
-      renderTabla(todosUsuarios);
+      filtrarNomina();
     }
 
     function filtrarNomina() {
       const q = document.getElementById("filtro-nomina").value.toLowerCase().trim();
-      const filtrados = todosUsuarios.filter(u =>
-        (u.nombre || "").toLowerCase().includes(q) ||
-        (u.rut || "").toLowerCase().includes(q) ||
-        (u.curso || "").toLowerCase().includes(q)
-      );
+      const filtrados = todosUsuarios.filter(u => {
+        const coincideRol = rolFiltro === "todos" || u.rol === rolFiltro;
+        const coincideTexto =
+          (u.nombre || "").toLowerCase().includes(q) ||
+          (u.rut || "").toLowerCase().includes(q) ||
+          (u.curso || "").toLowerCase().includes(q);
+        return coincideRol && coincideTexto;
+      });
       renderTabla(filtrados);
     }
 
@@ -179,19 +202,19 @@
     document.getElementById("form-usuario").addEventListener("submit", async (e) => {
       e.preventDefault();
       const payload = {
-        nombre: document.getElementById("u-nombre").value,
-        rut: document.getElementById("u-rut").value,
+        nombre: document.getElementById("u-nombre").value.toUpperCase(),
+        rut: document.getElementById("u-rut").value.toUpperCase(),
         rol: document.getElementById("u-rol").value,
         curso: document.getElementById("u-curso").value,
         pie: document.getElementById("u-pie").checked,
-        password: document.getElementById("u-password").value
+        password: document.getElementById("u-password").value || "escuela16"
       };
       const res = await fetch(`${API_URL}/api/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      if (res.ok) { e.target.reset(); cargarDashboard(); }
+      if (res.ok) { e.target.reset(); document.getElementById("u-password").value = "escuela16"; toggleCampoClaveMaestro(); cargarDashboard(); }
       else { const err = await res.json(); alert(err.detail || "Error al crear usuario"); }
     });
 

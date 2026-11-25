@@ -37,7 +37,6 @@
     </button>
   </header>
 
-  <!-- Barra de Navegación por Pestañas -->
   <nav class="bg-slate-900/70 border-b border-slate-800 px-6 flex flex-wrap gap-2 overflow-x-auto">
     <button onclick="verSeccion('curso')" id="nav-curso" class="py-3 px-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400">
       Mi Curso & Alertas D.67
@@ -61,7 +60,6 @@
   </nav>
 
   <main class="max-w-7xl mx-auto p-6 space-y-6">
-    <!-- SECCIÓN 1: MI CURSO & DECRETO 67 -->
     <section id="sec-curso" class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
@@ -102,7 +100,6 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 2: LIBRO DE NOTAS -->
     <section id="sec-notas" class="hidden space-y-6">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
         <h2 class="text-lg font-bold text-white mb-4">Registrar Calificación (Escala 1.0 a 7.0)</h2>
@@ -148,7 +145,6 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 3: PASE DE LISTA MASIVO -->
     <section id="sec-asistencia" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-3">
@@ -168,7 +164,6 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 4: BANDEJA DE JUSTIFICACIONES -->
     <section id="sec-justificaciones" class="hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Bandeja de Justificaciones de Asistencia</h2>
@@ -177,7 +172,6 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 5: HOJA DE VIDA & ENTREVISTAS APODERADOS -->
     <section id="sec-convivencia" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
@@ -218,20 +212,21 @@
       </div>
     </section>
 
-    <!-- SECCIÓN 6: MATRÍCULA DEL CURSO (AGREGAR / ELIMINAR ALUMNO) -->
     <section id="sec-matricula" class="hidden space-y-6">
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-        <h2 class="text-lg font-bold text-white">Agregar Nuevo Estudiante a mi Curso</h2>
-        <form id="form-nuevo-alumno" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-white">Agregar Nuevo Estudiante a mi Curso</h2>
+          <p class="text-xs text-slate-400">El estudiante ingresará al portal directamente con su RUT, sin necesidad de contraseña.</p>
+        </div>
+        <form id="form-nuevo-alumno" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <input id="al-nombre" type="text" required placeholder="Nombre completo" class="sm:col-span-2 px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
           <input id="al-rut" type="text" required placeholder="RUT (ej: 26123456-7)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
           <select id="al-curso" required class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
-          <input id="al-pass" type="text" required placeholder="Clave inicial (4 dígitos)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
           <label class="sm:col-span-2 flex items-center gap-2 text-sm text-slate-300">
             <input id="al-pie" type="checkbox" class="rounded bg-slate-950 border-slate-700" />
             Estudiante pertenece a Programa PIE
           </label>
-          <button type="submit" class="sm:col-span-3 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
+          <button type="submit" class="sm:col-span-2 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
             Matricular Estudiante
           </button>
         </form>
@@ -255,7 +250,6 @@
     </section>
   </main>
 
-  <!-- Modal / Área Oculta para Certificado PDF -->
   <div id="area-impresion" class="hidden"></div>
 
   <script>
@@ -295,7 +289,6 @@
       document.getElementById("kpi-asist-baja").textContent = ests.filter(e => e.total_dias_asistencia > 0 && e.pct_asistencia < 85).length;
       document.getElementById("kpi-pie-curso").textContent = ests.filter(e => e.pie).length;
 
-      // Poblar selects
       const optsEst = ests.map(e => `<option value="${e.id}">${e.nombre} (${e.curso})</option>`).join("");
       ["n-estudiante", "an-estudiante", "en-estudiante"].forEach(id => {
         document.getElementById(id).innerHTML = optsEst || `<option value="">Sin estudiantes</option>`;
@@ -306,7 +299,6 @@
       document.getElementById("al-curso").innerHTML = cursosCfg.map(c => `<option value="${c}">${c}</option>`).join("");
       document.getElementById("filtro-curso-asist").innerHTML = cursosUnicos.map(c => `<option value="${c}">${c}</option>`).join("");
 
-      // Render Tabla Resumen Decreto 67
       document.getElementById("tabla-resumen-curso").innerHTML = ests.map(e => `
         <tr class="${e.riesgo_d67 ? 'bg-red-950/20' : ''}">
           <td class="py-2.5 font-medium">${e.nombre}</td>
@@ -330,7 +322,6 @@
         </tr>
       `).join("");
 
-      // Render Notas
       document.getElementById("tabla-notas").innerHTML = (panelData.notas || []).map(n => `
         <tr>
           <td class="py-2 font-medium">${n.estudiante}</td>
@@ -345,7 +336,6 @@
         </tr>
       `).join("");
 
-      // Render Bandeja Justificaciones
       const justs = panelData.justificaciones || [];
       const pendientes = justs.filter(j => j.estado === "Pendiente").length;
       const badge = document.getElementById("badge-just");
@@ -373,7 +363,6 @@
         `).join("")
         : `<p class="text-sm text-slate-400">No hay mensajes de justificación en la bandeja.</p>`;
 
-      // Render Convivencia
       document.getElementById("lista-anotaciones").innerHTML = (panelData.anotaciones || []).map(a => `
         <div class="p-3 rounded bg-slate-950 border border-slate-800">
           <div class="flex justify-between text-xs mb-1">
@@ -395,7 +384,6 @@
         </div>
       `).join("") || `<p class="text-slate-500 text-xs">Sin entrevistas registradas.</p>`;
 
-      // Render Matrícula
       document.getElementById("tabla-matricula").innerHTML = ests.map(e => `
         <tr>
           <td class="py-2 font-medium">${e.nombre}</td>
@@ -525,7 +513,7 @@
           rol: "estudiante",
           curso: document.getElementById("al-curso").value,
           pie: document.getElementById("al-pie").checked,
-          password: document.getElementById("al-pass").value
+          password: "rut_directo"
         })
       });
       if (res.ok) { e.target.reset(); cargarPanel(); }
