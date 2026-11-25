@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Docente | Escuela Candelaria Pérez</title>
+  <title>Portal Profesor Jefe v9.0 | Escuela Candelaria Pérez</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #area-impresion, #area-impresion * { visibility: visible; }
+      #area-impresion { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; padding: 24px; }
+    }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
   <script>
-    const SESSION_KEY = "ecp_v8_session";
-    const API_URL = (localStorage.getItem("ecp_v8_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
+    const SESSION_KEY = "ecp_v9_session";
+    const API_URL = (localStorage.getItem("ecp_v9_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
     let currentUser = null;
-    try {
-      currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
-    } catch (e) { currentUser = null; }
-
+    try { currentUser = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) {}
     const rolActual = currentUser && currentUser.rol ? String(currentUser.rol).toLowerCase().trim() : "";
     if (!currentUser || rolActual !== "docente") {
       localStorage.removeItem(SESSION_KEY);
@@ -22,74 +26,245 @@
     }
   </script>
 
-  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center">
+  <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
     <div>
-      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Portal Docente v8.0</span>
-      <h1 id="docente-titulo" class="text-xl font-bold text-white">Bienvenido/a</h1>
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Jefatura de Curso v9.0 · Decreto 67</span>
+      <h1 id="docente-titulo" class="text-xl font-bold text-white">Profesor/a Jefe</h1>
+      <p id="docente-cursos" class="text-xs text-slate-400"></p>
     </div>
     <button onclick="cerrarSesion()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg">
       Cerrar Sesión
     </button>
   </header>
 
-  <main class="max-w-6xl mx-auto p-6 space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
-        <h2 class="text-lg font-bold text-white">Ingresar Calificación</h2>
-        <form id="form-nota" class="space-y-3">
-          <select id="n-estudiante" required class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
-            <option value="">Cargando estudiantes...</option>
+  <!-- Barra de Navegación por Pestañas -->
+  <nav class="bg-slate-900/70 border-b border-slate-800 px-6 flex flex-wrap gap-2 overflow-x-auto">
+    <button onclick="verSeccion('curso')" id="nav-curso" class="py-3 px-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400">
+      Mi Curso & Alertas D.67
+    </button>
+    <button onclick="verSeccion('notas')" id="nav-notas" class="py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+      Libro de Notas
+    </button>
+    <button onclick="verSeccion('asistencia')" id="nav-asistencia" class="py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+      Pase de Lista Masivo
+    </button>
+    <button onclick="verSeccion('justificaciones')" id="nav-justificaciones" class="py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
+      Bandeja Justificaciones
+      <span id="badge-just" class="hidden px-2 py-0.5 text-xs bg-amber-600 text-white rounded-full">0</span>
+    </button>
+    <button onclick="verSeccion('convivencia')" id="nav-convivencia" class="py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+      Hoja de Vida & Apoderados
+    </button>
+    <button onclick="verSeccion('matricula')" id="nav-matricula" class="py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+      Matrícula Curso
+    </button>
+  </nav>
+
+  <main class="max-w-7xl mx-auto p-6 space-y-6">
+    <!-- SECCIÓN 1: MI CURSO & DECRETO 67 -->
+    <section id="sec-curso" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400 uppercase">Alumnos en Jefatura</p>
+          <p id="kpi-total-alumnos" class="text-2xl font-bold text-white mt-1">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400 uppercase">En Riesgo Decreto 67</p>
+          <p id="kpi-riesgo" class="text-2xl font-bold text-red-400 mt-1">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400 uppercase">Asistencia < 85%</p>
+          <p id="kpi-asist-baja" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400 uppercase">Estudiantes PIE</p>
+          <p id="kpi-pie-curso" class="text-2xl font-bold text-purple-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto">
+        <h2 class="text-lg font-bold text-white mb-3">Estado Académico y Asistencia (Decreto 67)</h2>
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-slate-800 text-slate-400">
+            <tr>
+              <th class="py-2">Estudiante</th>
+              <th class="py-2">Curso</th>
+              <th class="py-2">PIE</th>
+              <th class="py-2">Promedio</th>
+              <th class="py-2">Ramos < 4.0</th>
+              <th class="py-2">% Asistencia</th>
+              <th class="py-2">Estado Decreto 67</th>
+              <th class="py-2 text-right">Informe</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-resumen-curso" class="divide-y divide-slate-800/70"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: LIBRO DE NOTAS -->
+    <section id="sec-notas" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <h2 class="text-lg font-bold text-white mb-4">Registrar Calificación (Escala 1.0 a 7.0)</h2>
+        <form id="form-nota" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <select id="n-estudiante" required class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
+          <select id="n-asignatura" required class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm">
+            <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+            <option value="Matemática">Matemática</option>
+            <option value="Historia, Geografía y Cs. Sociales">Historia, Geografía y Cs. Sociales</option>
+            <option value="Ciencias Naturales">Ciencias Naturales</option>
+            <option value="Inglés">Inglés</option>
+            <option value="Educación Física y Salud">Educación Física y Salud</option>
+            <option value="Artes Visuales / Música">Artes Visuales / Música</option>
+            <option value="Tecnología / Orientación">Tecnología / Orientación</option>
           </select>
-          <input id="n-asignatura" type="text" required placeholder="Asignatura (ej: Matemática)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <input id="n-evaluacion" type="text" required placeholder="Evaluación (ej: Prueba Unidad 1)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <input id="n-nota" type="number" step="0.1" min="1.0" max="7.0" required placeholder="Nota (1.0 a 7.0)" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
-            Registrar Nota
+          <input id="n-evaluacion" type="text" required placeholder="Evaluación (ej: Prueba 1)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <div class="flex gap-2">
+            <input id="n-nota" type="number" step="0.1" min="1.0" max="7.0" required placeholder="Nota (1.0-7.0)" class="w-1/2 px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+            <input id="n-ponderacion" type="number" min="5" max="100" value="100" required title="Ponderación %" class="w-1/2 px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          </div>
+          <button type="submit" class="py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
+            Guardar Nota
           </button>
         </form>
       </div>
 
-      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
-        <h2 class="text-lg font-bold text-white">Control de Asistencia</h2>
-        <form id="form-asistencia" class="space-y-3">
-          <select id="as-estudiante" required class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
-            <option value="">Cargando estudiantes...</option>
-          </select>
-          <select id="as-estado" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
-            <option value="Presente">Presente</option>
-            <option value="Ausente">Ausente</option>
-            <option value="Atrasado">Atrasado</option>
-          </select>
-          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm">
-            Guardar Asistencia
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto">
+        <h2 class="text-lg font-bold text-white mb-3">Calificaciones Registradas en el Curso</h2>
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-slate-800 text-slate-400">
+            <tr>
+              <th class="py-2">Estudiante</th>
+              <th class="py-2">Curso</th>
+              <th class="py-2">Asignatura</th>
+              <th class="py-2">Evaluación</th>
+              <th class="py-2">Pond.</th>
+              <th class="py-2">Nota</th>
+              <th class="py-2 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-notas" class="divide-y divide-slate-800/70"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: PASE DE LISTA MASIVO -->
+    <section id="sec-asistencia" class="hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-white">Pase de Lista Diario por Curso</h2>
+            <p class="text-xs text-slate-400">Marca el estado de cada alumno y guarda todo el curso en un clic.</p>
+          </div>
+          <div class="flex gap-3 items-center">
+            <select id="filtro-curso-asist" onchange="renderPaseLista()" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
+            <input id="fecha-asistencia" type="date" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+            <button onclick="guardarAsistenciaMasiva()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm">
+              Guardar Asistencia del Día
+            </button>
+          </div>
+        </div>
+        <div id="lista-asistencia-masiva" class="divide-y divide-slate-800"></div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: BANDEJA DE JUSTIFICACIONES -->
+    <section id="sec-justificaciones" class="hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Bandeja de Justificaciones de Asistencia</h2>
+        <p class="text-xs text-slate-400">Al aprobar una justificación, el día queda marcado automáticamente como <strong>Justificado</strong> en la asistencia oficial.</p>
+        <div id="contenedor-justificaciones" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: HOJA DE VIDA & ENTREVISTAS APODERADOS -->
+    <section id="sec-convivencia" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+          <h2 class="text-lg font-bold text-white">Registrar Observación / Hoja de Vida</h2>
+          <form id="form-anotacion" class="space-y-3">
+            <select id="an-estudiante" required class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
+            <select id="an-tipo" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm">
+              <option value="Positiva">Observación Positiva / Felicitación</option>
+              <option value="Negativa">Observación Negativa / Conducta</option>
+              <option value="Seguimiento">Seguimiento Pedagógico</option>
+            </select>
+            <textarea id="an-detalle" rows="2" required placeholder="Descripción objetiva de la observación..." class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></textarea>
+            <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold text-sm">Guardar en Hoja de Vida</button>
+          </form>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+          <h2 class="text-lg font-bold text-white">Registro de Entrevista con Apoderado</h2>
+          <form id="form-entrevista" class="space-y-3">
+            <select id="en-estudiante" required class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
+            <input id="en-apoderado" type="text" required placeholder="Nombre del apoderado asistente" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+            <input id="en-motivo" type="text" required placeholder="Motivo de citación / entrevista" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+            <textarea id="en-acuerdos" rows="2" required placeholder="Acuerdos y compromisos tomados..." class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></textarea>
+            <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">Registrar Entrevista</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <h3 class="font-bold text-white mb-3">Últimas Observaciones</h3>
+          <div id="lista-anotaciones" class="space-y-2 text-sm"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <h3 class="font-bold text-white mb-3">Historial de Entrevistas</h3>
+          <div id="lista-entrevistas" class="space-y-2 text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: MATRÍCULA DEL CURSO (AGREGAR / ELIMINAR ALUMNO) -->
+    <section id="sec-matricula" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Agregar Nuevo Estudiante a mi Curso</h2>
+        <form id="form-nuevo-alumno" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          <input id="al-nombre" type="text" required placeholder="Nombre completo" class="sm:col-span-2 px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <input id="al-rut" type="text" required placeholder="RUT (ej: 26123456-7)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <select id="al-curso" required class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></select>
+          <input id="al-pass" type="text" required placeholder="Clave inicial (4 dígitos)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <label class="sm:col-span-2 flex items-center gap-2 text-sm text-slate-300">
+            <input id="al-pie" type="checkbox" class="rounded bg-slate-950 border-slate-700" />
+            Estudiante pertenece a Programa PIE
+          </label>
+          <button type="submit" class="sm:col-span-3 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold text-sm">
+            Matricular Estudiante
           </button>
         </form>
       </div>
-    </div>
 
-    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
-      <h2 class="text-lg font-bold text-white mb-3">Últimas Calificaciones Registradas</h2>
-      <table class="w-full text-left text-sm">
-        <thead class="border-b border-slate-700 text-slate-400">
-          <tr>
-            <th class="py-2">Estudiante</th>
-            <th class="py-2">Curso</th>
-            <th class="py-2">Asignatura</th>
-            <th class="py-2">Evaluación</th>
-            <th class="py-2">Nota</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-notas" class="divide-y divide-slate-700/60"></tbody>
-      </table>
-    </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto">
+        <h2 class="text-lg font-bold text-white mb-3">Nómina Oficial de mi Jefatura</h2>
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-slate-800 text-slate-400">
+            <tr>
+              <th class="py-2">Nombre</th>
+              <th class="py-2">RUT</th>
+              <th class="py-2">Curso</th>
+              <th class="py-2">PIE</th>
+              <th class="py-2 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-matricula" class="divide-y divide-slate-800/70"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
+  <!-- Modal / Área Oculta para Certificado PDF -->
+  <div id="area-impresion" class="hidden"></div>
+
   <script>
-    let listaEstudiantes = [];
+    let panelData = { estudiantes: [], notas: [], justificaciones: [], anotaciones: [], entrevistas: [], cursos_disponibles: [] };
+    document.getElementById("fecha-asistencia").value = new Date().toISOString().split("T")[0];
 
     if (currentUser) {
-      document.getElementById("docente-titulo").textContent =
-        `Docente: ${currentUser.nombre} ${currentUser.curso ? "(" + currentUser.curso + ")" : ""}`;
+      document.getElementById("docente-titulo").textContent = "Profesor/a Jefe: " + currentUser.nombre;
+      document.getElementById("docente-cursos").textContent = "Cursos asignados: " + (currentUser.curso || "Todos");
     }
 
     function cerrarSesion() {
@@ -97,76 +272,315 @@
       window.location.replace("index.html");
     }
 
-    async function cargarDatosDocente() {
-      try {
-        const res = await fetch(`${API_URL}/api/docente/datos`);
-        const data = await res.json();
-        listaEstudiantes = data.estudiantes || [];
+    function verSeccion(sec) {
+      ["curso", "notas", "asistencia", "justificaciones", "convivencia", "matricula"].forEach(s => {
+        document.getElementById("sec-" + s).classList.toggle("hidden", s !== sec);
+        const nav = document.getElementById("nav-" + s);
+        if (s === sec) {
+          nav.className = "py-3 px-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-1.5";
+        } else {
+          nav.className = "py-3 px-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-1.5";
+        }
+      });
+    }
 
-        const opciones = listaEstudiantes.length
-          ? listaEstudiantes.map(e => `<option value="${e.id}">${e.nombre} (${e.curso || "Sin curso"})</option>`).join("")
-          : `<option value="">No hay estudiantes registrados</option>`;
+    async function cargarPanel() {
+      const cursosParam = encodeURIComponent(currentUser.curso || "");
+      const res = await fetch(`${API_URL}/api/docente/panel?cursos_asignados=${cursosParam}`);
+      panelData = await res.json();
 
-        document.getElementById("n-estudiante").innerHTML = opciones;
-        document.getElementById("as-estudiante").innerHTML = opciones;
+      const ests = panelData.estudiantes || [];
+      document.getElementById("kpi-total-alumnos").textContent = ests.length;
+      document.getElementById("kpi-riesgo").textContent = ests.filter(e => e.riesgo_d67).length;
+      document.getElementById("kpi-asist-baja").textContent = ests.filter(e => e.total_dias_asistencia > 0 && e.pct_asistencia < 85).length;
+      document.getElementById("kpi-pie-curso").textContent = ests.filter(e => e.pie).length;
 
-        const notas = data.notas || [];
-        document.getElementById("tabla-notas").innerHTML = notas.map(n => `
-          <tr>
-            <td class="py-2 font-medium">${n.estudiante}</td>
-            <td class="py-2 text-slate-300">${n.curso || "-"}</td>
-            <td class="py-2">${n.asignatura}</td>
-            <td class="py-2">${n.evaluacion}</td>
-            <td class="py-2 font-bold ${Number(n.nota) >= 4.0 ? "text-emerald-400" : "text-red-400"}">${Number(n.nota).toFixed(1)}</td>
-          </tr>
-        `).join("");
-      } catch (e) {
-        console.error("Error cargando datos docente:", e);
-      }
+      // Poblar selects
+      const optsEst = ests.map(e => `<option value="${e.id}">${e.nombre} (${e.curso})</option>`).join("");
+      ["n-estudiante", "an-estudiante", "en-estudiante"].forEach(id => {
+        document.getElementById(id).innerHTML = optsEst || `<option value="">Sin estudiantes</option>`;
+      });
+
+      const cursosUnicos = [...new Set(ests.map(e => e.curso))].sort();
+      const cursosCfg = panelData.cursos_disponibles.length ? panelData.cursos_disponibles : cursosUnicos;
+      document.getElementById("al-curso").innerHTML = cursosCfg.map(c => `<option value="${c}">${c}</option>`).join("");
+      document.getElementById("filtro-curso-asist").innerHTML = cursosUnicos.map(c => `<option value="${c}">${c}</option>`).join("");
+
+      // Render Tabla Resumen Decreto 67
+      document.getElementById("tabla-resumen-curso").innerHTML = ests.map(e => `
+        <tr class="${e.riesgo_d67 ? 'bg-red-950/20' : ''}">
+          <td class="py-2.5 font-medium">${e.nombre}</td>
+          <td class="py-2.5 text-slate-300">${e.curso}</td>
+          <td class="py-2.5">${e.pie ? '<span class="px-2 py-0.5 text-xs bg-purple-900/60 text-purple-300 border border-purple-700 rounded">PIE</span>' : '-'}</td>
+          <td class="py-2.5 font-bold ${e.promedio_general === null ? 'text-slate-500' : e.promedio_general >= 4.0 ? 'text-emerald-400' : 'text-red-400'}">
+            ${e.promedio_general !== null ? e.promedio_general.toFixed(1) : 'S/N'}
+          </td>
+          <td class="py-2.5 ${e.rojos >= 2 ? 'text-red-400 font-bold' : 'text-slate-300'}">${e.rojos}</td>
+          <td class="py-2.5 font-semibold ${e.pct_asistencia < 85 ? 'text-red-400' : e.pct_asistencia < 88 ? 'text-amber-400' : 'text-emerald-400'}">
+            ${e.pct_asistencia}%
+          </td>
+          <td class="py-2.5">
+            ${e.riesgo_d67
+              ? `<span class="px-2 py-0.5 text-xs bg-red-900/70 text-red-200 border border-red-700 rounded" title="${e.motivos_riesgo.join(', ')}">Alerta D.67</span>`
+              : `<span class="px-2 py-0.5 text-xs bg-emerald-950 text-emerald-300 border border-emerald-800 rounded">Normal</span>`}
+          </td>
+          <td class="py-2.5 text-right">
+            <button onclick="imprimirInforme(${e.id})" class="text-xs text-blue-400 hover:underline font-semibold">Imprimir PDF</button>
+          </td>
+        </tr>
+      `).join("");
+
+      // Render Notas
+      document.getElementById("tabla-notas").innerHTML = (panelData.notas || []).map(n => `
+        <tr>
+          <td class="py-2 font-medium">${n.estudiante}</td>
+          <td class="py-2 text-slate-400">${n.curso}</td>
+          <td class="py-2">${n.asignatura}</td>
+          <td class="py-2">${n.evaluacion}</td>
+          <td class="py-2 text-slate-400">${n.ponderacion}%</td>
+          <td class="py-2 font-bold ${Number(n.nota) >= 4.0 ? 'text-emerald-400' : 'text-red-400'}">${Number(n.nota).toFixed(1)}</td>
+          <td class="py-2 text-right">
+            <button onclick="eliminarNota(${n.id})" class="text-xs text-red-400 hover:text-red-300">Borrar</button>
+          </td>
+        </tr>
+      `).join("");
+
+      // Render Bandeja Justificaciones
+      const justs = panelData.justificaciones || [];
+      const pendientes = justs.filter(j => j.estado === "Pendiente").length;
+      const badge = document.getElementById("badge-just");
+      if (pendientes > 0) { badge.textContent = pendientes; badge.classList.remove("hidden"); }
+      else { badge.classList.add("hidden"); }
+
+      document.getElementById("contenedor-justificaciones").innerHTML = justs.length
+        ? justs.map(j => `
+          <div class="p-4 rounded-xl bg-slate-950 border ${j.estado === 'Pendiente' ? 'border-amber-700/70' : 'border-slate-800'} flex flex-wrap justify-between items-start gap-4">
+            <div class="space-y-1 max-w-2xl">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white">${j.estudiante}</span>
+                <span class="text-xs text-slate-400">(${j.curso}) · Fecha inasistencia: <strong>${j.fecha_ausencia}</strong></span>
+                <span class="px-2 py-0.5 text-xs rounded font-semibold ${j.estado === 'Pendiente' ? 'bg-amber-900/60 text-amber-300' : j.estado === 'Aprobada' ? 'bg-emerald-900/60 text-emerald-300' : 'bg-red-900/60 text-red-300'}">${j.estado}</span>
+              </div>
+              <p class="text-sm text-slate-300">${j.motivo}</p>
+            </div>
+            ${j.estado === 'Pendiente' ? `
+              <div class="flex gap-2">
+                <button onclick="resolverJustificacion(${j.id}, 'Aprobada')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-lg">Aprobar y Justificar</button>
+                <button onclick="resolverJustificacion(${j.id}, 'Rechazada')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-xs font-semibold rounded-lg">Rechazar</button>
+              </div>
+            ` : ''}
+          </div>
+        `).join("")
+        : `<p class="text-sm text-slate-400">No hay mensajes de justificación en la bandeja.</p>`;
+
+      // Render Convivencia
+      document.getElementById("lista-anotaciones").innerHTML = (panelData.anotaciones || []).map(a => `
+        <div class="p-3 rounded bg-slate-950 border border-slate-800">
+          <div class="flex justify-between text-xs mb-1">
+            <span class="font-bold text-white">${a.estudiante}</span>
+            <span class="${a.tipo === 'Positiva' ? 'text-emerald-400' : a.tipo === 'Negativa' ? 'text-red-400' : 'text-blue-400'} font-semibold">${a.tipo} · ${a.fecha}</span>
+          </div>
+          <p class="text-slate-300 text-xs">${a.detalle}</p>
+        </div>
+      `).join("") || `<p class="text-slate-500 text-xs">Sin observaciones registradas.</p>`;
+
+      document.getElementById("lista-entrevistas").innerHTML = (panelData.entrevistas || []).map(e => `
+        <div class="p-3 rounded bg-slate-950 border border-slate-800">
+          <div class="flex justify-between text-xs mb-1">
+            <span class="font-bold text-white">${e.estudiante} (Apod: ${e.apoderado})</span>
+            <span class="text-slate-400">${e.fecha}</span>
+          </div>
+          <p class="text-xs text-amber-300">Motivo: ${e.motivo}</p>
+          <p class="text-xs text-slate-300 mt-1">Acuerdos: ${e.acuerdos}</p>
+        </div>
+      `).join("") || `<p class="text-slate-500 text-xs">Sin entrevistas registradas.</p>`;
+
+      // Render Matrícula
+      document.getElementById("tabla-matricula").innerHTML = ests.map(e => `
+        <tr>
+          <td class="py-2 font-medium">${e.nombre}</td>
+          <td class="py-2 text-slate-300">${e.rut}</td>
+          <td class="py-2">${e.curso}</td>
+          <td class="py-2">
+            <button onclick="togglePIE(${e.id})" class="px-2 py-0.5 rounded text-xs font-semibold ${e.pie ? 'bg-purple-900/60 text-purple-300' : 'bg-slate-800 text-slate-400'}">${e.pie ? 'Sí (PIE)' : 'No'}</button>
+          </td>
+          <td class="py-2 text-right">
+            <button onclick="eliminarAlumno(${e.id})" class="text-xs text-red-400 hover:underline font-semibold">Eliminar del Curso</button>
+          </td>
+        </tr>
+      `).join("");
+
+      renderPaseLista();
+    }
+
+    function renderPaseLista() {
+      const cursoSel = document.getElementById("filtro-curso-asist").value;
+      const alumnosCurso = (panelData.estudiantes || []).filter(e => !cursoSel || e.curso === cursoSel);
+      document.getElementById("lista-asistencia-masiva").innerHTML = alumnosCurso.map(e => `
+        <div class="py-2.5 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <p class="font-medium text-sm text-white">${e.nombre}</p>
+            <p class="text-xs text-slate-400">RUT: ${e.rut} · Asistencia acumulada: ${e.pct_asistencia}%</p>
+          </div>
+          <select data-est-id="${e.id}" class="sel-asist-item px-3 py-1.5 rounded bg-slate-950 border border-slate-700 text-sm">
+            <option value="Presente">Presente</option>
+            <option value="Ausente">Ausente</option>
+            <option value="Atrasado">Atrasado</option>
+            <option value="Justificado">Justificado</option>
+          </select>
+        </div>
+      `).join("");
+    }
+
+    async function guardarAsistenciaMasiva() {
+      const curso = document.getElementById("filtro-curso-asist").value;
+      const fecha = document.getElementById("fecha-asistencia").value;
+      const selects = document.querySelectorAll(".sel-asist-item");
+      const registros = Array.from(selects).map(s => ({
+        estudiante_id: Number(s.dataset.estId),
+        estado: s.value
+      }));
+      const res = await fetch(`${API_URL}/api/docente/asistencia-masiva`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ curso, fecha, registros })
+      });
+      if (res.ok) { alert("Asistencia del curso guardada correctamente."); cargarPanel(); }
     }
 
     document.getElementById("form-nota").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const payload = {
-        estudiante_id: Number(document.getElementById("n-estudiante").value),
-        asignatura: document.getElementById("n-asignatura").value,
-        evaluacion: document.getElementById("n-evaluacion").value,
-        nota: parseFloat(document.getElementById("n-nota").value)
-      };
       const res = await fetch(`${API_URL}/api/docente/notas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          estudiante_id: Number(document.getElementById("n-estudiante").value),
+          asignatura: document.getElementById("n-asignatura").value,
+          evaluacion: document.getElementById("n-evaluacion").value,
+          nota: parseFloat(document.getElementById("n-nota").value),
+          ponderacion: parseInt(document.getElementById("n-ponderacion").value, 10)
+        })
       });
       if (res.ok) {
         document.getElementById("n-evaluacion").value = "";
         document.getElementById("n-nota").value = "";
-        cargarDatosDocente();
-      } else {
-        alert("Error al registrar la nota.");
+        cargarPanel();
       }
     });
 
-    document.getElementById("form-asistencia").addEventListener("submit", async (e) => {
+    async function eliminarNota(id) {
+      if (!confirm("¿Eliminar esta calificación?")) return;
+      await fetch(`${API_URL}/api/docente/notas/${id}`, { method: "DELETE" });
+      cargarPanel();
+    }
+
+    async function resolverJustificacion(id, estado) {
+      await fetch(`${API_URL}/api/docente/justificaciones/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado, respuesta_docente: "Revisado por Profesor Jefe" })
+      });
+      cargarPanel();
+    }
+
+    document.getElementById("form-anotacion").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const estId = Number(document.getElementById("as-estudiante").value);
-      const estObj = listaEstudiantes.find(x => x.id === estId);
-      const payload = {
-        estudiante_id: estId,
-        curso: estObj ? estObj.curso : "",
-        estado: document.getElementById("as-estado").value
-      };
-      const res = await fetch(`${API_URL}/api/docente/asistencia`, {
+      const res = await fetch(`${API_URL}/api/docente/anotaciones`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          estudiante_id: Number(document.getElementById("an-estudiante").value),
+          docente_nombre: currentUser.nombre,
+          tipo: document.getElementById("an-tipo").value,
+          detalle: document.getElementById("an-detalle").value
+        })
       });
-      if (res.ok) {
-        alert("Asistencia registrada correctamente.");
-      }
+      if (res.ok) { e.target.reset(); cargarPanel(); }
     });
 
-    cargarDatosDocente();
+    document.getElementById("form-entrevista").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch(`${API_URL}/api/docente/entrevistas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          estudiante_id: Number(document.getElementById("en-estudiante").value),
+          docente_nombre: currentUser.nombre,
+          apoderado: document.getElementById("en-apoderado").value,
+          motivo: document.getElementById("en-motivo").value,
+          acuerdos: document.getElementById("en-acuerdos").value
+        })
+      });
+      if (res.ok) { e.target.reset(); cargarPanel(); }
+    });
+
+    document.getElementById("form-nuevo-alumno").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const res = await fetch(`${API_URL}/api/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: document.getElementById("al-nombre").value.toUpperCase(),
+          rut: document.getElementById("al-rut").value.toUpperCase(),
+          rol: "estudiante",
+          curso: document.getElementById("al-curso").value,
+          pie: document.getElementById("al-pie").checked,
+          password: document.getElementById("al-pass").value
+        })
+      });
+      if (res.ok) { e.target.reset(); cargarPanel(); }
+      else { const err = await res.json(); alert(err.detail || "Error al matricular"); }
+    });
+
+    async function togglePIE(id) {
+      await fetch(`${API_URL}/api/usuarios/${id}/pie`, { method: "PUT" });
+      cargarPanel();
+    }
+
+    async function eliminarAlumno(id) {
+      if (!confirm("¿Eliminar este estudiante del curso?")) return;
+      await fetch(`${API_URL}/api/usuarios/${id}`, { method: "DELETE" });
+      cargarPanel();
+    }
+
+    function imprimirInforme(estId) {
+      const est = panelData.estudiantes.find(x => x.id === estId);
+      if (!est) return;
+      const filasAsig = Object.entries(est.promedios_asignatura || {}).map(([asig, prom]) =>
+        `<tr><td style="border:1px solid #ccc;padding:6px;">${asig}</td><td style="border:1px solid #ccc;padding:6px;text-align:center;font-weight:bold;">${prom.toFixed(1)}</td></tr>`
+      ).join("") || `<tr><td colspan="2" style="border:1px solid #ccc;padding:6px;">Sin calificaciones registradas</td></tr>`;
+
+      const area = document.getElementById("area-impresion");
+      area.classList.remove("hidden");
+      area.innerHTML = `
+        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: auto;">
+          <h2 style="text-align:center;margin-bottom:4px;">ESCUELA CANDELARIA PÉREZ</h2>
+          <p style="text-align:center;font-size:13px;color:#555;margin-top:0;">Informe Oficial de Calificaciones y Asistencia (Decreto 67)</p>
+          <hr style="margin:16px 0;" />
+          <p><strong>Estudiante:</strong> ${est.nombre}</p>
+          <p><strong>RUT:</strong> ${est.rut} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Curso:</strong> ${est.curso}</p>
+          <p><strong>Profesor/a Jefe:</strong> ${currentUser.nombre}</p>
+          <table style="width:100%;border-collapse:collapse;margin-top:16px;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #ccc;padding:8px;text-align:left;">Asignatura</th>
+                <th style="border:1px solid #ccc;padding:8px;text-align:center;">Promedio</th>
+              </tr>
+            </thead>
+            <tbody>${filasAsig}</tbody>
+          </table>
+          <div style="margin-top:20px;padding:12px;background:#f8fafc;border:1px solid #cbd5e1;">
+            <p style="margin:4px 0;"><strong>Promedio General Anual:</strong> ${est.promedio_general !== null ? est.promedio_general.toFixed(1) : 'Pendiente'}</p>
+            <p style="margin:4px 0;"><strong>Porcentaje de Asistencia Acumulada:</strong> ${est.pct_asistencia}% (Mínimo Decreto 67: 85%)</p>
+          </div>
+          <p style="margin-top:48px;text-align:center;font-size:12px;">_______________________________<br/>Firma Profesor/a Jefe · Dirección</p>
+        </div>
+      `;
+      window.print();
+      area.classList.add("hidden");
+    }
+
+    cargarPanel();
   </script>
 </body>
 </html>

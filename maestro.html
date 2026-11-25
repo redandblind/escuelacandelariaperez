@@ -3,31 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Centro de Mando Directivo | Escuela Candelaria Pérez</title>
+  <title>Centro de Mando Directivo v9.0 | Escuela Candelaria Pérez</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
   <script>
-    const SESSION_KEY = "ecp_v8_session";
-    const API_URL = (localStorage.getItem("ecp_v8_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
+    const SESSION_KEY = "ecp_v9_session";
+    const API_URL = (localStorage.getItem("ecp_v9_api") || "https://escuelacandelariaperez.onrender.com").replace(/\/$/, "");
     let currentUser = null;
-    try {
-      currentUser = JSON.parse(localStorage.getItem(SESSION_KEY));
-    } catch (e) { currentUser = null; }
-
+    try { currentUser = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) {}
     if (!currentUser || (currentUser.rol || "").toLowerCase().trim() !== "maestro") {
       localStorage.removeItem(SESSION_KEY);
       window.location.replace("index.html");
     }
   </script>
 
-  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+  <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
     <div>
-      <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Centro de Mando Directivo v8.0</span>
+      <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Centro de Mando Directivo v9.0</span>
       <h1 id="directora-nombre" class="text-xl font-bold text-white">Directora: Paulina Toledo</h1>
     </div>
     <div class="flex gap-3">
-      <button onclick="ejecutarPromocion()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold rounded-lg">
+      <button onclick="ejecutarPromocion()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold rounded-lg">
         Promoción Anual
       </button>
       <button onclick="cerrarSesion()" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg">
@@ -37,79 +34,93 @@
   </header>
 
   <main class="max-w-7xl mx-auto p-6 space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-        <p class="text-xs text-slate-400 uppercase">Total Estudiantes</p>
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Estudiantes</p>
         <p id="kpi-estudiantes" class="text-2xl font-bold text-blue-400 mt-1">0</p>
       </div>
-      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-        <p class="text-xs text-slate-400 uppercase">Total Docentes</p>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Docentes Jefes</p>
         <p id="kpi-docentes" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
       </div>
-      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-        <p class="text-xs text-slate-400 uppercase">Cursos Activos</p>
-        <p id="kpi-cursos" class="text-2xl font-bold text-indigo-400 mt-1">0</p>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Estudiantes PIE</p>
+        <p id="kpi-pie" class="text-2xl font-bold text-purple-400 mt-1">0</p>
       </div>
-      <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-        <p class="text-xs text-slate-400 uppercase">Promedio General Escuela</p>
-        <p id="kpi-promedio" class="text-2xl font-bold text-amber-400 mt-1">0.0</p>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Justificaciones Pend.</p>
+        <p id="kpi-just" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-400 uppercase">Promedio Escuela</p>
+        <p id="kpi-promedio" class="text-2xl font-bold text-cyan-400 mt-1">0.0</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
+      <!-- Registrar Usuario -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
         <h2 class="text-lg font-bold text-white">Registrar Docente o Estudiante</h2>
         <form id="form-usuario" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input id="u-nombre" type="text" required placeholder="Nombre completo" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <input id="u-rut" type="text" required placeholder="RUT (ej: 12345678-9)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <select id="u-rol" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm">
-            <option value="docente">Docente</option>
+          <input id="u-nombre" type="text" required placeholder="Nombre completo" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <input id="u-rut" type="text" required placeholder="RUT o usuario" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <select id="u-rol" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm">
             <option value="estudiante">Estudiante</option>
+            <option value="docente">Docente Jefe</option>
             <option value="maestro">Dirección (Maestro)</option>
           </select>
-          <input id="u-curso" type="text" placeholder="Curso (ej: 8° Básico)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <input id="u-asignatura" type="text" placeholder="Asignatura (solo docentes)" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <input id="u-password" type="text" required placeholder="Contraseña inicial" class="px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+          <input id="u-curso" type="text" placeholder="Curso (ej: 5° Básico)" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <input id="u-password" type="text" required placeholder="Contraseña inicial" class="px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <label class="flex items-center gap-2 text-sm text-slate-300 px-2">
+            <input id="u-pie" type="checkbox" class="rounded bg-slate-950 border-slate-700" />
+            Programa PIE / NEE
+          </label>
           <button type="submit" class="sm:col-span-2 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold text-sm">
-            Guardar Usuario
+            Guardar en Nómina
           </button>
         </form>
       </div>
 
-      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
-        <h2 class="text-lg font-bold text-white">Publicar Alerta o Comunicado Institucional</h2>
+      <!-- Comunicado Institucional -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h2 class="text-lg font-bold text-white">Publicar Comunicado Oficial</h2>
         <form id="form-alerta" class="space-y-3">
-          <input id="a-titulo" type="text" required placeholder="Título del comunicado" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm" />
-          <textarea id="a-detalle" rows="2" required placeholder="Detalle del mensaje para la comunidad escolar..." class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-sm"></textarea>
+          <input id="a-titulo" type="text" required placeholder="Título del comunicado" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm" />
+          <textarea id="a-detalle" rows="3" required placeholder="Mensaje institucional visible para toda la comunidad..." class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-sm"></textarea>
           <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-sm">
-            Publicar Alerta
+            Publicar Comunicado
           </button>
         </form>
       </div>
     </div>
 
-    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 overflow-x-auto">
-      <h2 class="text-lg font-bold text-white mb-3">Nómina de Usuarios Registrados</h2>
+    <!-- Nómina Completa -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 overflow-x-auto space-y-3">
+      <div class="flex flex-wrap justify-between items-center gap-3">
+        <h2 class="text-lg font-bold text-white">Nómina General Escuela Candelaria Pérez</h2>
+        <input id="filtro-nomina" oninput="filtrarNomina()" type="text" placeholder="Buscar por nombre, RUT o curso..."
+          class="px-3 py-1.5 rounded bg-slate-950 border border-slate-800 text-sm w-64" />
+      </div>
       <table class="w-full text-left text-sm">
-        <thead class="border-b border-slate-700 text-slate-400">
+        <thead class="border-b border-slate-800 text-slate-400">
           <tr>
             <th class="py-2">Nombre</th>
-            <th class="py-2">RUT</th>
+            <th class="py-2">RUT / Usuario</th>
             <th class="py-2">Rol</th>
             <th class="py-2">Curso</th>
-            <th class="py-2">Asignatura</th>
-            <th class="py-2 text-right">Acción</th>
+            <th class="py-2">PIE</th>
+            <th class="py-2 text-right">Acciones</th>
           </tr>
         </thead>
-        <tbody id="tabla-usuarios" class="divide-y divide-slate-700/60"></tbody>
+        <tbody id="tabla-usuarios" class="divide-y divide-slate-800/70"></tbody>
       </table>
     </div>
   </main>
 
   <script>
-    if (currentUser) {
-      document.getElementById("directora-nombre").textContent = "Directora: " + currentUser.nombre;
-    }
+    let todosUsuarios = [];
+    if (currentUser) document.getElementById("directora-nombre").textContent = "Directora: " + currentUser.nombre;
 
     function cerrarSesion() {
       localStorage.removeItem(SESSION_KEY);
@@ -117,33 +128,52 @@
     }
 
     async function cargarDashboard() {
-      try {
-        const res = await fetch(`${API_URL}/api/dashboard/maestro`);
-        const data = await res.json();
-        const usuarios = data.usuarios || [];
-        document.getElementById("kpi-estudiantes").textContent = usuarios.filter(u => u.rol === "estudiante").length;
-        document.getElementById("kpi-docentes").textContent = usuarios.filter(u => u.rol === "docente").length;
-        document.getElementById("kpi-cursos").textContent = (data.cursos || []).length;
-        document.getElementById("kpi-promedio").textContent = (data.promedio_general || 0).toFixed(1);
+      const res = await fetch(`${API_URL}/api/dashboard/maestro`);
+      const data = await res.json();
+      todosUsuarios = data.usuarios || [];
 
-        const tbody = document.getElementById("tabla-usuarios");
-        tbody.innerHTML = usuarios.map(u => `
-          <tr>
-            <td class="py-2 font-medium">${u.nombre}</td>
-            <td class="py-2 text-slate-300">${u.rut || "-"}</td>
-            <td class="py-2 uppercase text-xs font-bold text-indigo-400">${u.rol}</td>
-            <td class="py-2">${u.curso || "-"}</td>
-            <td class="py-2">${u.asignatura || "-"}</td>
-            <td class="py-2 text-right">
-              ${u.rol !== "maestro"
-                ? `<button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>`
-                : `<span class="text-xs text-slate-500">Protegido</span>`}
-            </td>
-          </tr>
-        `).join("");
-      } catch (e) {
-        console.error("Error cargando dashboard:", e);
-      }
+      document.getElementById("kpi-estudiantes").textContent = todosUsuarios.filter(u => u.rol === "estudiante").length;
+      document.getElementById("kpi-docentes").textContent = todosUsuarios.filter(u => u.rol === "docente").length;
+      document.getElementById("kpi-pie").textContent = todosUsuarios.filter(u => u.rol === "estudiante" && u.pie).length;
+      document.getElementById("kpi-just").textContent = data.justificaciones_pendientes || 0;
+      document.getElementById("kpi-promedio").textContent = (data.promedio_general || 0).toFixed(1);
+      renderTabla(todosUsuarios);
+    }
+
+    function filtrarNomina() {
+      const q = document.getElementById("filtro-nomina").value.toLowerCase().trim();
+      const filtrados = todosUsuarios.filter(u =>
+        (u.nombre || "").toLowerCase().includes(q) ||
+        (u.rut || "").toLowerCase().includes(q) ||
+        (u.curso || "").toLowerCase().includes(q)
+      );
+      renderTabla(filtrados);
+    }
+
+    function renderTabla(lista) {
+      document.getElementById("tabla-usuarios").innerHTML = lista.map(u => `
+        <tr>
+          <td class="py-2 font-medium">${u.nombre}</td>
+          <td class="py-2 text-slate-300">${u.rut || "-"}</td>
+          <td class="py-2 uppercase text-xs font-bold ${u.rol === 'docente' ? 'text-emerald-400' : u.rol === 'maestro' ? 'text-indigo-400' : 'text-blue-400'}">${u.rol}</td>
+          <td class="py-2">${u.curso || "-"}</td>
+          <td class="py-2">
+            ${u.rol === 'estudiante'
+              ? `<button onclick="togglePIE(${u.id})" class="px-2 py-0.5 rounded text-xs font-semibold ${u.pie ? 'bg-purple-900/60 text-purple-300 border border-purple-700' : 'bg-slate-800 text-slate-400'}">${u.pie ? 'PIE Activo' : 'No'}</button>`
+              : '-'}
+          </td>
+          <td class="py-2 text-right">
+            ${u.rol !== "maestro"
+              ? `<button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Eliminar</button>`
+              : `<span class="text-xs text-slate-500">Protegido</span>`}
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    async function togglePIE(id) {
+      await fetch(`${API_URL}/api/usuarios/${id}/pie`, { method: "PUT" });
+      cargarDashboard();
     }
 
     document.getElementById("form-usuario").addEventListener("submit", async (e) => {
@@ -153,7 +183,7 @@
         rut: document.getElementById("u-rut").value,
         rol: document.getElementById("u-rol").value,
         curso: document.getElementById("u-curso").value,
-        asignatura: document.getElementById("u-asignatura").value,
+        pie: document.getElementById("u-pie").checked,
         password: document.getElementById("u-password").value
       };
       const res = await fetch(`${API_URL}/api/usuarios`, {
@@ -161,46 +191,33 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      if (res.ok) {
-        e.target.reset();
-        cargarDashboard();
-      } else {
-        const err = await res.json();
-        alert(err.detail || "Error al guardar usuario");
-      }
+      if (res.ok) { e.target.reset(); cargarDashboard(); }
+      else { const err = await res.json(); alert(err.detail || "Error al crear usuario"); }
     });
 
     document.getElementById("form-alerta").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const payload = {
-        titulo: document.getElementById("a-titulo").value,
-        detalle: document.getElementById("a-detalle").value,
-        nivel: "info"
-      };
       const res = await fetch(`${API_URL}/api/alertas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          titulo: document.getElementById("a-titulo").value,
+          detalle: document.getElementById("a-detalle").value
+        })
       });
-      if (res.ok) {
-        e.target.reset();
-        alert("Alerta publicada correctamente.");
-      }
+      if (res.ok) { e.target.reset(); alert("Comunicado publicado."); }
     });
 
     async function eliminarUsuario(id) {
-      if (!confirm("¿Eliminar este usuario?")) return;
+      if (!confirm("¿Eliminar este registro?")) return;
       await fetch(`${API_URL}/api/usuarios/${id}`, { method: "DELETE" });
       cargarDashboard();
     }
 
     async function ejecutarPromocion() {
-      if (!confirm("¿Ejecutar promoción anual de cursos y reinicio de notas?")) return;
+      if (!confirm("¿Ejecutar promoción anual de cursos (1° a 8° Básico) y limpiar registros del año?")) return;
       const res = await fetch(`${API_URL}/api/admin/promocion-anual`, { method: "POST" });
-      if (res.ok) {
-        alert("Promoción anual completada.");
-        cargarDashboard();
-      }
+      if (res.ok) { alert("Promoción anual ejecutada."); cargarDashboard(); }
     }
 
     cargarDashboard();
