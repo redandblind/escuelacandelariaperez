@@ -35,7 +35,7 @@ main{flex:1;max-width:980px;width:100%;margin:0 auto;padding:24px 16px 40px}
 .btn-create{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
 .btn-secondary{background:#fff;color:var(--primary-dark);border:1.5px solid var(--border)}
 .curso-section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:18px;overflow:visible}
-.curso-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0}
+.curso-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;flex-wrap:wrap;gap:8px}
 .curso-header h3{font-size:1rem;color:var(--primary-dark);font-weight:700}
 .curso-count{font-size:.78rem;background:#eff6ff;color:var(--primary);padding:4px 10px;border-radius:999px;font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:.88rem}
@@ -84,7 +84,6 @@ tr:hover td{background:#f8fafc}
 .justificacion-card .meta{font-size:.75rem;color:var(--muted);margin-top:3px}
 .justificacion-card p{margin-top:8px;color:#334155;line-height:1.4}
 .btn-leer{margin-top:8px;background:#e0f2fe;color:#0369a1;border:none;padding:5px 10px;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer}
-.btn-leer:hover{background:#bae6fd}
 .empty-state{text-align:center;padding:28px 16px;color:var(--muted);font-size:.9rem}
 .sem-tabs{display:flex;gap:6px;margin-bottom:14px}
 .sem-tab{flex:1;padding:9px;border:1.5px solid var(--border);background:#f8fafc;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);text-align:center}
@@ -92,7 +91,6 @@ tr:hover td{background:#f8fafc}
 .nota-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
 .nota-row:last-child{border-bottom:none}
 .btn-del-nota{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;margin-left:8px;padding:2px 6px;border-radius:4px}
-.btn-del-nota:hover{background:#fee2e2}
 .avg-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-around;text-align:center;gap:8px}
 .avg-box .avg-val{font-size:1.4rem;font-weight:700}
 .avg-box .avg-lbl{font-size:.72rem;color:var(--muted);margin-top:2px}
@@ -101,11 +99,11 @@ tr:hover td{background:#f8fafc}
 .obs-item .obs-meta{font-size:.72rem;color:var(--muted);margin-top:4px}
 .inactivo-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;font-size:.85rem}
 .btn-reactivar{background:#d1fae5;color:#065f46;border:none;padding:6px 11px;border-radius:7px;font-weight:600;font-size:.78rem;cursor:pointer}
-.btn-reactivar:hover{background:#a7f3d0}
+.asist-row{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-bottom:1px solid #f1f5f9;font-size:.86rem}
+.asist-row select{width:auto;padding:6px 10px;font-size:.84rem}
 .cal-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;font-size:.84rem;color:#1e3a8a;line-height:1.5;margin-bottom:14px}
 .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
-@media(max-width:600px){header{padding:12px 14px}.welcome-row{flex-direction:column}.stats-grid{width:100%}.stat-card{flex:1}table{font-size:.82rem}th,td{padding:10px 10px}}
 @media print{body *{visibility:hidden}#modalVerNotas,#modalVerNotas *{visibility:visible}#modalVerNotas{position:fixed;inset:0;background:#fff;padding:0}.modal-footer,.modal-close,.btn-del-nota,.sem-tabs{display:none!important}.modal{box-shadow:none;max-width:100%;max-height:none}}
 </style>
 </head>
@@ -113,19 +111,20 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
 <header>
   <div class="header-left">
     <h1>Escuela Candelaria Pérez</h1>
-    <p>Panel del Docente · San Javier</p>
+    <p>Panel Académico Docente · San Javier</p>
   </div>
   <div class="header-actions">
-    <button class="icon-btn" onclick="abrirModalCalendario()" title="Calendario Escolar y Promoción">📅</button>
+    <a id="btnVolverMaestro" href="maestro.html" class="btn-logout" style="display:none;background:#eff6ff;color:#1e40af;border-color:#bfdbfe">👑 Volver a Dirección</a>
+    <button class="icon-btn" onclick="abrirModalCalendario()" title="Calendario Escolar">📅</button>
     <button class="icon-btn" onclick="abrirBuzonJustificaciones()" title="Justificaciones">💬<span id="contadorJustificaciones" class="badge">0</span></button>
-    <a href="index.html" class="btn-logout" onclick="cerrarSesionDocente()">Cerrar sesión</a>
+    <a href="index.html" class="btn-logout" onclick="sessionStorage.clear()">Cerrar sesión</a>
   </div>
 </header>
 <main>
   <div class="welcome-row">
     <div class="welcome-card">
       <h2 id="saludoProfe">Hola...</h2>
-      <p>Crea y administra alumnos, notas, promedios, observaciones y calendario escolar.</p>
+      <p>Gestiona calificaciones, asistencia diaria, observaciones, anuncios y matrículas de tus cursos.</p>
     </div>
     <div class="stats-grid">
       <div class="stat-card"><div class="num" id="statAlumnos">0</div><div class="label">Activos</div></div>
@@ -135,6 +134,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
   <div class="toolbar">
     <div class="search-box"><input type="text" id="buscarAlumno" placeholder="Buscar por nombre o RUT..." oninput="filtrarAlumnos()"></div>
+    <button class="btn-action btn-secondary" onclick="abrirModalAsistencia()">📋 Asistencia</button>
     <button class="btn-action btn-secondary" onclick="abrirModalCalendario()">📅 Calendario</button>
     <button class="btn-action btn-secondary" onclick="abrirModalAnuncio()">📢 Anuncio</button>
     <button class="btn-action btn-secondary" onclick="abrirModalInactivos()">⏸️ Inactivos (<span id="countInactivos">0</span>)</button>
@@ -143,22 +143,44 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   <div id="contenedorCursos"><div class="empty-state">Cargando datos desde la base de datos...</div></div>
 </main>
 
+<!-- MODAL ASISTENCIA -->
+<div id="modalAsistencia" class="modal-overlay">
+  <div class="modal wide">
+    <div class="modal-header"><h3>📋 Pasar Lista · Asistencia Diaria</h3><button class="modal-close" onclick="cerrarModal('modalAsistencia')">×</button></div>
+    <div class="modal-body">
+      <div class="cal-grid">
+        <div>
+          <label>Curso</label>
+          <select id="asistCurso" onchange="cargarListaAsistencia()"></select>
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="asistFecha" onchange="cargarListaAsistencia()">
+        </div>
+      </div>
+      <div id="listaAsistenciaAlumnos" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" onclick="cerrarModal('modalAsistencia')">Cerrar</button>
+      <button class="btn-modal btn-save" onclick="guardarAsistencia()">Guardar Asistencia</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CALENDARIO -->
 <div id="modalCalendario" class="modal-overlay">
   <div class="modal wide">
-    <div class="modal-header"><h3>📅 Calendario Escolar y Automatización</h3><button class="modal-close" onclick="cerrarModal('modalCalendario')">×</button></div>
+    <div class="modal-header"><h3>📅 Calendario Escolar y Promoción</h3><button class="modal-close" onclick="cerrarModal('modalCalendario')">×</button></div>
     <div class="modal-body">
       <div class="cal-info">
-        <strong>Reglas automáticas (Hora Chile):</strong><br>
-        • <strong>Promoción de curso:</strong> En la fecha de cierre escolar, todo estudiante con promedio general <strong>≥ 4,0</strong> pasa automáticamente al curso siguiente (8° Básico egresa). Si su promedio es <strong>&lt; 4,0</strong>, repite el curso.<br>
-        • <strong>Limpieza el 1 de enero:</strong> Cada <strong>1 de enero</strong> a las 00:00 hrs (Chile), la bandeja de notas se limpia automáticamente tras guardar el historial anual.
+        <strong>Automatización anual (Hora Chile):</strong><br>
+        • Alumnos con promedio <strong>≥ 4,0</strong> pasan al siguiente curso en la fecha de cierre escolar.<br>
+        • El <strong>1 de enero</strong> se limpia automáticamente la bandeja de notas, asistencia y avisos tras respaldar el historial.
       </div>
       <div class="cal-grid">
         <div>
           <label>Mes de cierre escolar</label>
-          <select id="calMes">
-            <option value="11">Noviembre</option>
-            <option value="12">Diciembre</option>
-          </select>
+          <select id="calMes"><option value="11">Noviembre</option><option value="12">Diciembre</option></select>
         </div>
         <div>
           <label>Día de cierre escolar</label>
@@ -168,7 +190,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
       <div id="resumenPromocionActual" style="margin-top:16px;font-size:.84rem;color:#334155"></div>
     </div>
     <div class="modal-footer" style="justify-content:space-between;flex-wrap:wrap">
-      <button class="btn-modal btn-warn" onclick="ejecutarPromocionManual()">⚡ Ejecutar promoción anual ahora</button>
+      <button class="btn-modal btn-warn" onclick="ejecutarPromocionManual()">⚡ Ejecutar promoción ahora</button>
       <div style="display:flex;gap:8px">
         <button class="btn-modal btn-cancel" onclick="cerrarModal('modalCalendario')">Cerrar</button>
         <button class="btn-modal btn-save" onclick="guardarConfigCalendario()">Guardar fecha</button>
@@ -177,29 +199,15 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL NOTA -->
 <div id="modalNota" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3 id="modalTituloNota">Agregar calificación</h3><button class="modal-close" onclick="cerrarModal('modalNota')">×</button></div>
     <div class="modal-body">
       <label>Semestre</label>
-      <select id="selectSemestre">
-        <option value="1">1° Semestre</option>
-        <option value="2">2° Semestre</option>
-      </select>
+      <select id="selectSemestre"><option value="1">1° Semestre</option><option value="2">2° Semestre</option></select>
       <label>Asignatura</label>
-      <select id="selectAsignatura">
-        <option>Lenguaje y Comunicación</option>
-        <option>Matemática</option>
-        <option>Historia, Geografía y Ciencias Sociales</option>
-        <option>Ciencias Naturales</option>
-        <option>Artes Visuales</option>
-        <option>Educación Física y Salud</option>
-        <option>Tecnología</option>
-        <option>Música</option>
-        <option>Inglés</option>
-        <option>Religión</option>
-        <option>Orientación</option>
-      </select>
+      <select id="selectAsignatura"></select>
       <label>Nota (1,0 a 7,0)</label>
       <input type="text" id="inputNota" placeholder="Ej: 6,5 o 5.0" inputmode="decimal">
     </div>
@@ -210,6 +218,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL VER NOTAS -->
 <div id="modalVerNotas" class="modal-overlay">
   <div class="modal wide">
     <div class="modal-header"><h3 id="tituloVerNotas">Calificaciones</h3><button class="modal-close" onclick="cerrarModal('modalVerNotas')">×</button></div>
@@ -233,15 +242,13 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL OBSERVACIÓN -->
 <div id="modalObs" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3 id="tituloObs">Observación</h3><button class="modal-close" onclick="cerrarModal('modalObs')">×</button></div>
     <div class="modal-body">
       <label>Tipo</label>
-      <select id="selectTipoObs">
-        <option value="pos">Positiva</option>
-        <option value="neg">Negativa / Amonestación</option>
-      </select>
+      <select id="selectTipoObs"><option value="pos">Positiva</option><option value="neg">Negativa / Amonestación</option></select>
       <label>Descripción</label>
       <textarea id="textoObs" rows="3" placeholder="Describe la observación..."></textarea>
       <div id="listaObsPrevias" style="margin-top:16px"></div>
@@ -253,6 +260,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL ANUNCIO -->
 <div id="modalAnuncio" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>📢 Publicar anuncio al curso</h3><button class="modal-close" onclick="cerrarModal('modalAnuncio')">×</button></div>
@@ -269,6 +277,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL CREAR ALUMNO -->
 <div id="modalCrearAlumno" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>Crear nuevo perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalCrearAlumno')">×</button></div>
@@ -287,11 +296,12 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL EDITAR ALUMNO -->
 <div id="modalEditarAlumno" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>✏️ Editar perfil de alumno</h3><button class="modal-close" onclick="cerrarModal('modalEditarAlumno')">×</button></div>
     <div class="modal-body">
-      <label>RUT del estudiante (no editable)</label>
+      <label>RUT del estudiante</label>
       <input type="text" id="editRut" disabled style="background:#f1f5f9;color:#64748b">
       <label>Nombre completo</label>
       <input type="text" id="editNombre">
@@ -305,6 +315,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL INACTIVOS -->
 <div id="modalInactivos" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>⏸️ Alumnos desactivados</h3><button class="modal-close" onclick="cerrarModal('modalInactivos')">×</button></div>
@@ -313,6 +324,7 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
+<!-- MODAL JUSTIFICACIONES -->
 <div id="modalJustificaciones" class="modal-overlay">
   <div class="modal">
     <div class="modal-header"><h3>📥 Buzón de justificaciones</h3><button class="modal-close" onclick="cerrarModal('modalJustificaciones')">×</button></div>
@@ -321,23 +333,23 @@ footer{text-align:center;padding:16px;font-size:.75rem;color:var(--muted);backgr
   </div>
 </div>
 
-<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v6.0</footer>
+<footer>Escuela Candelaria Pérez · San Javier · Panel Docente v8.0</footer>
 
 <script>
 const API_URL = "/api";
-
-let sesion = null;
 let nombreProfe = "";
 let cursosDelProfe = [];
 let tokenDocente = "";
 let alumnoSeleccionadoRut = null;
 let alumnoVerNotasRut = null;
-let alumnoVerNotasNombre = "";
 let notasVerCache = [];
 
 let alumnosCache = [];
 let notasCache = [];
+let asistenciasCache = [];
 let justificacionesCache = [];
+let asignaturasCache = [];
+let hoyChile = "";
 
 function authHeaders(json = true){
   const h = { "Authorization": `Bearer ${tokenDocente}` };
@@ -348,28 +360,27 @@ function authHeaders(json = true){
 (function checkSession(){
   try {
     const s = JSON.parse(sessionStorage.getItem('docente_session') || 'null');
+    const m = JSON.parse(sessionStorage.getItem('maestro_session') || 'null');
+    if (m && m.rol === 'maestro') {
+      document.getElementById('btnVolverMaestro').style.display = 'inline-block';
+    }
     if (!s || s.rol !== 'docente' || !s.token || Date.now() > s.exp) {
       sessionStorage.removeItem('docente_session');
       window.location.href = "index.html";
       return;
     }
-    sesion = s;
     nombreProfe = s.nombre;
     cursosDelProfe = s.cursos || [];
     tokenDocente = s.token;
     document.getElementById('saludoProfe').textContent = 'Hola, ' + formatearNombre(nombreProfe);
     cargarTodoDesdeAPI();
-  } catch(e) {
-    window.location.href = "index.html";
-  }
+  } catch(e) { window.location.href = "index.html"; }
 })();
 
 function formatearNombre(n){ return n.split(' ').map(p=>p.charAt(0)+p.slice(1).toLowerCase()).join(' '); }
 function limpiarRutFront(val){
   let limpio = val.trim().toUpperCase().replace(/\./g, '').replace(/\s+/g, '');
-  if (limpio.length >= 2 && !limpio.includes('-')) {
-    limpio = limpio.slice(0, -1) + '-' + limpio.slice(-1);
-  }
+  if (limpio.length >= 2 && !limpio.includes('-')) limpio = limpio.slice(0, -1) + '-' + limpio.slice(-1);
   return limpio;
 }
 function validarRutMod11(rut){
@@ -377,29 +388,14 @@ function validarRutMod11(rut){
   if(!/^\d{7,8}-[\dK]$/.test(norm)) return false;
   const [cuerpo, dv] = norm.split('-');
   let suma = 0, mult = 2;
-  for(let i = cuerpo.length - 1; i >= 0; i--){
-    suma += parseInt(cuerpo[i], 10) * mult;
-    mult = mult === 7 ? 2 : mult + 1;
-  }
+  for(let i = cuerpo.length - 1; i >= 0; i--){ suma += parseInt(cuerpo[i], 10) * mult; mult = mult === 7 ? 2 : mult + 1; }
   const resto = 11 - (suma % 11);
   const esperado = resto === 11 ? '0' : (resto === 10 ? 'K' : String(resto));
   return dv === esperado;
 }
-function parseNota(str){
-  if(str==null) return NaN;
-  const n = parseFloat(String(str).replace(',','.'));
-  return (n>=1 && n<=7) ? n : NaN;
-}
-function fmtNota(n){
-  if(n==null||isNaN(n)) return '—';
-  return Number(n).toFixed(1).replace('.',',');
-}
-function claseProm(n){
-  if(n==null||isNaN(n)) return 'prom-na';
-  if(n>=5.5) return 'prom-ok';
-  if(n>=4.0) return 'prom-mid';
-  return 'prom-bad';
-}
+function parseNota(str){ if(str==null) return NaN; const n = parseFloat(String(str).replace(',','.')); return (n>=1 && n<=7) ? n : NaN; }
+function fmtNota(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toFixed(1).replace('.',','); }
+function claseProm(n){ if(n==null||isNaN(n)) return 'prom-na'; if(n>=5.5) return 'prom-ok'; if(n>=4.0) return 'prom-mid'; return 'prom-bad'; }
 function calcPromedio(notas, semestre){
   let list = notas;
   if(semestre) list = notas.filter(x => String(x.semestre||'1')===String(semestre));
@@ -411,26 +407,31 @@ function calcPromedio(notas, semestre){
     byAsig[n.asignatura].push(v);
   });
   const asigAvgs = Object.values(byAsig).map(arr => arr.reduce((a,b)=>a+b,0)/arr.length);
-  if(!asigAvgs.length) return null;
-  return asigAvgs.reduce((a,b)=>a+b,0)/asigAvgs.length;
+  return asigAvgs.length ? asigAvgs.reduce((a,b)=>a+b,0)/asigAvgs.length : null;
+}
+
+function calcAsistenciaPct(rut){
+  const regs = asistenciasCache.filter(a => a.rut === rut);
+  if(!regs.length) return null;
+  const ok = regs.filter(r => r.estado === 'P' || r.estado === 'T' || r.estado === 'J').length;
+  return Math.round((ok / regs.length) * 100);
 }
 
 async function cargarTodoDesdeAPI(){
   try {
     const queryCursos = encodeURIComponent(cursosDelProfe.join(','));
-    const res = await fetch(`${API_URL}/docente/panel?cursos=${queryCursos}`, {
-      headers: authHeaders(false)
-    });
-    if (res.status === 401) {
-      sessionStorage.removeItem('docente_session');
-      window.location.href = "index.html";
-      return;
-    }
+    const res = await fetch(`${API_URL}/docente/panel?cursos=${queryCursos}`, { headers: authHeaders(false) });
+    if (res.status === 401 || res.status === 403) { sessionStorage.removeItem('docente_session'); window.location.href = "index.html"; return; }
     if (!res.ok) throw new Error();
     const data = await res.json();
     alumnosCache = data.alumnos || [];
     notasCache = data.notas || [];
+    asistenciasCache = data.asistencias || [];
     justificacionesCache = data.justificaciones || [];
+    asignaturasCache = data.asignaturas || [];
+    hoyChile = data.hoy_chile || new Date().toISOString().slice(0,10);
+
+    document.getElementById('selectAsignatura').innerHTML = asignaturasCache.map(a => `<option>${a.nombre}</option>`).join('');
     renderizarTodo();
     actualizarNotificacionesJustificaciones();
   } catch (err) {
@@ -441,8 +442,7 @@ async function cargarTodoDesdeAPI(){
 function renderizarTodo(){
   const cont = document.getElementById('contenedorCursos');
   cont.innerHTML = '';
-  let totalActivos = 0;
-  let totalInactivos = 0;
+  let totalActivos = 0, totalInactivos = 0;
 
   cursosDelProfe.forEach(cursoNombre => {
     const activos = alumnosCache.filter(a => a.curso === cursoNombre && a.activo === 1);
@@ -454,16 +454,18 @@ function renderizarTodo(){
     activos.forEach(al => {
       const rut = al.rut;
       const nombre = al.nombre;
-      const notasAl = notasCache.filter(n => n.rut === rut);
-      const prom = calcPromedio(notasAl);
-      const chip = `<span class="prom-chip ${claseProm(prom)}">${prom!=null?fmtNota(prom):'—'}</span>`;
-      const nombreEsc = nombre.replace(/'/g, "\\'");
-      const cursoEsc = cursoNombre.replace(/'/g, "\\'");
+      const prom = calcPromedio(notasCache.filter(n => n.rut === rut));
+      const asist = calcAsistenciaPct(rut);
+      const chipProm = `<span class="prom-chip ${claseProm(prom)}">${prom!=null?fmtNota(prom):'—'}</span>`;
+      const chipAsist = `<span class="prom-chip ${asist===null?'prom-na':(asist>=85?'prom-ok':'prom-bad')}">${asist!==null?asist+'%':'—'}</span>`;
+      const nombreEsc = nombre.replace(/'/g, "\'");
+      const cursoEsc = cursoNombre.replace(/'/g, "\'");
 
-      filas += `<tr id="fila-${rut}" data-nombre="${nombre.toLowerCase()}" data-rut="${rut.toLowerCase()}">
+      filas += `<tr data-nombre="${nombre.toLowerCase()}" data-rut="${rut.toLowerCase()}">
         <td style="font-family:monospace;font-size:.84rem">${rut}</td>
         <td>${nombre}</td>
-        <td style="text-align:center">${chip}</td>
+        <td style="text-align:center">${chipProm}</td>
+        <td style="text-align:center">${chipAsist}</td>
         <td class="acciones">
           <button class="menu-dots" onclick="toggleMenu('${rut}')">⋮</button>
           <div id="menu-${rut}" class="dropdown-menu">
@@ -476,10 +478,10 @@ function renderizarTodo(){
           </div></td></tr>`;
     });
 
-    if(!activos.length) filas='<tr><td colspan="4" class="empty-state">No hay alumnos activos en este curso.</td></tr>';
-    cont.innerHTML += `<div class="curso-section" data-curso="${cursoNombre}">
+    if(!activos.length) filas='<tr><td colspan="5" class="empty-state">No hay alumnos activos en este curso.</td></tr>';
+    cont.innerHTML += `<div class="curso-section">
       <div class="curso-header"><h3>${cursoNombre}</h3><span class="curso-count">${activos.length} alumno${activos.length!==1?'s':''}</span></div>
-      <table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>${filas}</tbody></table></div>`;
+      <table><thead><tr><th>RUT</th><th>Nombre</th><th style="text-align:center">Prom.</th><th style="text-align:center">Asist.</th><th style="text-align:right">Acciones</th></tr></thead><tbody>${filas}</tbody></table></div>`;
   });
 
   document.getElementById('statAlumnos').textContent = totalActivos;
@@ -504,138 +506,126 @@ window.addEventListener('click', e=>{
   if(!e.target.closest('.menu-dots') && !e.target.closest('.dropdown-menu'))
     document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
 });
+function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
 
-function cerrarModal(id){ document.getElementById(id).classList.remove('show'); if(id==='modalNota') alumnoSeleccionadoRut=null; }
-function cerrarSesionDocente(){ sessionStorage.removeItem('docente_session'); }
+// --- ASISTENCIA ---
+function abrirModalAsistencia(){
+  document.getElementById('asistCurso').innerHTML = cursosDelProfe.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('asistFecha').value = hoyChile;
+  document.getElementById('modalAsistencia').classList.add('show');
+  cargarListaAsistencia();
+}
 
+async function cargarListaAsistencia(){
+  const curso = document.getElementById('asistCurso').value;
+  const fecha = document.getElementById('asistFecha').value;
+  const cont = document.getElementById('listaAsistenciaAlumnos');
+  const alumnos = alumnosCache.filter(a => a.curso === curso && a.activo === 1);
+  if(!alumnos.length){ cont.innerHTML = '<div class="empty-state">No hay alumnos en este curso.</div>'; return; }
+
+  let mapaPrevio = {};
+  try {
+    const res = await fetch(`${API_URL}/asistencia?curso=${encodeURIComponent(curso)}&fecha=${fecha}`, { headers: authHeaders(false) });
+    if(res.ok){
+      const prev = await res.json();
+      prev.forEach(p => mapaPrevio[p.rut] = p.estado);
+    }
+  } catch(e){}
+
+  cont.innerHTML = alumnos.map(a => {
+    const est = mapaPrevio[a.rut] || 'P';
+    return `<div class="asist-row">
+      <div><strong>${a.nombre}</strong> <span style="font-size:.75rem;color:#64748b">(${a.rut})</span></div>
+      <select class="sel-asist" data-rut="${a.rut}">
+        <option value="P" ${est==='P'?'selected':''}>✅ Presente</option>
+        <option value="A" ${est==='A'?'selected':''}>❌ Ausente</option>
+        <option value="T" ${est==='T'?'selected':''}>⏰ Atrasado</option>
+        <option value="J" ${est==='J'?'selected':''}>📄 Justificado</option>
+      </select>
+    </div>`;
+  }).join('');
+}
+
+async function guardarAsistencia(){
+  const curso = document.getElementById('asistCurso').value;
+  const fecha = document.getElementById('asistFecha').value;
+  const registros = Array.from(document.querySelectorAll('.sel-asist')).map(s => ({ rut: s.dataset.rut, estado: s.value }));
+  if(!registros.length) return;
+  const res = await fetch(`${API_URL}/asistencia`, {
+    method: 'POST', headers: authHeaders(true), body: JSON.stringify({ curso, fecha, docente: nombreProfe, registros })
+  });
+  if(res.ok){
+    alert('✓ Asistencia guardada correctamente');
+    cerrarModal('modalAsistencia');
+    cargarTodoDesdeAPI();
+  }
+}
+
+// --- CALENDARIO ---
 async function abrirModalCalendario(){
   document.getElementById('modalCalendario').classList.add('show');
   const resEl = document.getElementById('resumenPromocionActual');
-  resEl.innerHTML = 'Consultando estado del calendario...';
-  try {
-    const res = await fetch(`${API_URL}/calendario`, { headers: authHeaders(false) });
-    if(!res.ok) throw new Error();
+  resEl.innerHTML = 'Consultando...';
+  const res = await fetch(`${API_URL}/calendario`, { headers: authHeaders(false) });
+  if(res.ok){
     const data = await res.json();
-    const cfg = data.config;
-    document.getElementById('calMes').value = String(cfg.mes_cierre);
-    document.getElementById('calDia').value = cfg.dia_cierre;
-
-    let aprueban = 0, repiten = 0;
-    alumnosCache.filter(a => a.activo === 1).forEach(al => {
-      const prom = calcPromedio(notasCache.filter(n => n.rut === al.rut));
-      if (prom === null || prom >= 4.0) aprueban++;
-      else repiten++;
-    });
-
-    resEl.innerHTML = `
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:9px">
-        <div><strong>Hora Chile servidor:</strong> ${data.fecha_servidor}</div>
-        <div><strong>Última promoción ejecutada:</strong> Año ${cfg.ultimo_anio_promocion}</div>
-        <div><strong>Última limpieza 1 de enero:</strong> Año ${cfg.ultimo_anio_limpieza}</div>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0">
-          <strong>Proyección actual en tus cursos:</strong>
-          <span style="color:#059669;font-weight:700">${aprueban} promueven</span> ·
-          <span style="color:#dc2626;font-weight:700">${repiten} repiten</span>
-        </div>
-      </div>
-    `;
-  } catch (e) {
-    resEl.innerHTML = '<span style="color:#dc2626">No se pudo cargar la configuración del calendario.</span>';
+    document.getElementById('calMes').value = String(data.config.mes_cierre);
+    document.getElementById('calDia').value = data.config.dia_cierre;
+    resEl.innerHTML = `<div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:9px">
+      <div><strong>Hora Chile:</strong> ${data.fecha_servidor}</div>
+      <div><strong>Última promoción:</strong> Año ${data.config.ultimo_anio_promocion}</div>
+    </div>`;
   }
 }
 
 async function guardarConfigCalendario(){
   const mes_cierre = parseInt(document.getElementById('calMes').value, 10);
   const dia_cierre = parseInt(document.getElementById('calDia').value, 10);
-  try {
-    const res = await fetch(`${API_URL}/calendario`, {
-      method: "PUT",
-      headers: authHeaders(true),
-      body: JSON.stringify({ mes_cierre, dia_cierre })
-    });
-    if(!res.ok) throw new Error();
-    alert(`✓ Fecha de cierre escolar programada para el ${dia_cierre}/${mes_cierre}.`);
-    await cargarTodoDesdeAPI();
-    cerrarModal('modalCalendario');
-  } catch(e) {
-    alert('Error al guardar fecha de calendario.');
-  }
+  const res = await fetch(`${API_URL}/calendario`, { method: 'PUT', headers: authHeaders(true), body: JSON.stringify({ mes_cierre, dia_cierre }) });
+  if(res.ok){ alert('✓ Fecha guardada'); cerrarModal('modalCalendario'); }
 }
 
 async function ejecutarPromocionManual(){
-  if(!confirm('¿Ejecutar ahora el cierre de año escolar?\n\n• Alumnos con promedio >= 4,0 pasarán al siguiente curso.\n• Alumnos con promedio < 4,0 repetirán su curso actual.\n• Los de 8° Básico pasarán a Egresados.')) return;
-  try {
-    const res = await fetch(`${API_URL}/calendario/simular-cierre`, {
-      method: "POST",
-      headers: authHeaders(false)
-    });
-    const data = await res.json();
-    if(!res.ok){ alert(data.detail || 'No se pudo ejecutar la promoción.'); return; }
-    alert('✓ ' + data.mensaje);
-    await cargarTodoDesdeAPI();
-    cerrarModal('modalCalendario');
-  } catch(e) {
-    alert('Error al ejecutar promoción.');
-  }
+  if(!confirm('¿Ejecutar ahora el cierre de año escolar?')) return;
+  const res = await fetch(`${API_URL}/calendario/simular-cierre`, { method: 'POST', headers: authHeaders(false) });
+  if(res.ok){ const d = await res.json(); alert('✓ ' + d.mensaje); cerrarModal('modalCalendario'); cargarTodoDesdeAPI(); }
 }
 
+// --- NOTAS ---
 function abrirModalNota(rut, nombre){
   alumnoSeleccionadoRut = rut;
   document.getElementById('modalTituloNota').textContent = 'Nota · '+nombre;
   document.getElementById('inputNota').value = '';
   document.getElementById('modalNota').classList.add('show');
   document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-  setTimeout(()=>document.getElementById('inputNota').focus(),80);
 }
 
 async function guardarNota(){
   const asignatura = document.getElementById('selectAsignatura').value;
   const semestre = parseInt(document.getElementById('selectSemestre').value, 10);
-  const notaRaw = document.getElementById('inputNota').value.trim();
-  const val = parseNota(notaRaw);
-  if(isNaN(val)){ alert('Ingresa una nota válida entre 1,0 y 7,0'); document.getElementById('inputNota').focus(); return; }
-
-  try {
-    const res = await fetch(`${API_URL}/notas`, {
-      method: "POST",
-      headers: authHeaders(true),
-      body: JSON.stringify({
-        rut: alumnoSeleccionadoRut,
-        asignatura,
-        nota: val,
-        semestre,
-        docente: nombreProfe
-      })
-    });
-    if (!res.ok) throw new Error();
-    alert('✓ Nota '+fmtNota(val)+' registrada en '+asignatura+' ('+semestre+'° Semestre)');
-    cerrarModal('modalNota');
-    await cargarTodoDesdeAPI();
-  } catch (e) {
-    alert('Error al guardar la nota en la base de datos.');
-  }
+  const val = parseNota(document.getElementById('inputNota').value.trim());
+  if(isNaN(val)){ alert('Ingresa una nota válida entre 1,0 y 7,0'); return; }
+  const res = await fetch(`${API_URL}/notas`, {
+    method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut: alumnoSeleccionadoRut, asignatura, nota: val, semestre, docente: nombreProfe })
+  });
+  if(res.ok){ alert('✓ Nota registrada'); cerrarModal('modalNota'); cargarTodoDesdeAPI(); }
 }
 
 function abrirVerNotas(rut, nombre){
   alumnoVerNotasRut = rut;
-  alumnoVerNotasNombre = nombre;
   document.getElementById('tituloVerNotas').textContent = 'Informe de Notas · '+nombre;
   notasVerCache = notasCache.filter(n => n.rut === rut);
   actualizarVistaVerNotas();
-  document.querySelectorAll('.sem-tab').forEach(t=>t.classList.toggle('active', t.dataset.sem==='all'));
   renderListaNotasDocente('all');
   document.getElementById('modalVerNotas').classList.add('show');
   document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
 }
 
 function actualizarVistaVerNotas(){
-  const p1 = calcPromedio(notasVerCache,'1');
-  const p2 = calcPromedio(notasVerCache,'2');
-  const pg = calcPromedio(notasVerCache);
-  const el1=document.getElementById('avgS1'), el2=document.getElementById('avgS2'), elg=document.getElementById('avgGen');
-  el1.textContent=fmtNota(p1); el1.className='avg-val '+claseProm(p1);
-  el2.textContent=fmtNota(p2); el2.className='avg-val '+claseProm(p2);
-  elg.textContent=fmtNota(pg); elg.className='avg-val '+claseProm(pg);
+  const p1 = calcPromedio(notasVerCache,'1'), p2 = calcPromedio(notasVerCache,'2'), pg = calcPromedio(notasVerCache);
+  document.getElementById('avgS1').textContent = fmtNota(p1);
+  document.getElementById('avgS2').textContent = fmtNota(p2);
+  document.getElementById('avgGen').textContent = fmtNota(pg);
 }
 
 function filtrarSemVer(btn){
@@ -648,74 +638,42 @@ function renderListaNotasDocente(sem){
   let list = notasVerCache.slice().reverse();
   if(sem!=='all') list = list.filter(n=>String(n.semestre||'1')===sem);
   const cont = document.getElementById('listaNotasDocente');
-  if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones en este período.</div>'; return; }
+  if(!list.length){ cont.innerHTML='<div class="empty-state">Sin calificaciones.</div>'; return; }
   cont.innerHTML = list.map(n=>{
     const v = parseNota(n.nota);
-    return `<div class="nota-row" data-sem="${n.semestre||'1'}">
+    return `<div class="nota-row">
       <div><strong>${n.asignatura}</strong><div style="font-size:.75rem;color:#64748b">${n.fecha||''} · Sem ${n.semestre||'1'}</div></div>
       <div><span class="prom-chip ${claseProm(v)}">${fmtNota(v)}</span>
-      ${n.id ? `<button class="btn-del-nota" onclick="borrarNota(${n.id})" title="Eliminar nota">✕</button>` : ''}
-      </div></div>`;
+      <button class="btn-del-nota" onclick="borrarNota(${n.id})">✕</button></div></div>`;
   }).join('');
 }
 
-async function borrarNota(notaId){
-  if(!confirm('¿Eliminar esta calificación?')) return;
-  try {
-    const res = await fetch(`${API_URL}/notas/${notaId}`, {
-      method: "DELETE",
-      headers: authHeaders(false)
-    });
-    if(!res.ok) throw new Error();
-    await cargarTodoDesdeAPI();
-    notasVerCache = notasCache.filter(n => n.rut === alumnoVerNotasRut);
-    actualizarVistaVerNotas();
-    const activeSem = document.querySelector('.sem-tab.active')?.dataset.sem || 'all';
-    renderListaNotasDocente(activeSem);
-  } catch (e) {
-    alert('No se pudo eliminar la nota.');
-  }
+async function borrarNota(id){
+  if(!confirm('¿Eliminar esta nota?')) return;
+  const res = await fetch(`${API_URL}/notas/${id}`, { method: 'DELETE', headers: authHeaders(false) });
+  if(res.ok){ await cargarTodoDesdeAPI(); notasVerCache = notasCache.filter(n => n.rut === alumnoVerNotasRut); actualizarVistaVerNotas(); renderListaNotasDocente('all'); }
 }
 
+// --- OBS, ANUNCIOS, ALUMNOS, JUSTIFICACIONES ---
 async function abrirObs(rut, nombre){
   alumnoSeleccionadoRut = rut;
   document.getElementById('tituloObs').textContent = 'Observación · '+nombre;
   document.getElementById('textoObs').value = '';
-  const cont = document.getElementById('listaObsPrevias');
-  cont.innerHTML = '<div style="font-size:.8rem;color:#64748b">Cargando historial...</div>';
   document.getElementById('modalObs').classList.add('show');
   document.querySelectorAll('.dropdown-menu').forEach(m=>m.style.display='none');
-
-  try {
-    const res = await fetch(`${API_URL}/portal/${rut}`);
-    if(res.ok){
-      const data = await res.json();
-      const obs = data.observaciones || [];
-      if(obs.length){
-        cont.innerHTML = '<div style="font-size:.8rem;font-weight:600;margin-bottom:8px;color:#64748b">Historial</div>' +
-          obs.map(o=>`<div class="obs-item ${o.tipo==='neg'?'neg':''}">${o.texto}<div class="obs-meta">${o.fecha||''} · ${o.docente||''}</div></div>`).join('');
-      } else cont.innerHTML = '';
-    }
-  } catch(e){ cont.innerHTML = ''; }
+  const res = await fetch(`${API_URL}/portal/${rut}`);
+  if(res.ok){
+    const data = await res.json();
+    document.getElementById('listaObsPrevias').innerHTML = (data.observaciones||[]).map(o=>`<div class="obs-item ${o.tipo==='neg'?'neg':''}">${o.texto}<div class="obs-meta">${o.fecha} · ${o.docente}</div></div>`).join('');
+  }
 }
 
 async function guardarObs(){
   const texto = document.getElementById('textoObs').value.trim();
   const tipo = document.getElementById('selectTipoObs').value;
-  if(!texto){ alert('Escribe la observación.'); return; }
-
-  try {
-    const res = await fetch(`${API_URL}/observaciones`, {
-      method: "POST",
-      headers: authHeaders(true),
-      body: JSON.stringify({ rut: alumnoSeleccionadoRut, tipo, texto, docente: nombreProfe })
-    });
-    if(!res.ok) throw new Error();
-    alert('✓ Observación registrada');
-    cerrarModal('modalObs');
-  } catch(e) {
-    alert('Error al guardar observación.');
-  }
+  if(!texto) return;
+  const res = await fetch(`${API_URL}/observaciones`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut: alumnoSeleccionadoRut, tipo, texto, docente: nombreProfe }) });
+  if(res.ok){ alert('✓ Observación registrada'); cerrarModal('modalObs'); }
 }
 
 function abrirModalAnuncio(){
@@ -727,20 +685,9 @@ function abrirModalAnuncio(){
 async function guardarAnuncio(){
   const curso = document.getElementById('cursoAnuncio').value;
   const texto = document.getElementById('textoAnuncio').value.trim();
-  if(!texto){ alert('Escribe el mensaje del anuncio.'); return; }
-
-  try {
-    const res = await fetch(`${API_URL}/anuncios`, {
-      method: "POST",
-      headers: authHeaders(true),
-      body: JSON.stringify({ curso, texto, docente: nombreProfe })
-    });
-    if(!res.ok) throw new Error();
-    alert('✓ Anuncio publicado para ' + curso);
-    cerrarModal('modalAnuncio');
-  } catch(e) {
-    alert('Error al publicar anuncio.');
-  }
+  if(!texto) return;
+  const res = await fetch(`${API_URL}/anuncios`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ curso, texto, docente: nombreProfe }) });
+  if(res.ok){ alert('✓ Anuncio publicado'); cerrarModal('modalAnuncio'); }
 }
 
 function abrirModalCrearAlumno(){
@@ -748,30 +695,17 @@ function abrirModalCrearAlumno(){
   document.getElementById('nuevoRut').value='';
   document.getElementById('nuevoNombre').value='';
   document.getElementById('modalCrearAlumno').classList.add('show');
-  setTimeout(()=>document.getElementById('nuevoRut').focus(),80);
 }
 
 async function crearNuevoAlumno(){
   const rut = limpiarRutFront(document.getElementById('nuevoRut').value);
   const nombre = document.getElementById('nuevoNombre').value.trim().toUpperCase();
   const curso = document.getElementById('nuevoCurso').value;
-  if(!rut||!nombre){ alert('RUT y nombre son obligatorios.'); return; }
-  if(!validarRutMod11(rut)){ alert('El RUT ingresado no es válido (dígito verificador incorrecto).'); return; }
-
-  try {
-    const res = await fetch(`${API_URL}/alumnos`, {
-      method: "POST",
-      headers: authHeaders(true),
-      body: JSON.stringify({ rut, nombre, curso })
-    });
-    const data = await res.json();
-    if(!res.ok){ alert(data.detail || 'Error al crear alumno.'); return; }
-    alert(`✓ ${data.mensaje}:\n${nombre}\nRUT de ingreso estudiante: ${data.rut || rut}\nCurso: ${curso}`);
-    cerrarModal('modalCrearAlumno');
-    await cargarTodoDesdeAPI();
-  } catch(e) {
-    alert('Error de conexión con el servidor.');
-  }
+  if(!rut||!nombre || !validarRutMod11(rut)){ alert('Verifica que el RUT y nombre sean válidos.'); return; }
+  const res = await fetch(`${API_URL}/alumnos`, { method: 'POST', headers: authHeaders(true), body: JSON.stringify({ rut, nombre, curso }) });
+  if(!res.ok){ const d = await res.json(); alert(d.detail || 'Error'); return; }
+  cerrarModal('modalCrearAlumno');
+  cargarTodoDesdeAPI();
 }
 
 function abrirEditarAlumno(rut, nombre, curso){
@@ -786,122 +720,51 @@ async function guardarEdicionAlumno(){
   const rut = document.getElementById('editRut').value;
   const nombre = document.getElementById('editNombre').value.trim().toUpperCase();
   const curso = document.getElementById('editCurso').value;
-  if(!nombre){ alert('El nombre no puede estar vacío.'); return; }
-
-  try {
-    const res = await fetch(`${API_URL}/alumnos/${rut}`, {
-      method: "PUT",
-      headers: authHeaders(true),
-      body: JSON.stringify({ nombre, curso })
-    });
-    if(!res.ok) throw new Error();
-    alert('✓ Datos del estudiante actualizados.');
-    cerrarModal('modalEditarAlumno');
-    await cargarTodoDesdeAPI();
-  } catch(e) {
-    alert('Error al actualizar estudiante.');
-  }
+  const res = await fetch(`${API_URL}/alumnos/${rut}`, { method: 'PUT', headers: authHeaders(true), body: JSON.stringify({ nombre, curso }) });
+  if(res.ok){ cerrarModal('modalEditarAlumno'); cargarTodoDesdeAPI(); }
 }
 
 async function desactivarAlumno(rut, nombre){
-  if(!confirm(`¿Desactivar temporalmente a ${nombre}?\nEl alumno no podrá ingresar hasta que lo reactives.`)) return;
-  try {
-    const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=0`, {
-      method: "PATCH",
-      headers: authHeaders(false)
-    });
-    if(!res.ok) throw new Error();
-    await cargarTodoDesdeAPI();
-    alert(`Estudiante ${nombre} desactivado.`);
-  } catch(e) {
-    alert('No se pudo desactivar al estudiante.');
-  }
+  if(!confirm(`¿Desactivar a ${nombre}?`)) return;
+  const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=0`, { method: 'PATCH', headers: authHeaders(false) });
+  if(res.ok) cargarTodoDesdeAPI();
 }
 
 async function reactivarAlumno(rut){
-  try {
-    const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=1`, {
-      method: "PATCH",
-      headers: authHeaders(false)
-    });
-    if(!res.ok) throw new Error();
-    await cargarTodoDesdeAPI();
-    abrirModalInactivos();
-  } catch(e) {
-    alert('No se pudo reactivar al estudiante.');
-  }
+  const res = await fetch(`${API_URL}/alumnos/${rut}/estado?activo=1`, { method: 'PATCH', headers: authHeaders(false) });
+  if(res.ok){ await cargarTodoDesdeAPI(); abrirModalInactivos(); }
 }
 
 function abrirModalInactivos(){
   const inactivos = alumnosCache.filter(a => a.activo === 0);
-  const cont = document.getElementById('listaInactivos');
-  if(!inactivos.length){
-    cont.innerHTML = '<div class="empty-state">No hay alumnos desactivados en tus cursos.</div>';
-  } else {
-    cont.innerHTML = inactivos.map(a => `
-      <div class="inactivo-row">
-        <div><strong>${a.nombre}</strong><div style="font-size:.75rem;color:#64748b">${a.rut} · ${a.curso}</div></div>
-        <button class="btn-reactivar" onclick="reactivarAlumno('${a.rut}')">✓ Reactivar</button>
-      </div>
-    `).join('');
-  }
+  document.getElementById('listaInactivos').innerHTML = inactivos.length ? inactivos.map(a => `<div class="inactivo-row"><div><strong>${a.nombre}</strong> (${a.rut})</div><button class="btn-reactivar" onclick="reactivarAlumno('${a.rut}')">Reactivar</button></div>`).join('') : '<div class="empty-state">Sin alumnos desactivados.</div>';
   document.getElementById('modalInactivos').classList.add('show');
 }
 
 async function eliminarDefinitivo(rut, nombre){
-  if(!confirm(`⚠️ ELIMINACIÓN DEFINITIVA\n\n¿Borrar completamente a ${nombre} (${rut}) y todas sus notas/observaciones de la base de datos?`)) return;
-  try {
-    const res = await fetch(`${API_URL}/alumnos/${rut}`, {
-      method: "DELETE",
-      headers: authHeaders(false)
-    });
-    if(!res.ok) throw new Error();
-    await cargarTodoDesdeAPI();
-    alert(`🗑️ ${nombre} fue eliminado definitivamente de la base de datos.`);
-  } catch(e) {
-    alert('No se pudo eliminar al estudiante.');
-  }
+  if(!confirm(`⚠️ ¿Borrar definitivamente a ${nombre}?`)) return;
+  const res = await fetch(`${API_URL}/alumnos/${rut}`, { method: 'DELETE', headers: authHeaders(false) });
+  if(res.ok) cargarTodoDesdeAPI();
 }
 
 function actualizarNotificacionesJustificaciones(){
-  const badge = document.getElementById('contadorJustificaciones');
-  const stat = document.getElementById('statJustif');
   const sinLeer = justificacionesCache.filter(j => !j.leida).length;
-  if(sinLeer > 0){ badge.textContent = sinLeer; badge.style.display = 'flex'; }
-  else badge.style.display = 'none';
-  if(stat) stat.textContent = sinLeer;
+  const badge = document.getElementById('contadorJustificaciones');
+  badge.textContent = sinLeer;
+  badge.style.display = sinLeer > 0 ? 'flex' : 'none';
+  document.getElementById('statJustif').textContent = sinLeer;
 }
 
 async function marcarJustificacionLeida(id){
-  try {
-    const res = await fetch(`${API_URL}/justificaciones/${id}/leer`, {
-      method: "PATCH",
-      headers: authHeaders(false)
-    });
-    if(!res.ok) throw new Error();
-    const item = justificacionesCache.find(j => j.id === id);
-    if(item) item.leida = 1;
-    actualizarNotificacionesJustificaciones();
-    abrirBuzonJustificaciones();
-  } catch(e) {
-    alert('No se pudo archivar la justificación.');
-  }
+  const res = await fetch(`${API_URL}/justificaciones/${id}/leer`, { method: 'PATCH', headers: authHeaders(false) });
+  if(res.ok){ const item = justificacionesCache.find(j => j.id === id); if(item) item.leida = 1; actualizarNotificacionesJustificaciones(); abrirBuzonJustificaciones(); }
 }
 
 function abrirBuzonJustificaciones(){
-  const cont = document.getElementById('listaJustificacionesBuzon');
-  if(!justificacionesCache.length) cont.innerHTML='<div class="empty-state">No hay justificaciones recibidas.</div>';
-  else cont.innerHTML = justificacionesCache.map(j=>{
+  document.getElementById('listaJustificacionesBuzon').innerHTML = justificacionesCache.length ? justificacionesCache.map(j=>{
     const al = alumnosCache.find(a => a.rut === j.rut);
-    const nombreAl = al ? al.nombre : j.rut;
-    const esLeida = Boolean(j.leida);
-    return `<div class="justificacion-card ${esLeida?'leida':''}">
-      <strong>${nombreAl}</strong> ${esLeida ? '<span style="font-size:.72rem;color:#059669">✓ Leída</span>' : ''}
-      <div class="meta">${j.curso} · ${j.fecha} · ${j.rut}</div>
-      <p>"${j.mensaje}"</p>
-      ${!esLeida ? `<button class="btn-leer" onclick="marcarJustificacionLeida(${j.id})">✓ Marcar como leída</button>` : ''}
-    </div>`;
-  }).join('');
+    return `<div class="justificacion-card ${j.leida?'leida':''}"><strong>${al ? al.nombre : j.rut}</strong><div class="meta">${j.curso} · ${j.fecha}</div><p>"${j.mensaje}"</p>${!j.leida?`<button class="btn-leer" onclick="marcarJustificacionLeida(${j.id})">✓ Marcar leída</button>`:''}</div>`;
+  }).join('') : '<div class="empty-state">Buzón vacío.</div>';
   document.getElementById('modalJustificaciones').classList.add('show');
 }
 </script>

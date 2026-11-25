@@ -38,11 +38,11 @@ footer{margin-top:26px;font-size:.75rem;color:#94a3b8;text-align:center}
   <div class="school-header">
     <div class="school-badge">ECP</div>
     <h1>Escuela Candelaria Pérez</h1>
-    <p>San Javier · Portal Educativo</p>
+    <p>San Javier · Portal Educativo v8.0</p>
   </div>
   <div class="tabs">
     <button type="button" class="tab-btn active" onclick="switchTab('estudiantes')">🎓 Estudiantes</button>
-    <button type="button" class="tab-btn" onclick="switchTab('docentes')">👨‍🏫 Docentes</button>
+    <button type="button" class="tab-btn" onclick="switchTab('docentes')">👨‍🏫 Docentes / Dirección</button>
   </div>
 
   <div id="sec-estudiantes" class="form-section active">
@@ -54,7 +54,7 @@ footer{margin-top:26px;font-size:.75rem;color:#94a3b8;text-align:center}
       </div>
       <button type="submit" id="btnEst" class="btn-submit">Ingresar al Portal</button>
     </form>
-    <p class="hint-text">Ingresa tu RUT con o sin puntos para ver notas, promedio, observaciones y anuncios.</p>
+    <p class="hint-text">Ingresa tu RUT con o sin puntos para ver notas, promedio, asistencia, observaciones y certificados.</p>
   </div>
 
   <div id="sec-docentes" class="form-section">
@@ -62,15 +62,15 @@ footer{margin-top:26px;font-size:.75rem;color:#94a3b8;text-align:center}
     <form onsubmit="loginDocente(event)">
       <div class="form-group">
         <label for="docNombre">Nombre completo</label>
-        <input type="text" id="docNombre" placeholder="Ej: Marta Quevedo Villalobos" autocomplete="name" required>
+        <input type="text" id="docNombre" placeholder="Ej: Paulina Toledo" autocomplete="name" required>
       </div>
       <div class="form-group">
         <label for="docPass">Contraseña</label>
         <input type="password" id="docPass" placeholder="••••••••••••" required>
       </div>
-      <button type="submit" id="btnDoc" class="btn-submit">Acceder al Panel Docente</button>
+      <button type="submit" id="btnDoc" class="btn-submit">Acceder al Panel</button>
     </form>
-    <p class="hint-text">Acceso exclusivo para el cuerpo docente de la institución.</p>
+    <p class="hint-text">Acceso exclusivo para docentes y dirección de la institución.</p>
   </div>
 </div>
 <footer>Escuela Candelaria Pérez · San Javier, Región del Maule</footer>
@@ -164,21 +164,32 @@ async function loginDocente(e){
       return;
     }
 
-    const docente = await res.json();
-    sessionStorage.setItem('docente_session', JSON.stringify({
-      rol: 'docente',
-      nombre: docente.nombre,
-      cursos: docente.cursos,
-      token: docente.token,
-      exp: Date.now() + 9*60*60*1000
-    }));
-    window.location.href = "docente.html";
+    const usuario = await res.json();
+    if(usuario.rol === 'maestro'){
+      sessionStorage.setItem('maestro_session', JSON.stringify({
+        rol: 'maestro',
+        nombre: usuario.nombre,
+        cursos: usuario.cursos,
+        token: usuario.token,
+        exp: Date.now() + 11*60*60*1000
+      }));
+      window.location.href = "maestro.html";
+    } else {
+      sessionStorage.setItem('docente_session', JSON.stringify({
+        rol: 'docente',
+        nombre: usuario.nombre,
+        cursos: usuario.cursos,
+        token: usuario.token,
+        exp: Date.now() + 11*60*60*1000
+      }));
+      window.location.href = "docente.html";
+    }
   } catch (err) {
     errEl.textContent = "No se pudo conectar con el servidor.";
     errEl.classList.add('show');
   } finally {
     btn.disabled = false;
-    btn.textContent = "Acceder al Panel Docente";
+    btn.textContent = "Acceder al Panel";
   }
 }
 </script>
